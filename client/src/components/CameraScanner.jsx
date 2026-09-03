@@ -1,11 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Camera, Upload, AlertCircle, FileText } from 'lucide-react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { Camera, Upload, AlertCircle, FileText, RefreshCw, X } from 'lucide-react';
 import { guider } from '../utils/voiceGuider';
 
 export default function CameraScanner({ selectedLang, onScanCompleted, onBack }) {
   const [stream, setStream] = useState(null);
   const [useCamera, setUseCamera] = useState(false);
   const [cameraError, setCameraError] = useState(null);
+  const [facingMode, setFacingMode] = useState('environment'); // 'environment' | 'user'
   const [presets, setPresets] = useState([]);
   const [loadingPresets, setLoadingPresets] = useState(true);
   
@@ -20,10 +21,21 @@ export default function CameraScanner({ selectedLang, onScanCompleted, onBack })
     };
   }, [selectedLang]);
 
+  // Ensure stream is bound to the video element whenever video element or stream updates
+  useEffect(() => {
+    if (videoRef.current && stream) {
+      videoRef.current.srcObject = stream;
+      videoRef.current.play().catch((err) => {
+        console.warn("Autoplay was prevented or video stream play error:", err);
+      });
+    }
+  }, [stream, useCamera]);
+
   const fetchPresets = async () => {
     try {
       setLoadingPresets(true);
-      const res = await fetch('http://localhost:5000/api/presets');
+      const apiBase = import.meta.env.VITE_API_BASE_URL || (window.location.hostname === 'localhost' ? 'http://localhost:5000' : '');
+      const res = await fetch(`${apiBase}/api/presets`);
       if (res.ok) {
         const data = await res.json();
         setPresets(data);
@@ -59,58 +71,143 @@ export default function CameraScanner({ selectedLang, onScanCompleted, onBack })
     }
   };
 
-  const startCamera = async () => {
-    try {
-      setCameraError(null);
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
+  const stopCamera = useCallback(() => {
+    if (stream) {
+      stream.getTracks().forEach((track) => {
+        track.stop();
       });
-      setStream(mediaStream);
-      if (videoRef.current) {
-        videoRef.current.srcObject = mediaStream;
-      }
-      setUseCamera(true);
-    } catch (err) {
-      console.error("Camera access error:", err);
-      setCameraError("Camera not available. Please upload a file or choose a preset below.");
-      setUseCamera(false);
+      setStream(null);
     }
-  };
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+    setUseCamera(false);
+  }, [stream]);
 
-  const stopCamera = () => {
+  const startCamera = async (mode = facingMode) => {
+    setCameraError(null);
+
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setCameraError(
+        "Camera access is not supported on this browser or requires a secure connection (HTTPS / localhost). Please upload a file instead."
+      );
+      setUseCamera(false);
+      return;
+    }
+
+    // Stop any existing stream first
     if (stream) {
       stream.getTracks().forEach(track => track.stop());
       setStream(null);
     }
-    setUseCamera(false);
+
+    let mediaStream = null;
+
+    // Strategy 1: Attempt with ideal facingMode and high resolution
+    try {
+      mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: { ideal: mode },
+          width: { ideal: 1920, min: 640 },
+          height: { ideal: 1080, min: 480 }
+        },
+        audio: false
+      });
+    } catch (err1) {
+      console.warn("HD camera constraint failed, trying basic facingMode:", err1);
+      // Strategy 2: Attempt with basic facingMode
+      try {
+        mediaStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: mode },
+          audio: false
+        });
+      } catch (err2) {
+        console.warn("facingMode constraint failed, falling back to any video device:", err2);
+        // Strategy 3: Fallback to any default video device
+        try {
+          mediaStream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: false
+          });
+        } catch (err3) {
+          console.error("Camera access error:", err3);
+          let errorMsg = "Could not activate camera. Please upload a photo or use a demo document below.";
+          if (err3.name === 'NotAllowedError' || err3.name === 'PermissionDeniedError') {
+            errorMsg = "Camera permission denied. Please allow camera access in your browser settings.";
+          } else if (err3.name === 'NotFoundError' || err3.name === 'DevicesNotFoundError') {
+            errorMsg = "No camera found on this device. Please upload a document photo.";
+          } else if (err3.name === 'NotReadableError' || err3.name === 'TrackStartError') {
+            errorMsg = "Camera is already in use by another app or tab. Please close other apps and retry.";
+          }
+          setCameraError(errorMsg);
+          setUseCamera(false);
+          return;
+        }
+      }
+    }
+
+    if (mediaStream) {
+      setStream(mediaStream);
+      setUseCamera(true);
+    }
+  };
+
+  const toggleCameraFacing = async () => {
+    const nextMode = facingMode === 'environment' ? 'user' : 'environment';
+    setFacingMode(nextMode);
+    await startCamera(nextMode);
   };
 
   const capturePhoto = () => {
-    if (!videoRef.current || !canvasRef.current) return;
     const video = videoRef.current;
     const canvas = canvasRef.current;
+    if (!video || !canvas) return;
+
+    const width = video.videoWidth || video.clientWidth || 1280;
+    const height = video.videoHeight || video.clientHeight || 720;
+    
+    canvas.width = width;
+    canvas.height = height;
     const ctx = canvas.getContext('2d');
-    
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    
-    canvas.toBlob((blob) => {
+    ctx.drawImage(video, 0, 0, width, height);
+
+    const handleBlob = (blob) => {
       stopCamera();
-      const url = URL.createObjectURL(blob);
-      onScanCompleted({ type: 'image', file: blob, previewUrl: url });
-    }, 'image/jpeg');
+      if (blob) {
+        const url = URL.createObjectURL(blob);
+        onScanCompleted({ type: 'image', file: blob, previewUrl: url });
+      } else {
+        // Fallback: convert dataURL
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+        fetch(dataUrl)
+          .then(res => res.blob())
+          .then(b => {
+            onScanCompleted({ type: 'image', file: b, previewUrl: dataUrl });
+          });
+      }
+    };
+
+    if (canvas.toBlob) {
+      canvas.toBlob(handleBlob, 'image/jpeg', 0.92);
+    } else {
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+      fetch(dataUrl)
+        .then(res => res.blob())
+        .then(handleBlob);
+    }
   };
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
+      stopCamera();
       const url = URL.createObjectURL(file);
       onScanCompleted({ type: 'image', file: file, previewUrl: url });
     }
   };
 
   const selectPreset = (preset) => {
+    stopCamera();
     guider.speak(`Loading preset ${preset.name}`, selectedLang);
     onScanCompleted({ type: 'text', text: preset.text, name: preset.name });
   };
@@ -119,7 +216,7 @@ export default function CameraScanner({ selectedLang, onScanCompleted, onBack })
     <div style={{ width: '100%' }}>
       <div className="scanner-header">
         <button
-          onClick={() => { guider.stop(); onBack(); }}
+          onClick={() => { stopCamera(); guider.stop(); onBack(); }}
           className="btn-back"
         >
           ← Back
@@ -134,19 +231,28 @@ export default function CameraScanner({ selectedLang, onScanCompleted, onBack })
               ref={videoRef}
               autoPlay
               playsInline
+              muted
               className="camera-stream"
             />
             <div className="camera-overlay">
-              <span className="camera-overlay-label">Place Document Here</span>
+              <span className="camera-overlay-label">Align Document in Frame</span>
             </div>
             <div className="scanline" />
+            
+            <button
+              onClick={stopCamera}
+              className="btn-camera-close"
+              title="Close Camera"
+            >
+              <X size={18} />
+            </button>
           </>
         ) : (
           <div className="camera-fallback-msg">
             <AlertCircle size={40} style={{ color: '#F59E0B' }} />
-            <p>{cameraError || "Press button below to activate phone camera."}</p>
+            <p>{cameraError || "Press button below to activate camera."}</p>
             <button
-              onClick={startCamera}
+              onClick={() => startCamera(facingMode)}
               className="btn-camera-trigger tap-target"
             >
               <Camera size={18} />
@@ -160,11 +266,29 @@ export default function CameraScanner({ selectedLang, onScanCompleted, onBack })
       {useCamera && (
         <div className="capture-controls">
           <button
+            onClick={toggleCameraFacing}
+            className="btn-camera-flip tap-target"
+            title="Flip Camera (Front / Back)"
+          >
+            <RefreshCw size={20} />
+            <span>Flip</span>
+          </button>
+
+          <button
             onClick={capturePhoto}
             className="btn-shutter tap-target pulse-button"
             title="Capture Document"
           >
             <Camera size={32} />
+          </button>
+
+          <button
+            onClick={stopCamera}
+            className="btn-camera-cancel tap-target"
+            title="Cancel"
+          >
+            <X size={20} />
+            <span>Close</span>
           </button>
         </div>
       )}

@@ -355,7 +355,8 @@ export default function DocumentAnalyzer({ scanData, selectedLang, onReset }) {
           formData.append('document', scanData.file);
           formData.append('lang', selectedLang);
 
-          const res = await fetch('http://localhost:5000/api/analyze', {
+          const apiBase = import.meta.env.VITE_API_BASE_URL || (window.location.hostname === 'localhost' ? 'http://localhost:5000' : '');
+          const res = await fetch(`${apiBase}/api/analyze`, {
             method: 'POST',
             body: formData
           });

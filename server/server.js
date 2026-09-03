@@ -394,8 +394,20 @@ app.get('/api/presets', (req, res) => {
   ]);
 });
 
+// Serve built client frontend if available
+const clientDistPath = path.join(__dirname, '../client/dist');
+if (fs.existsSync(clientDistPath)) {
+  app.use(express.static(clientDistPath));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api')) {
+      return next();
+    }
+    res.sendFile(path.join(clientDistPath, 'index.html'));
+  });
+}
+
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`===========================================================`);
-  console.log(`VaakSetu Local Hotspot Server running on port ${PORT}`);
+  console.log(`VaakSetu Server running on port ${PORT}`);
   console.log(`===========================================================`);
 });
