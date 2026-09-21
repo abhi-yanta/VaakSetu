@@ -239,19 +239,120 @@ const TRANSLATIONS = {
   }
 };
 
+const legalMarkers = [
+  'agreement', 'contract', 'affidavit', 'notary', 'witness', 'witnesses',
+  'party', 'parties', 'signature', 'signed', 'terms and conditions', 'clause',
+  'clauses', 'stamp paper', 'hereby', 'whereas', 'undertaking', 'deed',
+  'अनुबंध', 'करार', 'दस्तावेज़', 'हस्ताक्षर', 'शर्तें', 'साक्षी', 'शपथ पत्र'
+];
+
+const deedKeywords = [
+  'sale deed', 'conveyance deed', 'title deed', 'gift deed', 'lease deed',
+  'khasra', 'khatauni', 'khata', 'survey number', 'sub-registrar', 'registrar',
+  'registration', 'registra', 'tehsil', 'mauza', 'patta', 'property', 'plot',
+  'boundaries', 'land', 'खसरा', 'खतौनी', 'पट्टा', 'पंजीकरण', 'भूमि', 'जमीन',
+  'बिक्री पत्र', 'तहसील', 'चौहद्दी'
+];
+
+const loanKeywords = [
+  'loan', 'loan agreement', 'borrower', 'lender', 'creditor', 'debtor',
+  'principal amount', 'interest rate', 'emi', 'installment', 'repayment',
+  'sanction', 'default', 'collateral', 'mortgage', 'promissory', 'pledge',
+  'ऋण', 'कर्ज', 'ऋण समझौता', 'ब्याज', 'उधार', 'किस्त', 'गिरवी', 'जब्त'
+];
+
+const jobKeywords = [
+  'employment', 'appointment letter', 'employee', 'employer', 'salary',
+  'wages', 'remuneration', 'probation', 'work hours', 'working hours',
+  'overtime', 'resignation', 'resign', 'termination', 'bond period',
+  'labor contract', 'नौकरी', 'रोजगार', 'काम', 'वेतन', 'मजदूरी', 'नियोक्ता',
+  'कर्मचारी', 'काम के घंटे'
+];
+
+const medicalKeywords = [
+  'medical', 'hospital', 'consent form', 'patient', 'doctor', 'surgery',
+  'surgical', 'clinical', 'treatment', 'diagnosis', 'anesthesia', 'discharged',
+  'admission', 'liability waiver', 'मरीज', 'अस्पताल', 'इलाज', 'डॉक्टर',
+  'सहमति पत्र', 'शल्य चिकित्सा', 'चिकित्सा'
+];
+
+function matchesKeyword(text, keyword) {
+  const isAscii = /^[a-zA-Z0-9\s\-]+$/.test(keyword);
+  if (isAscii) {
+    const pattern = new RegExp('\\b' + keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
+    return pattern.test(text);
+  }
+  return text.includes(keyword);
+}
+
+function countMatches(text, keywords) {
+  let count = 0;
+  for (const kw of keywords) {
+    if (matchesKeyword(text, kw)) count++;
+  }
+  return count;
+}
+
 function analyzeText(text = "") {
-  const normalizedText = text.toLowerCase();
+  const trimmed = text.trim();
+  const normalizedText = trimmed.toLowerCase();
+
+  // 1. Check for insufficient text
+  if (trimmed.length < 20 || trimmed.split(/\s+/).length < 4) {
+    return {
+      category: "unclear",
+      warnings: ["alert_unclear_image"],
+      severity: "unknown",
+      textLength: text.length
+    };
+  }
+
+  // 2. Score against categories using word boundaries
+  const legalScore = countMatches(normalizedText, legalMarkers);
+  const loanScore = countMatches(normalizedText, loanKeywords);
+  const deedScore = countMatches(normalizedText, deedKeywords);
+  const jobScore = countMatches(normalizedText, jobKeywords);
+  const medicalScore = countMatches(normalizedText, medicalKeywords);
+
+  const totalScore = legalScore + loanScore + deedScore + jobScore + medicalScore;
+
+  // 3. Reject non-legal documents (e.g. school notebooks, general notes)
+  if (totalScore === 0 || (loanScore === 0 && deedScore === 0 && jobScore === 0 && medicalScore === 0 && legalScore < 2)) {
+    return {
+      category: "unrecognized",
+      warnings: ["info_non_legal_document"],
+      severity: "unknown",
+      textLength: text.length
+    };
+  }
+
   let category = "loan";
+  let highestScore = loanScore;
+
+  if (deedScore > highestScore) {
+    category = "deed";
+    highestScore = deedScore;
+  }
+  if (jobScore > highestScore) {
+    category = "job";
+    highestScore = jobScore;
+  }
+  if (medicalScore > highestScore) {
+    category = "medical";
+    highestScore = medicalScore;
+  }
+
+  if (highestScore < 1 && legalScore < 2) {
+    return {
+      category: "unrecognized",
+      warnings: ["info_non_legal_document"],
+      severity: "unknown",
+      textLength: text.length
+    };
+  }
+
   let warnings = [];
   let severity = "safe";
-
-  if (normalizedText.includes("land") || normalizedText.includes("deed") || normalizedText.includes("property") || normalizedText.includes("survey number") || normalizedText.includes("sale") || normalizedText.includes("registra") || normalizedText.includes("खसरा") || normalizedText.includes("पट्टा") || normalizedText.includes("पंजीकरण")) {
-    category = "deed";
-  } else if (normalizedText.includes("employment") || normalizedText.includes("labor") || normalizedText.includes("job") || normalizedText.includes("salary") || normalizedText.includes("work hours") || normalizedText.includes("employer") || normalizedText.includes("नौकरी") || normalizedText.includes("काम") || normalizedText.includes("वेतन")) {
-    category = "job";
-  } else if (normalizedText.includes("medical") || normalizedText.includes("hospital") || normalizedText.includes("consent") || normalizedText.includes("patient") || normalizedText.includes("treatment") || normalizedText.includes("surgery") || normalizedText.includes("मरीज") || normalizedText.includes("अस्पताल")) {
-    category = "medical";
-  }
 
   if (category === "loan") {
     const interestRegex = /(\d+)%\s*(?:per annum|annual|interest|yearly|interest rate|ब्याज|प्रति वर्ष)/i;
@@ -266,24 +367,24 @@ function analyzeText(text = "") {
       }
     }
 
-    if (interestRate >= 24 || normalizedText.includes("30%") || normalizedText.includes("36%") || normalizedText.includes("40%") || normalizedText.includes("compound interest") || normalizedText.includes("चक्रवृद्धि ब्याज")) {
+    if (interestRate >= 24 || normalizedText.includes("30%") || normalizedText.includes("36%") || normalizedText.includes("40%") || matchesKeyword(normalizedText, "compound interest") || normalizedText.includes("चक्रवृद्धि ब्याज")) {
       warnings.push("alert_high_interest");
       severity = "danger";
     }
 
-    if (normalizedText.includes("seize") || normalizedText.includes("collateral") || normalizedText.includes("forfeit") || normalizedText.includes("mortgage") || normalizedText.includes("guarantee land") || normalizedText.includes("गिरवी") || normalizedText.includes("जब्त")) {
+    if (matchesKeyword(normalizedText, "seize") || matchesKeyword(normalizedText, "collateral") || matchesKeyword(normalizedText, "forfeit") || matchesKeyword(normalizedText, "mortgage") || normalizedText.includes("guarantee land") || normalizedText.includes("गिरवी") || normalizedText.includes("जब्त")) {
       warnings.push("alert_collateral");
       severity = "danger";
     }
 
-    if (normalizedText.includes("processing fee") || normalizedText.includes("admin fee") || normalizedText.includes("hidden cost") || normalizedText.includes("commission") || normalizedText.includes("कमीशन")) {
+    if (normalizedText.includes("processing fee") || normalizedText.includes("admin fee") || normalizedText.includes("hidden cost") || matchesKeyword(normalizedText, "commission") || normalizedText.includes("कमीशन")) {
       warnings.push("alert_hidden_fee");
       if (severity !== "danger") severity = "warning";
     }
   }
 
   if (category === "deed") {
-    if (normalizedText.includes("transfer all rights") || normalizedText.includes("irrevocable") || normalizedText.includes("forever") || normalizedText.includes("relinquish") || normalizedText.includes("अधिकार हस्तांतरण")) {
+    if (normalizedText.includes("transfer all rights") || matchesKeyword(normalizedText, "irrevocable") || matchesKeyword(normalizedText, "relinquish") || normalizedText.includes("अधिकार हस्तांतरण")) {
       warnings.push("alert_collateral");
       severity = "danger";
     }

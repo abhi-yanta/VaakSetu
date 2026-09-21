@@ -29,7 +29,11 @@ export default function DocumentAnalyzer({ scanData, selectedLang, onReset }) {
       deed: "ज़मीन के कागज़ात (भूमि डीड)",
       loan: "ऋण दस्तावेज़ (लोन पेपर)",
       job: "काम का अनुबंध (जाब कांट्रैक्ट)",
-      medical: "अस्पताल का पर्चा (मेडिकल फॉर्म)"
+      medical: "अस्पताल का पर्चा (मेडिकल फॉर्म)",
+      unrecognized: "अज्ञात / गैर-कानूनी दस्तावेज़",
+      unclear: "अस्पष्ट या कम लिखावट",
+      unrecognized_doc: "यह कोई आधिकारिक कानूनी दस्तावेज़ नहीं लगता",
+      unclear_doc: "लिखावट बहुत कम है या पन्ना स्पष्ट नहीं है"
     },
     ta: {
       loading_ocr: "ஆவணம் வாசிக்கப்படுகிறது...",
@@ -229,7 +233,9 @@ export default function DocumentAnalyzer({ scanData, selectedLang, onReset }) {
       alert_hidden_fee: "सावधान: फाइलिंग या प्रोसेसिंग के नाम पर छुपे हुए पैसे लिए जा रहे हैं। आपको पूरा पैसा नहीं मिलेगा।",
       alert_unpaid_labor: "चेतावनी: बिना अतिरिक्त पैसे दिए आपसे ज़्यादा समय तक काम कराने की शर्त लिखी है। यह गैर-कानूनी है।",
       alert_no_exit: "चेतावनी: आप इस नौकरी को आसानी से छोड़ नहीं सकते। यदि आप समय से पहले छोड़ते हैं, तो आपको भारी जुर्माना देना पड़ेगा।",
-      alert_medical_liability: "सावधान: अस्पताल किसी भी गलती या लापरवाही की जिम्मेदारी लेने से बच रहा है। वे कह रहे हैं कि कोई भी संकट आने पर आपकी खुद की जिम्मेदारी होगी।"
+      alert_medical_liability: "सावधान: अस्पताल किसी भी गलती या लापरवाही की जिम्मेदारी लेने से बच रहा है। वे कह रहे हैं कि कोई भी संकट आने पर आपकी खुद की जिम्मेदारी होगी।",
+      info_non_legal_document: "यह कागज़ किसी लोन, ज़मीन की डीड या अनुबंध से मेल नहीं खाता। यह सामान्य लिखावट, अभ्यास या नोट्स जैसा लगता है। कृपया आधिकारिक दस्तावेज़ स्कैन करें।",
+      alert_unclear_image: "फोटो में लिखावट स्पष्ट नहीं है या पन्ना खाली है। कृपया अच्छी रोशनी में आधिकारिक कागज़ात दोबारा स्कैन करें।"
     },
     ta: {
       alert_high_interest: "எச்சரிக்கை: வட்டி விகிதம் மிக அதிகமாக உள்ளது! இது ஆண்டிற்கு இருபத்தி நான்கு சதவீதத்திற்கும் மேல். இதனால் உங்கள் கடன் சுமை பன்மடங்கு அதிகரிக்கும்.",
@@ -405,7 +411,11 @@ export default function DocumentAnalyzer({ scanData, selectedLang, onReset }) {
     let textToSpeak = "";
     const categoryName = uiText[results.category] || results.category;
     
-    if (results.severity === SEVERITIES.SAFE) {
+    if (results.category === 'unclear') {
+      textToSpeak = "दस्तावेज़ में लिखावट बहुत कम या अस्पष्ट है। कृपया अच्छी रोशनी में कैमरे को सीधा रखकर दोबारा फोटो खींचें।";
+    } else if (results.category === 'unrecognized' || results.severity === SEVERITIES.UNKNOWN) {
+      textToSpeak = "यह कागज़ किसी आधिकारिक कानूनी या वित्तीय दस्तावेज़ से मेल नहीं खाता। यह सामान्य लिखावट, अभ्यास या नोट्स जैसा लगता है।";
+    } else if (results.severity === SEVERITIES.SAFE) {
       textToSpeak = `यह ${categoryName} दस्तावेज़ है। ${uiText.safe_doc}। आप इस पर हस्ताक्षर कर सकते हैं।`;
     } else if (results.severity === SEVERITIES.WARNING) {
       textToSpeak = `यह ${categoryName} दस्तावेज़ है। ${uiText.warning_doc}। ध्यान देने योग्य बातें नीचे पीली पट्टी में हैं।`;

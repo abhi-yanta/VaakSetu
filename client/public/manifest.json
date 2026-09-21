@@ -3,7 +3,7 @@
   "name": "VaakSetu - The Voice Bridge (वाक् सेतु)",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/8089/8089114.png",
+      "src": "/logo.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"

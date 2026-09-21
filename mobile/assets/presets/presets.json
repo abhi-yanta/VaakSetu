@@ -1,0 +1,26 @@
+[
+  {
+    "id": "loan_fraud",
+    "title": "36% High-Interest Private Loan",
+    "description": "Exploitative loan with land forfeiture clause",
+    "text": "Loan Agreement. The borrower agrees to borrow Rs. 50,000. The interest rate is 3% per month (compound interest, 36% per annum). In case of default, the lender has complete rights to seize and mortgage the borrower agricultural land survey number 405. Processing fee of Rs. 5,000 will be deducted in advance."
+  },
+  {
+    "id": "land_deed_safe",
+    "title": "Standard Land Sale Deed",
+    "description": "Legally compliant sale deed with mutual consent",
+    "text": "Sale Deed. This document confirms the sale of plot 42 from seller Ramesh to buyer Suresh for Rs. 3,00,000. All government taxes and registration fees have been paid. Both parties sign with mutual consent in front of legal witnesses."
+  },
+  {
+    "id": "labor_bond",
+    "title": "Exploitative Labor Bond Contract",
+    "description": "Forced overtime, bonded non-exit term and penalties",
+    "text": "Labor Contract. Employee agrees to work 12 hours daily. Overtime without pay is mandatory during peak harvest season. Employee cannot resign or leave the work site before 12 months under bond period. Any early resignation incurs a penalty fee of Rs. 25,000."
+  },
+  {
+    "id": "medical_waiver",
+    "title": "Hospital Surgery Release Waiver",
+    "description": "Full disclaimer of negligence and liability",
+    "text": "Patient Consent Form. Patient agrees to undergo surgical procedure. The hospital and doctors are not responsible for any post-surgery complications, medical negligence, or accidental outcomes. Patient waives liability and rights to file claims against hospital staff at own risk."
+  }
+]

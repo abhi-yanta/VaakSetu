@@ -1,0 +1,39 @@
+name: vaaksetu_mobile
+description: "VaakSetu (वाक् सेतु) — The Voice Bridge. Offline-first, AI-powered document accessibility app in 12 Indian languages."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  google_mlkit_text_recognition: ^0.14.0
+  camera: ^0.10.5+9
+  image_picker: ^1.1.2
+  flutter_tts: ^4.2.0
+  vibration: ^3.2.1
+  path_provider: ^2.1.4
+  provider: ^6.1.2
+  shared_preferences: ^2.3.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  android: "ic_launcher"
+  ios: true
+  image_path: "assets/icon/app_icon.png"
+  min_sdk_android: 21
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/presets/
+    - assets/icon/
