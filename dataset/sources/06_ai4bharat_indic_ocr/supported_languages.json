@@ -1,0 +1,17 @@
+{
+  "vaaksetu_supported_languages": [
+    {"vaaksetu_code": "hi", "language": "Hindi", "script": "Devanagari", "ai4bharat_code": "hin", "ml_kit_script": "devanagiri"},
+    {"vaaksetu_code": "ta", "language": "Tamil", "script": "Tamil", "ai4bharat_code": "tam", "ml_kit_script": "latin"},
+    {"vaaksetu_code": "te", "language": "Telugu", "script": "Telugu", "ai4bharat_code": "tel", "ml_kit_script": "latin"},
+    {"vaaksetu_code": "mr", "language": "Marathi", "script": "Devanagari", "ai4bharat_code": "mar", "ml_kit_script": "devanagiri"},
+    {"vaaksetu_code": "bn", "language": "Bengali", "script": "Bengali", "ai4bharat_code": "ben", "ml_kit_script": "chinese"},
+    {"vaaksetu_code": "gu", "language": "Gujarati", "script": "Gujarati", "ai4bharat_code": "guj", "ml_kit_script": "devanagiri"},
+    {"vaaksetu_code": "kn", "language": "Kannada", "script": "Kannada", "ai4bharat_code": "kan", "ml_kit_script": "latin"},
+    {"vaaksetu_code": "ml", "language": "Malayalam", "script": "Malayalam", "ai4bharat_code": "mal", "ml_kit_script": "latin"},
+    {"vaaksetu_code": "or", "language": "Odia", "script": "Odia", "ai4bharat_code": "ory", "ml_kit_script": "devanagiri"},
+    {"vaaksetu_code": "pa", "language": "Punjabi", "script": "Gurmukhi", "ai4bharat_code": "pan", "ml_kit_script": "devanagiri"},
+    {"vaaksetu_code": "as", "language": "Assamese", "script": "Bengali", "ai4bharat_code": "asm", "ml_kit_script": "chinese"},
+    {"vaaksetu_code": "ur", "language": "Urdu", "script": "Nastaliq (Arabic)", "ai4bharat_code": "urd", "ml_kit_script": "latin"}
+  ],
+  "notes": "ml_kit_script shows which Google ML Kit recognizer is the best current fallback. Bengali and Assamese use the 'chinese' recognizer as a fallback since Bengali script is not natively supported by ML Kit."
+}

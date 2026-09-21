@@ -1,0 +1,65 @@
+{
+  "checklist_version": "1.0",
+  "document_type": "sale_deed",
+  "mandatory_fields": [
+    {
+      "field": "stamp_paper_value",
+      "description": "Non-Judicial Stamp Paper of appropriate value (varies by state & consideration amount)",
+      "risk_if_missing": "Deed may be invalid/unregistered"
+    },
+    {
+      "field": "registration_number",
+      "description": "Sub-Registrar office registration/serial number",
+      "risk_if_missing": "Deed not officially registered"
+    },
+    {
+      "field": "date_of_execution",
+      "description": "Date on which deed was signed and registered",
+      "risk_if_missing": "Legal enforceability dispute"
+    },
+    {
+      "field": "consideration_amount",
+      "description": "Total sale price (must match stamp duty paid)",
+      "risk_if_missing": "Under-declared value = stamp duty fraud"
+    },
+    {
+      "field": "area_description",
+      "description": "Exact area in Decimals/Bigha/Sq.ft with Khasra/Survey numbers",
+      "risk_if_missing": "Boundary dispute likely"
+    },
+    {
+      "field": "mouza_village_details",
+      "description": "Mouza name, J.L. number, P.S., District",
+      "risk_if_missing": "Land cannot be uniquely identified"
+    },
+    {
+      "field": "seller_full_details",
+      "description": "Full name, address, identity proof of seller",
+      "risk_if_missing": "Seller identity unverifiable"
+    },
+    {
+      "field": "purchaser_full_details",
+      "description": "Full name, address, PAN of purchaser",
+      "risk_if_missing": "Purchaser identity unverifiable"
+    },
+    {
+      "field": "witness_signatures",
+      "description": "At least 2 independent witness signatures",
+      "risk_if_missing": "Deed may be challenged as coerced"
+    },
+    {
+      "field": "sub_registrar_attestation",
+      "description": "Sub-Registrar stamp/signature confirming registration",
+      "risk_if_missing": "Deed is not legally registered"
+    }
+  ],
+  "red_flag_patterns": [
+    "consideration_amount < 10% of market_value",
+    "no witness signatures",
+    "seller_thumb_impression_only (no signature from literate seller)",
+    "blank_fields_present",
+    "no_sub_registrar_attestation",
+    "irrevocable_transfer_without_spouse_consent",
+    "power_of_attorney_only (not registered deed)"
+  ]
+}

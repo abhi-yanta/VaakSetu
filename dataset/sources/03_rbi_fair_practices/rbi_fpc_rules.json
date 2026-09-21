@@ -1,0 +1,83 @@
+[
+  {
+    "rule_id": "RBI_FPC_001",
+    "circular": "DBOD.Leg.BC.104/2003",
+    "category": "loan",
+    "guideline": "Lenders must disclose the Annual Percentage Rate (APR) including all fees and charges before sanctioning any loan.",
+    "vaaksetu_rule": "alert_high_interest",
+    "detection_patterns": [
+      "interest rate > 24% per annum",
+      "compound interest without disclosure",
+      "monthly rate × 12 > 24"
+    ],
+    "risk_level": "danger",
+    "explanation_hi": "ब्याज दर 24% से अधिक है। यह RBI के नियमों के विरुद्ध है।",
+    "explanation_en": "Interest rate exceeds 24% per annum. This violates RBI Fair Practices guidelines."
+  },
+  {
+    "rule_id": "RBI_FPC_002",
+    "circular": "RPCD.CO.Plan.BC.66/2013",
+    "category": "loan",
+    "guideline": "Lenders cannot deduct fees, insurance premiums or any charges upfront from the disbursed loan principal.",
+    "vaaksetu_rule": "alert_hidden_fee",
+    "detection_patterns": [
+      "processing fee deducted in advance",
+      "admin fee withheld from disbursement",
+      "deducted from principal"
+    ],
+    "risk_level": "warning",
+    "explanation_hi": "ऋण की राशि में से पहले ही कटौती की जा रही है। यह अनुचित प्रथा है।",
+    "explanation_en": "Upfront fee deduction from loan principal is an unfair practice per RBI guidelines."
+  },
+  {
+    "rule_id": "RBI_FPC_003",
+    "circular": "RBI/2014-15/299",
+    "category": "loan",
+    "guideline": "Lenders cannot take blank signed cheques or blank signed documents as security for a loan.",
+    "vaaksetu_rule": "alert_blank_cheque",
+    "detection_patterns": [
+      "blank cheque",
+      "signed blank paper",
+      "blank stamp paper as security",
+      "undated cheque"
+    ],
+    "risk_level": "danger",
+    "explanation_hi": "खाली चेक लेना गैर-कानूनी है। यह ऋणदाता को असीमित राशि निकालने का अधिकार देता है।",
+    "explanation_en": "Taking blank signed cheques as loan security is prohibited. It gives lender unchecked access to funds."
+  },
+  {
+    "rule_id": "RBI_FPC_004",
+    "circular": "DBOD.Leg.BC.104/2003",
+    "category": "loan",
+    "guideline": "Lenders cannot seize or sell collateral (including agricultural land) without proper legal proceedings.",
+    "vaaksetu_rule": "alert_collateral",
+    "detection_patterns": [
+      "seize without court notice",
+      "forfeit directly",
+      "unconditional rights to seize",
+      "without arbitration",
+      "without legal proceedings",
+      "बिना अदालत के जब्त"
+    ],
+    "risk_level": "danger",
+    "explanation_hi": "अदालती आदेश के बिना संपत्ति जब्त करने की शर्त गैर-कानूनी है।",
+    "explanation_en": "Seizure of property without court proceedings is illegal under Indian law."
+  },
+  {
+    "rule_id": "RBI_FPC_005",
+    "circular": "RBI/2022-23/08",
+    "category": "loan",
+    "guideline": "All loan interest rates must be in simple annual percentage terms. Compound interest must be explicitly disclosed and agreed upon.",
+    "vaaksetu_rule": "alert_high_interest",
+    "detection_patterns": [
+      "compound interest",
+      "compounded monthly",
+      "compounded daily",
+      "चक्रवृद्धि ब्याज",
+      "मासिक चक्रवृद्धि"
+    ],
+    "risk_level": "danger",
+    "explanation_hi": "चक्रवृद्धि ब्याज का स्पष्ट उल्लेख न होने पर यह अनुचित प्रथा मानी जाती है।",
+    "explanation_en": "Undisclosed compound interest is an unfair lending practice under RBI regulations."
+  }
+]

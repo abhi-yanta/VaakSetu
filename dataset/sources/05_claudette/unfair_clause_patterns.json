@@ -1,0 +1,56 @@
+[
+  {
+    "pattern_id": "CL_001",
+    "category": "limitation_of_liability",
+    "vaaksetu_warning": "alert_medical_liability",
+    "risk_level": "danger",
+    "example_text": "To the maximum extent permitted by law, the provider shall not be liable for any direct, indirect, incidental, special, or consequential damages.",
+    "hindi_equivalent": "सेवा प्रदाता किसी भी क्षति के लिए उत्तरदायी नहीं होगा।",
+    "why_unfair": "Completely releases provider from all liability — leaves user with zero recourse."
+  },
+  {
+    "pattern_id": "CL_002",
+    "category": "unilateral_change",
+    "vaaksetu_warning": "alert_no_exit",
+    "risk_level": "warning",
+    "example_text": "We reserve the right to modify these terms at any time without prior notice. Continued use constitutes acceptance.",
+    "hindi_equivalent": "हम किसी भी समय बिना सूचना के शर्तें बदल सकते हैं।",
+    "why_unfair": "User cannot consent to future unknown changes; continuation-as-consent is deceptive."
+  },
+  {
+    "pattern_id": "CL_003",
+    "category": "arbitration",
+    "vaaksetu_warning": "alert_no_exit",
+    "risk_level": "danger",
+    "example_text": "All disputes shall be resolved through binding arbitration. You waive your right to bring or participate in any class action lawsuit.",
+    "hindi_equivalent": "सभी विवाद पंचाट द्वारा सुलझाए जाएंगे। आप अदालत में जाने का अधिकार छोड़ते हैं।",
+    "why_unfair": "Waiving court rights and class action removes the most effective consumer protection mechanisms."
+  },
+  {
+    "pattern_id": "CL_004",
+    "category": "unilateral_termination",
+    "vaaksetu_warning": "alert_no_exit",
+    "risk_level": "warning",
+    "example_text": "We may suspend or terminate your account at any time, for any reason or no reason, with or without notice.",
+    "hindi_equivalent": "हम किसी भी कारण से बिना सूचना के आपका खाता बंद कर सकते हैं।",
+    "why_unfair": "Allows arbitrary termination with no accountability or compensation."
+  },
+  {
+    "pattern_id": "CL_005",
+    "category": "contract_by_using",
+    "vaaksetu_warning": "alert_hidden_fee",
+    "risk_level": "warning",
+    "example_text": "By accessing or using our service, you agree to be bound by these terms and conditions.",
+    "hindi_equivalent": "सेवा का उपयोग करके आप इन शर्तों से सहमत हो जाते हैं।",
+    "why_unfair": "User may not have read terms; passive consent is inherently unfair for significant obligations."
+  },
+  {
+    "pattern_id": "CL_006",
+    "category": "jurisdiction",
+    "vaaksetu_warning": "alert_collateral",
+    "risk_level": "warning",
+    "example_text": "Any disputes shall be subject to the exclusive jurisdiction of the courts of Delaware, USA.",
+    "hindi_equivalent": "सभी विवादों पर केवल विदेशी अदालतों का अधिकार क्षेत्र होगा।",
+    "why_unfair": "Requiring a rural Indian user to litigate in Delaware is practically impossible."
+  }
+]

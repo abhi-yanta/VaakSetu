@@ -1,0 +1,57 @@
+[
+  {
+    "case_id": "IK_2016_NCDRC_00234",
+    "court": "National Consumer Disputes Redressal Commission",
+    "year": 2016,
+    "category": "loan_fraud",
+    "risk_level": "danger",
+    "language": "en",
+    "text_excerpt": "The complainant, a marginal farmer, borrowed Rs. 1,50,000 from the opposite party moneylender at 5% per month (60% per annum compound interest). The loan agreement was written on blank stamp paper and the farmer was asked to put his thumb impression without reading the contents. On default of a single instalment, the moneylender forcibly occupied the complainant's agricultural land measuring 2.5 acres (Khasra No. 142).",
+    "red_flags_found": ["predatory_interest_60_percent", "blank_stamp_paper", "coerced_thumb_impression", "agricultural_land_seizure"],
+    "source_url": "https://indiankanoon.org/doc/sample_1/"
+  },
+  {
+    "case_id": "IK_2021_HC_ALLAHABAD_08876",
+    "court": "Allahabad High Court",
+    "year": 2021,
+    "category": "deed_fraud",
+    "risk_level": "danger",
+    "language": "en",
+    "text_excerpt": "The petitioner's illiterate father was asked to sign what was represented to him as a loan receipt. The document was in fact a registered Sale Deed transferring 3 bighas of ancestral agricultural land to the opposite party for a purported consideration of Rs. 50,000 (actual market value Rs. 18,00,000). The Sub-Registrar failed to verify the identity of the parties.",
+    "red_flags_found": ["forged_sale_deed", "misrepresentation_to_illiterate_party", "under_declared_market_value", "coerced_registration"],
+    "source_url": "https://indiankanoon.org/doc/sample_2/"
+  },
+  {
+    "case_id": "IK_2018_LABOUR_COURT_MH_04521",
+    "court": "Labour Court Maharashtra",
+    "year": 2018,
+    "category": "job_fraud",
+    "risk_level": "danger",
+    "language": "en",
+    "text_excerpt": "The workmen were made to sign a bond agreement which stipulated 14-hour daily shifts, unpaid overtime during peak agricultural seasons, and a penalty of Rs. 50,000 for early resignation. The employer also withheld original Aadhar cards and ration cards of workers, making escape practically impossible.",
+    "red_flags_found": ["excessive_work_hours_14h", "unpaid_overtime", "bonded_labour_penalty", "document_withholding"],
+    "source_url": "https://indiankanoon.org/doc/sample_3/"
+  },
+  {
+    "case_id": "IK_2020_CONSUMER_FORUM_RJ_07731",
+    "court": "District Consumer Forum, Rajasthan",
+    "year": 2020,
+    "category": "medical_waiver",
+    "risk_level": "warning",
+    "language": "en",
+    "text_excerpt": "Before performing the surgical procedure, the hospital obtained the patient's signature on a consent form that included a clause releasing the hospital, its doctors, and all staff from any liability arising from medical negligence, post-operative complications, or death. The patient was not explained the nature of this waiver before signing.",
+    "red_flags_found": ["negligence_waiver", "uninformed_consent", "total_liability_release"],
+    "source_url": "https://indiankanoon.org/doc/sample_4/"
+  },
+  {
+    "case_id": "IK_2022_HC_GUJARAT_13209",
+    "court": "Gujarat High Court",
+    "year": 2022,
+    "category": "loan_fraud",
+    "risk_level": "danger",
+    "language": "en",
+    "text_excerpt": "The respondent moneylender deducted Rs. 12,000 as 'processing fee' upfront from a loan of Rs. 80,000, handing the borrower only Rs. 68,000. Interest was computed on the full Rs. 80,000 at 36% per annum compound. Three signed blank cheques were taken as security. On default, all three cheques were presented simultaneously, causing criminal proceedings under Section 138 NI Act.",
+    "red_flags_found": ["advance_fee_deduction", "predatory_interest_36_percent", "blank_signed_cheques", "criminal_cheque_misuse"],
+    "source_url": "https://indiankanoon.org/doc/sample_5/"
+  }
+]

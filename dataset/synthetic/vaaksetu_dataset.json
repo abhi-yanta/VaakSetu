@@ -1,0 +1,1017 @@
+[
+  {
+    "id": "loan_danger_1",
+    "category": "loan",
+    "is_legal_document": true,
+    "risk_level": "danger",
+    "language": "en",
+    "text": "Loan Agreement. Between Local Rural Credit Union (Lender) and Borrower. The borrower agrees to borrow Rs. 50,000. The interest rate is 60% per annum compounded monthly. The lender holds unconditional rights to seize and take possession of agricultural land survey no. 185 without court notice. An advance processing deduction fee of Rs. 2000 shall be withheld prior to disbursement. Borrower surrenders three signed blank cheques as guarantee.",
+    "expected_warnings": [
+      "predatory_interest",
+      "land_collateral",
+      "advance_fee",
+      "blank_cheque"
+    ]
+  },
+  {
+    "id": "loan_danger_2",
+    "category": "loan",
+    "is_legal_document": true,
+    "risk_level": "danger",
+    "language": "en",
+    "text": "Loan Agreement. Between Kisan Quick Cash (Lender) and Borrower. The borrower agrees to borrow Rs. 50,000. The interest rate is 30% per annum compounded monthly. Lender can forfeit borrower ancestral property without arbitration. An advance processing deduction fee of Rs. 5000 shall be withheld prior to disbursement. Borrower surrenders three signed blank cheques as guarantee.",
+    "expected_warnings": [
+      "predatory_interest",
+      "land_collateral",
+      "advance_fee",
+      "blank_cheque"
+    ]
+  },
+  {
+    "id": "loan_danger_3",
+    "category": "loan",
+    "is_legal_document": true,
+    "risk_level": "danger",
+    "language": "en",
+    "text": "Loan Agreement. Between Kisan Quick Cash (Lender) and Borrower. The borrower agrees to borrow Rs. 50,000. The interest rate is 30% per annum compounded monthly. Borrower pledges farm land khasra no. 723 as direct liquidation collateral. An advance processing deduction fee of Rs. 10000 shall be withheld prior to disbursement. Borrower surrenders three signed blank cheques as guarantee.",
+    "expected_warnings": [
+      "predatory_interest",
+      "land_collateral",
+      "advance_fee",
+      "blank_cheque"
+    ]
+  },
+  {
+    "id": "loan_danger_4",
+    "category": "loan",
+    "is_legal_document": true,
+    "risk_level": "danger",
+    "language": "en",
+    "text": "Loan Agreement. Between Chaudhary Moneylenders (Lender) and Borrower. The borrower agrees to borrow Rs. 50,000. The interest rate is 48% per annum compounded monthly. Borrower pledges farm land khasra no. 191 as direct liquidation collateral. An advance processing deduction fee of Rs. 5000 shall be withheld prior to disbursement. Borrower surrenders three signed blank cheques as guarantee.",
+    "expected_warnings": [
+      "predatory_interest",
+      "land_collateral",
+      "advance_fee",
+      "blank_cheque"
+    ]
+  },
+  {
+    "id": "loan_danger_5",
+    "category": "loan",
+    "is_legal_document": true,
+    "risk_level": "danger",
+    "language": "en",
+    "text": "Loan Agreement. Between Kisan Quick Cash (Lender) and Borrower. The borrower agrees to borrow Rs. 50,000. The interest rate is 30% per annum compounded monthly. The lender holds unconditional rights to seize and take possession of agricultural land survey no. 448 without court notice. An advance processing deduction fee of Rs. 10000 shall be withheld prior to disbursement. Borrower surrenders three signed blank cheques as guarantee.",
+    "expected_warnings": [
+      "predatory_interest",
+      "land_collateral",
+      "advance_fee",
+      "blank_cheque"
+    ]
+  },
+  {
+    "id": "loan_danger_6",
+    "category": "loan",
+    "is_legal_document": true,
+    "risk_level": "danger",
+    "language": "en",
+    "text": "Loan Agreement. Between Sethji Private Finance (Lender) and Borrower. The borrower agrees to borrow Rs. 50,000. The interest rate is 48% per annum compounded monthly. The lender holds unconditional rights to seize and take possession of agricultural land survey no. 948 without court notice. An advance processing deduction fee of Rs. 2000 shall be withheld prior to disbursement. Borrower surrenders three signed blank cheques as guarantee.",
+    "expected_warnings": [
+      "predatory_interest",
+      "land_collateral",
+      "advance_fee",
+      "blank_cheque"
+    ]
+  },
+  {
+    "id": "loan_danger_7",
+    "category": "loan",
+    "is_legal_document": true,
+    "risk_level": "danger",
+    "language": "en",
+    "text": "Loan Agreement. Between Shree Ganesh Finance (Lender) and Borrower. The borrower agrees to borrow Rs. 50,000. The interest rate is 30% per annum compounded monthly. The lender holds unconditional rights to seize and take possession of agricultural land survey no. 319 without court notice. An advance processing deduction fee of Rs. 10000 shall be withheld prior to disbursement. Borrower surrenders three signed blank cheques as guarantee.",
+    "expected_warnings": [
+      "predatory_interest",
+      "land_collateral",
+      "advance_fee",
+      "blank_cheque"
+    ]
+  },
+  {
+    "id": "loan_danger_8",
+    "category": "loan",
+    "is_legal_document": true,
+    "risk_level": "danger",
+    "language": "en",
+    "text": "Loan Agreement. Between Sethji Private Finance (Lender) and Borrower. The borrower agrees to borrow Rs. 50,000. The interest rate is 30% per annum compounded monthly. Lender can forfeit borrower ancestral property without arbitration. An advance processing deduction fee of Rs. 10000 shall be withheld prior to disbursement. Borrower surrenders three signed blank cheques as guarantee.",
+    "expected_warnings": [
+      "predatory_interest",
+      "land_collateral",
+      "advance_fee",
+      "blank_cheque"
+    ]
+  },
+  {
+    "id": "loan_danger_9",
+    "category": "loan",
+    "is_legal_document": true,
+    "risk_level": "danger",
+    "language": "en",
+    "text": "Loan Agreement. Between Local Rural Credit Union (Lender) and Borrower. The borrower agrees to borrow Rs. 50,000. The interest rate is 72% per annum compounded monthly. Borrower pledges farm land khasra no. 217 as direct liquidation collateral. An advance processing deduction fee of Rs. 7500 shall be withheld prior to disbursement. Borrower surrenders three signed blank cheques as guarantee.",
+    "expected_warnings": [
+      "predatory_interest",
+      "land_collateral",
+      "advance_fee",
+      "blank_cheque"
+    ]
+  },
+  {
+    "id": "loan_danger_10",
+    "category": "loan",
+    "is_legal_document": true,
+    "risk_level": "danger",
+    "language": "en",
+    "text": "Loan Agreement. Between Kisan Quick Cash (Lender) and Borrower. The borrower agrees to borrow Rs. 50,000. The interest rate is 72% per annum compounded monthly. Borrower pledges farm land khasra no. 539 as direct liquidation collateral. An advance processing deduction fee of Rs. 7500 shall be withheld prior to disbursement. Borrower surrenders three signed blank cheques as guarantee.",
+    "expected_warnings": [
+      "predatory_interest",
+      "land_collateral",
+      "advance_fee",
+      "blank_cheque"
+    ]
+  },
+  {
+    "id": "loan_danger_11",
+    "category": "loan",
+    "is_legal_document": true,
+    "risk_level": "danger",
+    "language": "en",
+    "text": "Loan Agreement. Between Chaudhary Moneylenders (Lender) and Borrower. The borrower agrees to borrow Rs. 50,000. The interest rate is 48% per annum compounded monthly. The lender holds unconditional rights to seize and take possession of agricultural land survey no. 267 without court notice. An advance processing deduction fee of Rs. 10000 shall be withheld prior to disbursement. Borrower surrenders three signed blank cheques as guarantee.",
+    "expected_warnings": [
+      "predatory_interest",
+      "land_collateral",
+      "advance_fee",
+      "blank_cheque"
+    ]
+  },
+  {
+    "id": "loan_danger_12",
+    "category": "loan",
+    "is_legal_document": true,
+    "risk_level": "danger",
+    "language": "en",
+    "text": "Loan Agreement. Between Sethji Private Finance (Lender) and Borrower. The borrower agrees to borrow Rs. 50,000. The interest rate is 36% per annum compounded monthly. Borrower pledges farm land khasra no. 803 as direct liquidation collateral. An advance processing deduction fee of Rs. 5000 shall be withheld prior to disbursement. Borrower surrenders three signed blank cheques as guarantee.",
+    "expected_warnings": [
+      "predatory_interest",
+      "land_collateral",
+      "advance_fee",
+      "blank_cheque"
+    ]
+  },
+  {
+    "id": "loan_danger_13",
+    "category": "loan",
+    "is_legal_document": true,
+    "risk_level": "danger",
+    "language": "en",
+    "text": "Loan Agreement. Between Shree Ganesh Finance (Lender) and Borrower. The borrower agrees to borrow Rs. 50,000. The interest rate is 30% per annum compounded monthly. The lender holds unconditional rights to seize and take possession of agricultural land survey no. 163 without court notice. An advance processing deduction fee of Rs. 5000 shall be withheld prior to disbursement. Borrower surrenders three signed blank cheques as guarantee.",
+    "expected_warnings": [
+      "predatory_interest",
+      "land_collateral",
+      "advance_fee",
+      "blank_cheque"
+    ]
+  },
+  {
+    "id": "loan_danger_14",
+    "category": "loan",
+    "is_legal_document": true,
+    "risk_level": "danger",
+    "language": "en",
+    "text": "Loan Agreement. Between Kisan Quick Cash (Lender) and Borrower. The borrower agrees to borrow Rs. 50,000. The interest rate is 30% per annum compounded monthly. Borrower pledges farm land khasra no. 106 as direct liquidation collateral. An advance processing deduction fee of Rs. 5000 shall be withheld prior to disbursement. Borrower surrenders three signed blank cheques as guarantee.",
+    "expected_warnings": [
+      "predatory_interest",
+      "land_collateral",
+      "advance_fee",
+      "blank_cheque"
+    ]
+  },
+  {
+    "id": "loan_danger_15",
+    "category": "loan",
+    "is_legal_document": true,
+    "risk_level": "danger",
+    "language": "en",
+    "text": "Loan Agreement. Between Chaudhary Moneylenders (Lender) and Borrower. The borrower agrees to borrow Rs. 50,000. The interest rate is 72% per annum compounded monthly. The lender holds unconditional rights to seize and take possession of agricultural land survey no. 467 without court notice. An advance processing deduction fee of Rs. 10000 shall be withheld prior to disbursement. Borrower surrenders three signed blank cheques as guarantee.",
+    "expected_warnings": [
+      "predatory_interest",
+      "land_collateral",
+      "advance_fee",
+      "blank_cheque"
+    ]
+  },
+  {
+    "id": "loan_danger_16",
+    "category": "loan",
+    "is_legal_document": true,
+    "risk_level": "danger",
+    "language": "en",
+    "text": "Loan Agreement. Between Local Rural Credit Union (Lender) and Borrower. The borrower agrees to borrow Rs. 50,000. The interest rate is 60% per annum compounded monthly. Borrower pledges farm land khasra no. 192 as direct liquidation collateral. An advance processing deduction fee of Rs. 10000 shall be withheld prior to disbursement. Borrower surrenders three signed blank cheques as guarantee.",
+    "expected_warnings": [
+      "predatory_interest",
+      "land_collateral",
+      "advance_fee",
+      "blank_cheque"
+    ]
+  },
+  {
+    "id": "loan_danger_17",
+    "category": "loan",
+    "is_legal_document": true,
+    "risk_level": "danger",
+    "language": "en",
+    "text": "Loan Agreement. Between Local Rural Credit Union (Lender) and Borrower. The borrower agrees to borrow Rs. 50,000. The interest rate is 60% per annum compounded monthly. Borrower pledges farm land khasra no. 459 as direct liquidation collateral. An advance processing deduction fee of Rs. 7500 shall be withheld prior to disbursement. Borrower surrenders three signed blank cheques as guarantee.",
+    "expected_warnings": [
+      "predatory_interest",
+      "land_collateral",
+      "advance_fee",
+      "blank_cheque"
+    ]
+  },
+  {
+    "id": "loan_danger_18",
+    "category": "loan",
+    "is_legal_document": true,
+    "risk_level": "danger",
+    "language": "en",
+    "text": "Loan Agreement. Between Chaudhary Moneylenders (Lender) and Borrower. The borrower agrees to borrow Rs. 50,000. The interest rate is 36% per annum compounded monthly. Borrower pledges farm land khasra no. 982 as direct liquidation collateral. An advance processing deduction fee of Rs. 2000 shall be withheld prior to disbursement. Borrower surrenders three signed blank cheques as guarantee.",
+    "expected_warnings": [
+      "predatory_interest",
+      "land_collateral",
+      "advance_fee",
+      "blank_cheque"
+    ]
+  },
+  {
+    "id": "loan_danger_19",
+    "category": "loan",
+    "is_legal_document": true,
+    "risk_level": "danger",
+    "language": "en",
+    "text": "Loan Agreement. Between Chaudhary Moneylenders (Lender) and Borrower. The borrower agrees to borrow Rs. 50,000. The interest rate is 60% per annum compounded monthly. Lender can forfeit borrower ancestral property without arbitration. An advance processing deduction fee of Rs. 10000 shall be withheld prior to disbursement. Borrower surrenders three signed blank cheques as guarantee.",
+    "expected_warnings": [
+      "predatory_interest",
+      "land_collateral",
+      "advance_fee",
+      "blank_cheque"
+    ]
+  },
+  {
+    "id": "loan_danger_20",
+    "category": "loan",
+    "is_legal_document": true,
+    "risk_level": "danger",
+    "language": "en",
+    "text": "Loan Agreement. Between Chaudhary Moneylenders (Lender) and Borrower. The borrower agrees to borrow Rs. 50,000. The interest rate is 36% per annum compounded monthly. Borrower pledges farm land khasra no. 689 as direct liquidation collateral. An advance processing deduction fee of Rs. 5000 shall be withheld prior to disbursement. Borrower surrenders three signed blank cheques as guarantee.",
+    "expected_warnings": [
+      "predatory_interest",
+      "land_collateral",
+      "advance_fee",
+      "blank_cheque"
+    ]
+  },
+  {
+    "id": "loan_safe_1",
+    "category": "loan",
+    "is_legal_document": true,
+    "risk_level": "safe",
+    "language": "en",
+    "text": "Official Bank Loan Contract. Between National Rural Bank and Borrower. Sanctioned principal amount Rs. 1,00,000. Simple interest rate of 9% per annum with 36 monthly EMIs. No collateral required under government credit guarantee scheme. Prepayment penalty is zero. Fully compliant with RBI Fair Practices Code.",
+    "expected_warnings": []
+  },
+  {
+    "id": "loan_safe_2",
+    "category": "loan",
+    "is_legal_document": true,
+    "risk_level": "safe",
+    "language": "en",
+    "text": "Official Bank Loan Contract. Between National Rural Bank and Borrower. Sanctioned principal amount Rs. 1,00,000. Simple interest rate of 9% per annum with 36 monthly EMIs. No collateral required under government credit guarantee scheme. Prepayment penalty is zero. Fully compliant with RBI Fair Practices Code.",
+    "expected_warnings": []
+  },
+  {
+    "id": "loan_safe_3",
+    "category": "loan",
+    "is_legal_document": true,
+    "risk_level": "safe",
+    "language": "en",
+    "text": "Official Bank Loan Contract. Between National Rural Bank and Borrower. Sanctioned principal amount Rs. 1,00,000. Simple interest rate of 12% per annum with 36 monthly EMIs. No collateral required under government credit guarantee scheme. Prepayment penalty is zero. Fully compliant with RBI Fair Practices Code.",
+    "expected_warnings": []
+  },
+  {
+    "id": "loan_safe_4",
+    "category": "loan",
+    "is_legal_document": true,
+    "risk_level": "safe",
+    "language": "en",
+    "text": "Official Bank Loan Contract. Between National Rural Bank and Borrower. Sanctioned principal amount Rs. 1,00,000. Simple interest rate of 11% per annum with 36 monthly EMIs. No collateral required under government credit guarantee scheme. Prepayment penalty is zero. Fully compliant with RBI Fair Practices Code.",
+    "expected_warnings": []
+  },
+  {
+    "id": "loan_safe_5",
+    "category": "loan",
+    "is_legal_document": true,
+    "risk_level": "safe",
+    "language": "en",
+    "text": "Official Bank Loan Contract. Between National Rural Bank and Borrower. Sanctioned principal amount Rs. 1,00,000. Simple interest rate of 9% per annum with 36 monthly EMIs. No collateral required under government credit guarantee scheme. Prepayment penalty is zero. Fully compliant with RBI Fair Practices Code.",
+    "expected_warnings": []
+  },
+  {
+    "id": "loan_safe_6",
+    "category": "loan",
+    "is_legal_document": true,
+    "risk_level": "safe",
+    "language": "en",
+    "text": "Official Bank Loan Contract. Between National Rural Bank and Borrower. Sanctioned principal amount Rs. 1,00,000. Simple interest rate of 14% per annum with 36 monthly EMIs. No collateral required under government credit guarantee scheme. Prepayment penalty is zero. Fully compliant with RBI Fair Practices Code.",
+    "expected_warnings": []
+  },
+  {
+    "id": "loan_safe_7",
+    "category": "loan",
+    "is_legal_document": true,
+    "risk_level": "safe",
+    "language": "en",
+    "text": "Official Bank Loan Contract. Between National Rural Bank and Borrower. Sanctioned principal amount Rs. 1,00,000. Simple interest rate of 11% per annum with 36 monthly EMIs. No collateral required under government credit guarantee scheme. Prepayment penalty is zero. Fully compliant with RBI Fair Practices Code.",
+    "expected_warnings": []
+  },
+  {
+    "id": "loan_safe_8",
+    "category": "loan",
+    "is_legal_document": true,
+    "risk_level": "safe",
+    "language": "en",
+    "text": "Official Bank Loan Contract. Between National Rural Bank and Borrower. Sanctioned principal amount Rs. 1,00,000. Simple interest rate of 14% per annum with 36 monthly EMIs. No collateral required under government credit guarantee scheme. Prepayment penalty is zero. Fully compliant with RBI Fair Practices Code.",
+    "expected_warnings": []
+  },
+  {
+    "id": "loan_safe_9",
+    "category": "loan",
+    "is_legal_document": true,
+    "risk_level": "safe",
+    "language": "en",
+    "text": "Official Bank Loan Contract. Between National Rural Bank and Borrower. Sanctioned principal amount Rs. 1,00,000. Simple interest rate of 12% per annum with 36 monthly EMIs. No collateral required under government credit guarantee scheme. Prepayment penalty is zero. Fully compliant with RBI Fair Practices Code.",
+    "expected_warnings": []
+  },
+  {
+    "id": "loan_safe_10",
+    "category": "loan",
+    "is_legal_document": true,
+    "risk_level": "safe",
+    "language": "en",
+    "text": "Official Bank Loan Contract. Between National Rural Bank and Borrower. Sanctioned principal amount Rs. 1,00,000. Simple interest rate of 13% per annum with 36 monthly EMIs. No collateral required under government credit guarantee scheme. Prepayment penalty is zero. Fully compliant with RBI Fair Practices Code.",
+    "expected_warnings": []
+  },
+  {
+    "id": "loan_safe_11",
+    "category": "loan",
+    "is_legal_document": true,
+    "risk_level": "safe",
+    "language": "en",
+    "text": "Official Bank Loan Contract. Between National Rural Bank and Borrower. Sanctioned principal amount Rs. 1,00,000. Simple interest rate of 9% per annum with 36 monthly EMIs. No collateral required under government credit guarantee scheme. Prepayment penalty is zero. Fully compliant with RBI Fair Practices Code.",
+    "expected_warnings": []
+  },
+  {
+    "id": "loan_safe_12",
+    "category": "loan",
+    "is_legal_document": true,
+    "risk_level": "safe",
+    "language": "en",
+    "text": "Official Bank Loan Contract. Between National Rural Bank and Borrower. Sanctioned principal amount Rs. 1,00,000. Simple interest rate of 10% per annum with 36 monthly EMIs. No collateral required under government credit guarantee scheme. Prepayment penalty is zero. Fully compliant with RBI Fair Practices Code.",
+    "expected_warnings": []
+  },
+  {
+    "id": "loan_safe_13",
+    "category": "loan",
+    "is_legal_document": true,
+    "risk_level": "safe",
+    "language": "en",
+    "text": "Official Bank Loan Contract. Between National Rural Bank and Borrower. Sanctioned principal amount Rs. 1,00,000. Simple interest rate of 10% per annum with 36 monthly EMIs. No collateral required under government credit guarantee scheme. Prepayment penalty is zero. Fully compliant with RBI Fair Practices Code.",
+    "expected_warnings": []
+  },
+  {
+    "id": "loan_safe_14",
+    "category": "loan",
+    "is_legal_document": true,
+    "risk_level": "safe",
+    "language": "en",
+    "text": "Official Bank Loan Contract. Between National Rural Bank and Borrower. Sanctioned principal amount Rs. 1,00,000. Simple interest rate of 10% per annum with 36 monthly EMIs. No collateral required under government credit guarantee scheme. Prepayment penalty is zero. Fully compliant with RBI Fair Practices Code.",
+    "expected_warnings": []
+  },
+  {
+    "id": "loan_safe_15",
+    "category": "loan",
+    "is_legal_document": true,
+    "risk_level": "safe",
+    "language": "en",
+    "text": "Official Bank Loan Contract. Between National Rural Bank and Borrower. Sanctioned principal amount Rs. 1,00,000. Simple interest rate of 13% per annum with 36 monthly EMIs. No collateral required under government credit guarantee scheme. Prepayment penalty is zero. Fully compliant with RBI Fair Practices Code.",
+    "expected_warnings": []
+  },
+  {
+    "id": "deed_safe_1",
+    "category": "deed",
+    "is_legal_document": true,
+    "risk_level": "safe",
+    "language": "en",
+    "text": "Registered Sale Deed. This irrevocable agreement of sale is executed on stamp paper for plot no. 14, measuring 1200 sq ft, for total consideration of Rs. 300000. Both seller and buyer execute this deed with mutual consent in the presence of two independent witnesses. Stamp duty and municipal registration tax receipts are duly attached.",
+    "expected_warnings": []
+  },
+  {
+    "id": "deed_safe_2",
+    "category": "deed",
+    "is_legal_document": true,
+    "risk_level": "safe",
+    "language": "en",
+    "text": "Registered Sale Deed. This irrevocable agreement of sale is executed on stamp paper for plot no. 70, measuring 1200 sq ft, for total consideration of Rs. 800000. Both seller and buyer execute this deed with mutual consent in the presence of two independent witnesses. Stamp duty and municipal registration tax receipts are duly attached.",
+    "expected_warnings": []
+  },
+  {
+    "id": "deed_safe_3",
+    "category": "deed",
+    "is_legal_document": true,
+    "risk_level": "safe",
+    "language": "en",
+    "text": "Registered Sale Deed. This irrevocable agreement of sale is executed on stamp paper for plot no. 15, measuring 1200 sq ft, for total consideration of Rs. 900000. Both seller and buyer execute this deed with mutual consent in the presence of two independent witnesses. Stamp duty and municipal registration tax receipts are duly attached.",
+    "expected_warnings": []
+  },
+  {
+    "id": "deed_safe_4",
+    "category": "deed",
+    "is_legal_document": true,
+    "risk_level": "safe",
+    "language": "en",
+    "text": "Registered Sale Deed. This irrevocable agreement of sale is executed on stamp paper for plot no. 26, measuring 1200 sq ft, for total consideration of Rs. 200000. Both seller and buyer execute this deed with mutual consent in the presence of two independent witnesses. Stamp duty and municipal registration tax receipts are duly attached.",
+    "expected_warnings": []
+  },
+  {
+    "id": "deed_safe_5",
+    "category": "deed",
+    "is_legal_document": true,
+    "risk_level": "safe",
+    "language": "en",
+    "text": "Registered Sale Deed. This irrevocable agreement of sale is executed on stamp paper for plot no. 10, measuring 1200 sq ft, for total consideration of Rs. 700000. Both seller and buyer execute this deed with mutual consent in the presence of two independent witnesses. Stamp duty and municipal registration tax receipts are duly attached.",
+    "expected_warnings": []
+  },
+  {
+    "id": "deed_safe_6",
+    "category": "deed",
+    "is_legal_document": true,
+    "risk_level": "safe",
+    "language": "en",
+    "text": "Registered Sale Deed. This irrevocable agreement of sale is executed on stamp paper for plot no. 31, measuring 1200 sq ft, for total consideration of Rs. 300000. Both seller and buyer execute this deed with mutual consent in the presence of two independent witnesses. Stamp duty and municipal registration tax receipts are duly attached.",
+    "expected_warnings": []
+  },
+  {
+    "id": "deed_safe_7",
+    "category": "deed",
+    "is_legal_document": true,
+    "risk_level": "safe",
+    "language": "en",
+    "text": "Registered Sale Deed. This irrevocable agreement of sale is executed on stamp paper for plot no. 21, measuring 1200 sq ft, for total consideration of Rs. 800000. Both seller and buyer execute this deed with mutual consent in the presence of two independent witnesses. Stamp duty and municipal registration tax receipts are duly attached.",
+    "expected_warnings": []
+  },
+  {
+    "id": "deed_safe_8",
+    "category": "deed",
+    "is_legal_document": true,
+    "risk_level": "safe",
+    "language": "en",
+    "text": "Registered Sale Deed. This irrevocable agreement of sale is executed on stamp paper for plot no. 68, measuring 1200 sq ft, for total consideration of Rs. 900000. Both seller and buyer execute this deed with mutual consent in the presence of two independent witnesses. Stamp duty and municipal registration tax receipts are duly attached.",
+    "expected_warnings": []
+  },
+  {
+    "id": "deed_safe_9",
+    "category": "deed",
+    "is_legal_document": true,
+    "risk_level": "safe",
+    "language": "en",
+    "text": "Registered Sale Deed. This irrevocable agreement of sale is executed on stamp paper for plot no. 11, measuring 1200 sq ft, for total consideration of Rs. 700000. Both seller and buyer execute this deed with mutual consent in the presence of two independent witnesses. Stamp duty and municipal registration tax receipts are duly attached.",
+    "expected_warnings": []
+  },
+  {
+    "id": "deed_safe_10",
+    "category": "deed",
+    "is_legal_document": true,
+    "risk_level": "safe",
+    "language": "en",
+    "text": "Registered Sale Deed. This irrevocable agreement of sale is executed on stamp paper for plot no. 77, measuring 1200 sq ft, for total consideration of Rs. 200000. Both seller and buyer execute this deed with mutual consent in the presence of two independent witnesses. Stamp duty and municipal registration tax receipts are duly attached.",
+    "expected_warnings": []
+  },
+  {
+    "id": "deed_safe_11",
+    "category": "deed",
+    "is_legal_document": true,
+    "risk_level": "safe",
+    "language": "en",
+    "text": "Registered Sale Deed. This irrevocable agreement of sale is executed on stamp paper for plot no. 59, measuring 1200 sq ft, for total consideration of Rs. 600000. Both seller and buyer execute this deed with mutual consent in the presence of two independent witnesses. Stamp duty and municipal registration tax receipts are duly attached.",
+    "expected_warnings": []
+  },
+  {
+    "id": "deed_safe_12",
+    "category": "deed",
+    "is_legal_document": true,
+    "risk_level": "safe",
+    "language": "en",
+    "text": "Registered Sale Deed. This irrevocable agreement of sale is executed on stamp paper for plot no. 58, measuring 1200 sq ft, for total consideration of Rs. 200000. Both seller and buyer execute this deed with mutual consent in the presence of two independent witnesses. Stamp duty and municipal registration tax receipts are duly attached.",
+    "expected_warnings": []
+  },
+  {
+    "id": "deed_safe_13",
+    "category": "deed",
+    "is_legal_document": true,
+    "risk_level": "safe",
+    "language": "en",
+    "text": "Registered Sale Deed. This irrevocable agreement of sale is executed on stamp paper for plot no. 10, measuring 1200 sq ft, for total consideration of Rs. 200000. Both seller and buyer execute this deed with mutual consent in the presence of two independent witnesses. Stamp duty and municipal registration tax receipts are duly attached.",
+    "expected_warnings": []
+  },
+  {
+    "id": "deed_safe_14",
+    "category": "deed",
+    "is_legal_document": true,
+    "risk_level": "safe",
+    "language": "en",
+    "text": "Registered Sale Deed. This irrevocable agreement of sale is executed on stamp paper for plot no. 10, measuring 1200 sq ft, for total consideration of Rs. 900000. Both seller and buyer execute this deed with mutual consent in the presence of two independent witnesses. Stamp duty and municipal registration tax receipts are duly attached.",
+    "expected_warnings": []
+  },
+  {
+    "id": "deed_safe_15",
+    "category": "deed",
+    "is_legal_document": true,
+    "risk_level": "safe",
+    "language": "en",
+    "text": "Registered Sale Deed. This irrevocable agreement of sale is executed on stamp paper for plot no. 49, measuring 1200 sq ft, for total consideration of Rs. 600000. Both seller and buyer execute this deed with mutual consent in the presence of two independent witnesses. Stamp duty and municipal registration tax receipts are duly attached.",
+    "expected_warnings": []
+  },
+  {
+    "id": "job_danger_1",
+    "category": "job",
+    "is_legal_document": true,
+    "risk_level": "danger",
+    "language": "en",
+    "text": "Employment Agreement. Worker agrees to daily duty of 12 hours minimum. Overtime without pay is mandatory during seasonal production cycles. The worker is subject to a 24-month mandatory bond period and original identification documents will be held by management. Any termination or resignation requires payment of Rs. 25000 as liquidated damage penalty.",
+    "expected_warnings": [
+      "excessive_hours",
+      "unpaid_overtime",
+      "bonded_labor",
+      "resignation_fine"
+    ]
+  },
+  {
+    "id": "job_danger_2",
+    "category": "job",
+    "is_legal_document": true,
+    "risk_level": "danger",
+    "language": "en",
+    "text": "Employment Agreement. Worker agrees to daily duty of 12 hours minimum. Overtime without pay is mandatory during seasonal production cycles. The worker is subject to a 24-month mandatory bond period and original identification documents will be held by management. Any termination or resignation requires payment of Rs. 15000 as liquidated damage penalty.",
+    "expected_warnings": [
+      "excessive_hours",
+      "unpaid_overtime",
+      "bonded_labor",
+      "resignation_fine"
+    ]
+  },
+  {
+    "id": "job_danger_3",
+    "category": "job",
+    "is_legal_document": true,
+    "risk_level": "danger",
+    "language": "en",
+    "text": "Employment Agreement. Worker agrees to daily duty of 12 hours minimum. Overtime without pay is mandatory during seasonal production cycles. The worker is subject to a 24-month mandatory bond period and original identification documents will be held by management. Any termination or resignation requires payment of Rs. 50000 as liquidated damage penalty.",
+    "expected_warnings": [
+      "excessive_hours",
+      "unpaid_overtime",
+      "bonded_labor",
+      "resignation_fine"
+    ]
+  },
+  {
+    "id": "job_danger_4",
+    "category": "job",
+    "is_legal_document": true,
+    "risk_level": "danger",
+    "language": "en",
+    "text": "Employment Agreement. Worker agrees to daily duty of 12 hours minimum. Overtime without pay is mandatory during seasonal production cycles. The worker is subject to a 24-month mandatory bond period and original identification documents will be held by management. Any termination or resignation requires payment of Rs. 25000 as liquidated damage penalty.",
+    "expected_warnings": [
+      "excessive_hours",
+      "unpaid_overtime",
+      "bonded_labor",
+      "resignation_fine"
+    ]
+  },
+  {
+    "id": "job_danger_5",
+    "category": "job",
+    "is_legal_document": true,
+    "risk_level": "danger",
+    "language": "en",
+    "text": "Employment Agreement. Worker agrees to daily duty of 12 hours minimum. Overtime without pay is mandatory during seasonal production cycles. The worker is subject to a 24-month mandatory bond period and original identification documents will be held by management. Any termination or resignation requires payment of Rs. 50000 as liquidated damage penalty.",
+    "expected_warnings": [
+      "excessive_hours",
+      "unpaid_overtime",
+      "bonded_labor",
+      "resignation_fine"
+    ]
+  },
+  {
+    "id": "job_danger_6",
+    "category": "job",
+    "is_legal_document": true,
+    "risk_level": "danger",
+    "language": "en",
+    "text": "Employment Agreement. Worker agrees to daily duty of 12 hours minimum. Overtime without pay is mandatory during seasonal production cycles. The worker is subject to a 24-month mandatory bond period and original identification documents will be held by management. Any termination or resignation requires payment of Rs. 15000 as liquidated damage penalty.",
+    "expected_warnings": [
+      "excessive_hours",
+      "unpaid_overtime",
+      "bonded_labor",
+      "resignation_fine"
+    ]
+  },
+  {
+    "id": "job_danger_7",
+    "category": "job",
+    "is_legal_document": true,
+    "risk_level": "danger",
+    "language": "en",
+    "text": "Employment Agreement. Worker agrees to daily duty of 12 hours minimum. Overtime without pay is mandatory during seasonal production cycles. The worker is subject to a 24-month mandatory bond period and original identification documents will be held by management. Any termination or resignation requires payment of Rs. 50000 as liquidated damage penalty.",
+    "expected_warnings": [
+      "excessive_hours",
+      "unpaid_overtime",
+      "bonded_labor",
+      "resignation_fine"
+    ]
+  },
+  {
+    "id": "job_danger_8",
+    "category": "job",
+    "is_legal_document": true,
+    "risk_level": "danger",
+    "language": "en",
+    "text": "Employment Agreement. Worker agrees to daily duty of 12 hours minimum. Overtime without pay is mandatory during seasonal production cycles. The worker is subject to a 24-month mandatory bond period and original identification documents will be held by management. Any termination or resignation requires payment of Rs. 25000 as liquidated damage penalty.",
+    "expected_warnings": [
+      "excessive_hours",
+      "unpaid_overtime",
+      "bonded_labor",
+      "resignation_fine"
+    ]
+  },
+  {
+    "id": "job_danger_9",
+    "category": "job",
+    "is_legal_document": true,
+    "risk_level": "danger",
+    "language": "en",
+    "text": "Employment Agreement. Worker agrees to daily duty of 12 hours minimum. Overtime without pay is mandatory during seasonal production cycles. The worker is subject to a 24-month mandatory bond period and original identification documents will be held by management. Any termination or resignation requires payment of Rs. 50000 as liquidated damage penalty.",
+    "expected_warnings": [
+      "excessive_hours",
+      "unpaid_overtime",
+      "bonded_labor",
+      "resignation_fine"
+    ]
+  },
+  {
+    "id": "job_danger_10",
+    "category": "job",
+    "is_legal_document": true,
+    "risk_level": "danger",
+    "language": "en",
+    "text": "Employment Agreement. Worker agrees to daily duty of 12 hours minimum. Overtime without pay is mandatory during seasonal production cycles. The worker is subject to a 24-month mandatory bond period and original identification documents will be held by management. Any termination or resignation requires payment of Rs. 15000 as liquidated damage penalty.",
+    "expected_warnings": [
+      "excessive_hours",
+      "unpaid_overtime",
+      "bonded_labor",
+      "resignation_fine"
+    ]
+  },
+  {
+    "id": "job_danger_11",
+    "category": "job",
+    "is_legal_document": true,
+    "risk_level": "danger",
+    "language": "en",
+    "text": "Employment Agreement. Worker agrees to daily duty of 12 hours minimum. Overtime without pay is mandatory during seasonal production cycles. The worker is subject to a 24-month mandatory bond period and original identification documents will be held by management. Any termination or resignation requires payment of Rs. 50000 as liquidated damage penalty.",
+    "expected_warnings": [
+      "excessive_hours",
+      "unpaid_overtime",
+      "bonded_labor",
+      "resignation_fine"
+    ]
+  },
+  {
+    "id": "job_danger_12",
+    "category": "job",
+    "is_legal_document": true,
+    "risk_level": "danger",
+    "language": "en",
+    "text": "Employment Agreement. Worker agrees to daily duty of 12 hours minimum. Overtime without pay is mandatory during seasonal production cycles. The worker is subject to a 24-month mandatory bond period and original identification documents will be held by management. Any termination or resignation requires payment of Rs. 25000 as liquidated damage penalty.",
+    "expected_warnings": [
+      "excessive_hours",
+      "unpaid_overtime",
+      "bonded_labor",
+      "resignation_fine"
+    ]
+  },
+  {
+    "id": "job_danger_13",
+    "category": "job",
+    "is_legal_document": true,
+    "risk_level": "danger",
+    "language": "en",
+    "text": "Employment Agreement. Worker agrees to daily duty of 12 hours minimum. Overtime without pay is mandatory during seasonal production cycles. The worker is subject to a 24-month mandatory bond period and original identification documents will be held by management. Any termination or resignation requires payment of Rs. 50000 as liquidated damage penalty.",
+    "expected_warnings": [
+      "excessive_hours",
+      "unpaid_overtime",
+      "bonded_labor",
+      "resignation_fine"
+    ]
+  },
+  {
+    "id": "job_danger_14",
+    "category": "job",
+    "is_legal_document": true,
+    "risk_level": "danger",
+    "language": "en",
+    "text": "Employment Agreement. Worker agrees to daily duty of 12 hours minimum. Overtime without pay is mandatory during seasonal production cycles. The worker is subject to a 24-month mandatory bond period and original identification documents will be held by management. Any termination or resignation requires payment of Rs. 25000 as liquidated damage penalty.",
+    "expected_warnings": [
+      "excessive_hours",
+      "unpaid_overtime",
+      "bonded_labor",
+      "resignation_fine"
+    ]
+  },
+  {
+    "id": "job_danger_15",
+    "category": "job",
+    "is_legal_document": true,
+    "risk_level": "danger",
+    "language": "en",
+    "text": "Employment Agreement. Worker agrees to daily duty of 12 hours minimum. Overtime without pay is mandatory during seasonal production cycles. The worker is subject to a 24-month mandatory bond period and original identification documents will be held by management. Any termination or resignation requires payment of Rs. 15000 as liquidated damage penalty.",
+    "expected_warnings": [
+      "excessive_hours",
+      "unpaid_overtime",
+      "bonded_labor",
+      "resignation_fine"
+    ]
+  },
+  {
+    "id": "medical_waiver_1",
+    "category": "medical",
+    "is_legal_document": true,
+    "risk_level": "warning",
+    "language": "en",
+    "text": "Hospital Informed Consent and Waiver Form. Patient gives consent for laparoscopic surgical operation. The hospital, management, and treating physicians are completely absolved from all civil or criminal liability. Patient waives all rights to claim compensation or assert claims of medical negligence under any consumer forum. All risks are solely assumed by the signatory.",
+    "expected_warnings": [
+      "negligence_waiver",
+      "liability_release"
+    ]
+  },
+  {
+    "id": "medical_waiver_2",
+    "category": "medical",
+    "is_legal_document": true,
+    "risk_level": "warning",
+    "language": "en",
+    "text": "Hospital Informed Consent and Waiver Form. Patient gives consent for laparoscopic surgical operation. The hospital, management, and treating physicians are completely absolved from all civil or criminal liability. Patient waives all rights to claim compensation or assert claims of medical negligence under any consumer forum. All risks are solely assumed by the signatory.",
+    "expected_warnings": [
+      "negligence_waiver",
+      "liability_release"
+    ]
+  },
+  {
+    "id": "medical_waiver_3",
+    "category": "medical",
+    "is_legal_document": true,
+    "risk_level": "warning",
+    "language": "en",
+    "text": "Hospital Informed Consent and Waiver Form. Patient gives consent for laparoscopic surgical operation. The hospital, management, and treating physicians are completely absolved from all civil or criminal liability. Patient waives all rights to claim compensation or assert claims of medical negligence under any consumer forum. All risks are solely assumed by the signatory.",
+    "expected_warnings": [
+      "negligence_waiver",
+      "liability_release"
+    ]
+  },
+  {
+    "id": "medical_waiver_4",
+    "category": "medical",
+    "is_legal_document": true,
+    "risk_level": "warning",
+    "language": "en",
+    "text": "Hospital Informed Consent and Waiver Form. Patient gives consent for laparoscopic surgical operation. The hospital, management, and treating physicians are completely absolved from all civil or criminal liability. Patient waives all rights to claim compensation or assert claims of medical negligence under any consumer forum. All risks are solely assumed by the signatory.",
+    "expected_warnings": [
+      "negligence_waiver",
+      "liability_release"
+    ]
+  },
+  {
+    "id": "medical_waiver_5",
+    "category": "medical",
+    "is_legal_document": true,
+    "risk_level": "warning",
+    "language": "en",
+    "text": "Hospital Informed Consent and Waiver Form. Patient gives consent for laparoscopic surgical operation. The hospital, management, and treating physicians are completely absolved from all civil or criminal liability. Patient waives all rights to claim compensation or assert claims of medical negligence under any consumer forum. All risks are solely assumed by the signatory.",
+    "expected_warnings": [
+      "negligence_waiver",
+      "liability_release"
+    ]
+  },
+  {
+    "id": "medical_waiver_6",
+    "category": "medical",
+    "is_legal_document": true,
+    "risk_level": "warning",
+    "language": "en",
+    "text": "Hospital Informed Consent and Waiver Form. Patient gives consent for laparoscopic surgical operation. The hospital, management, and treating physicians are completely absolved from all civil or criminal liability. Patient waives all rights to claim compensation or assert claims of medical negligence under any consumer forum. All risks are solely assumed by the signatory.",
+    "expected_warnings": [
+      "negligence_waiver",
+      "liability_release"
+    ]
+  },
+  {
+    "id": "medical_waiver_7",
+    "category": "medical",
+    "is_legal_document": true,
+    "risk_level": "warning",
+    "language": "en",
+    "text": "Hospital Informed Consent and Waiver Form. Patient gives consent for laparoscopic surgical operation. The hospital, management, and treating physicians are completely absolved from all civil or criminal liability. Patient waives all rights to claim compensation or assert claims of medical negligence under any consumer forum. All risks are solely assumed by the signatory.",
+    "expected_warnings": [
+      "negligence_waiver",
+      "liability_release"
+    ]
+  },
+  {
+    "id": "medical_waiver_8",
+    "category": "medical",
+    "is_legal_document": true,
+    "risk_level": "warning",
+    "language": "en",
+    "text": "Hospital Informed Consent and Waiver Form. Patient gives consent for laparoscopic surgical operation. The hospital, management, and treating physicians are completely absolved from all civil or criminal liability. Patient waives all rights to claim compensation or assert claims of medical negligence under any consumer forum. All risks are solely assumed by the signatory.",
+    "expected_warnings": [
+      "negligence_waiver",
+      "liability_release"
+    ]
+  },
+  {
+    "id": "medical_waiver_9",
+    "category": "medical",
+    "is_legal_document": true,
+    "risk_level": "warning",
+    "language": "en",
+    "text": "Hospital Informed Consent and Waiver Form. Patient gives consent for laparoscopic surgical operation. The hospital, management, and treating physicians are completely absolved from all civil or criminal liability. Patient waives all rights to claim compensation or assert claims of medical negligence under any consumer forum. All risks are solely assumed by the signatory.",
+    "expected_warnings": [
+      "negligence_waiver",
+      "liability_release"
+    ]
+  },
+  {
+    "id": "medical_waiver_10",
+    "category": "medical",
+    "is_legal_document": true,
+    "risk_level": "warning",
+    "language": "en",
+    "text": "Hospital Informed Consent and Waiver Form. Patient gives consent for laparoscopic surgical operation. The hospital, management, and treating physicians are completely absolved from all civil or criminal liability. Patient waives all rights to claim compensation or assert claims of medical negligence under any consumer forum. All risks are solely assumed by the signatory.",
+    "expected_warnings": [
+      "negligence_waiver",
+      "liability_release"
+    ]
+  },
+  {
+    "id": "medical_waiver_11",
+    "category": "medical",
+    "is_legal_document": true,
+    "risk_level": "warning",
+    "language": "en",
+    "text": "Hospital Informed Consent and Waiver Form. Patient gives consent for laparoscopic surgical operation. The hospital, management, and treating physicians are completely absolved from all civil or criminal liability. Patient waives all rights to claim compensation or assert claims of medical negligence under any consumer forum. All risks are solely assumed by the signatory.",
+    "expected_warnings": [
+      "negligence_waiver",
+      "liability_release"
+    ]
+  },
+  {
+    "id": "medical_waiver_12",
+    "category": "medical",
+    "is_legal_document": true,
+    "risk_level": "warning",
+    "language": "en",
+    "text": "Hospital Informed Consent and Waiver Form. Patient gives consent for laparoscopic surgical operation. The hospital, management, and treating physicians are completely absolved from all civil or criminal liability. Patient waives all rights to claim compensation or assert claims of medical negligence under any consumer forum. All risks are solely assumed by the signatory.",
+    "expected_warnings": [
+      "negligence_waiver",
+      "liability_release"
+    ]
+  },
+  {
+    "id": "medical_waiver_13",
+    "category": "medical",
+    "is_legal_document": true,
+    "risk_level": "warning",
+    "language": "en",
+    "text": "Hospital Informed Consent and Waiver Form. Patient gives consent for laparoscopic surgical operation. The hospital, management, and treating physicians are completely absolved from all civil or criminal liability. Patient waives all rights to claim compensation or assert claims of medical negligence under any consumer forum. All risks are solely assumed by the signatory.",
+    "expected_warnings": [
+      "negligence_waiver",
+      "liability_release"
+    ]
+  },
+  {
+    "id": "medical_waiver_14",
+    "category": "medical",
+    "is_legal_document": true,
+    "risk_level": "warning",
+    "language": "en",
+    "text": "Hospital Informed Consent and Waiver Form. Patient gives consent for laparoscopic surgical operation. The hospital, management, and treating physicians are completely absolved from all civil or criminal liability. Patient waives all rights to claim compensation or assert claims of medical negligence under any consumer forum. All risks are solely assumed by the signatory.",
+    "expected_warnings": [
+      "negligence_waiver",
+      "liability_release"
+    ]
+  },
+  {
+    "id": "medical_waiver_15",
+    "category": "medical",
+    "is_legal_document": true,
+    "risk_level": "warning",
+    "language": "en",
+    "text": "Hospital Informed Consent and Waiver Form. Patient gives consent for laparoscopic surgical operation. The hospital, management, and treating physicians are completely absolved from all civil or criminal liability. Patient waives all rights to claim compensation or assert claims of medical negligence under any consumer forum. All risks are solely assumed by the signatory.",
+    "expected_warnings": [
+      "negligence_waiver",
+      "liability_release"
+    ]
+  },
+  {
+    "id": "hi_loan_danger_1",
+    "category": "loan",
+    "is_legal_document": true,
+    "risk_level": "danger",
+    "language": "hi",
+    "text": "ऋण अनुबंध पत्र। उधारकर्ता सेठ मोहनलाल साहूकार से ₹40,000 की राशि 4% मासिक चक्रवृद्धि ब्याज (48% वार्षिक) पर लेता है। किस्त न चुकाने पर साहूकार को खसरा संख्या 112 की कृषि भूमि को तुरंत ज़ब्त करने और बेचने का पूरा अधिकार होगा। अग्रिम कटौती के रूप में ₹3,000 पहले ही काट लिए गए हैं।",
+    "expected_warnings": [
+      "predatory_interest",
+      "land_collateral"
+    ]
+  },
+  {
+    "id": "hi_deed_safe_1",
+    "category": "deed",
+    "is_legal_document": true,
+    "risk_level": "safe",
+    "language": "hi",
+    "text": "पंजीकृत भूमि विक्रय विलेख (बैनामा)। प्रथम पक्ष रामचरण एवं द्वितीय पक्ष श्यामलाल के मध्य स्टांप पेपर पर समझौता। खसरा नंबर 204 की भूमि का पूर्ण स्वामित्व आपसी सहमति से ₹4,00,000 में हस्तांतरित किया जाता है। सभी सरकारी पंजीकरण शुल्क और कर का भुगतान हो चुका है। दोनों पक्षों के गवाहों के समक्ष हस्ताक्षर हुए।",
+    "expected_warnings": []
+  },
+  {
+    "id": "non_legal_notebook_1",
+    "category": "unrecognized",
+    "is_legal_document": false,
+    "risk_level": "unknown",
+    "language": "en",
+    "text": "Question (12): Define an array. Explain the 1-D, 2-D and multidimensional arrays with suitable examples. Answer: An array is a collection of elements of the same data type stored at contiguous memory locations.",
+    "expected_warnings": []
+  },
+  {
+    "id": "non_legal_receipt_1",
+    "category": "unrecognized",
+    "is_legal_document": false,
+    "risk_level": "unknown",
+    "language": "en",
+    "text": "Krishna Grocery Store. Bill No: 4092. Date: 12/04/2026. 1. Basmati Rice 5kg - Rs. 350. 2. Mustard Oil 1L - Rs. 160. 3. Sugar 2kg - Rs. 88. Subtotal: Rs. 598. GST: Rs. 0. Total: Rs. 598. Thank you visit again!",
+    "expected_warnings": []
+  },
+  {
+    "id": "non_legal_electricity_bill_1",
+    "category": "unrecognized",
+    "is_legal_document": false,
+    "risk_level": "unknown",
+    "language": "en",
+    "text": "State Power Distribution Corporation Limited. Consumer No: 8849201. Due Date: 28/09/2026. Meter Reading Units: 142 kWh. Tariff Category: Domestic Rural. Total Current Dues: Rs. 420. Pay before due date to avoid disconnection of supply.",
+    "expected_warnings": []
+  },
+  {
+    "id": "non_legal_letter_1",
+    "category": "unrecognized",
+    "is_legal_document": false,
+    "risk_level": "unknown",
+    "language": "en",
+    "text": "Dear Ramesh, Hope this letter finds you in good health. We celebrated Diwali with great joy in the village. Mother is doing well and sends her blessings. Please let us know when you plan to visit for the harvest season. Your loving brother.",
+    "expected_warnings": []
+  },
+  {
+    "id": "non_legal_homework_math_1",
+    "category": "unrecognized",
+    "is_legal_document": false,
+    "risk_level": "unknown",
+    "language": "en",
+    "text": "Class 10 Mathematics Chapter 4. Solve the quadratic equation: 2x^2 + 5x - 3 = 0. Using quadratic formula x = (-b +- sqrt(b^2 - 4ac)) / (2a). Roots are x = 1/2 and x = -3.",
+    "expected_warnings": []
+  },
+  {
+    "id": "non_legal_recipe_1",
+    "category": "unrecognized",
+    "is_legal_document": false,
+    "risk_level": "unknown",
+    "language": "en",
+    "text": "Masala Chai Recipe. Ingredients: 2 cups water, 1 cup milk, 2 tsp tea leaves, 1 inch crushed ginger, 2 pods cardamom, 2 tsp sugar. Boil water with ginger and spices for 3 minutes. Add milk and sugar, simmer for 2 minutes and strain.",
+    "expected_warnings": []
+  }
+]
