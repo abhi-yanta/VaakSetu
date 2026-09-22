@@ -254,9 +254,9 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                           children: [
                             const Icon(Icons.camera_alt_outlined, color: AppColors.textMuted, size: 56),
                             const SizedBox(height: 14),
-                            const Text(
-                              'कैमरा तैयार हो रहा है...',
-                              style: TextStyle(color: AppColors.textSecondary, fontSize: 16),
+                            Text(
+                              ui['camera_preparing'] ?? 'कैमरा तैयार हो रहा है...',
+                              style: const TextStyle(color: AppColors.textSecondary, fontSize: 16),
                             ),
                             const SizedBox(height: 12),
                             ElevatedButton.icon(

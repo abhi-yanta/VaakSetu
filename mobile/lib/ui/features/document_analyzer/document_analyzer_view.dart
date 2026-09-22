@@ -58,15 +58,15 @@ class _DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
     String summary;
 
     if (widget.analysis.category == DocumentCategory.unclear) {
-      summary = "दस्तावेज़ में लिखावट बहुत कम या अस्पष्ट है। कृपया अच्छी रोशनी में कैमरे को सीधा रखकर दोबारा फोटो खींचें।";
+      summary = LocalizedContent.getWarning(widget.selectedLang, 'alert_unclear_image');
     } else if (widget.analysis.isUnrecognized) {
-      summary = "यह कागज़ किसी आधिकारिक कानूनी या वित्तीय दस्तावेज़ से मेल नहीं खाता। यह सामान्य लिखावट या नोट्स जैसा लगता है। कृपया लोन पेपर, ज़मीन की डीड या अनुबंध जैसे आधिकारिक कागज़ात स्कैन करें।";
+      summary = LocalizedContent.getWarning(widget.selectedLang, 'info_non_legal_document');
     } else if (widget.analysis.severity == DocumentSeverity.safe) {
-      summary = "यह $categoryName दस्तावेज़ है। यह दस्तावेज़ सुरक्षित है। आप इस पर हस्ताक्षर कर सकते हैं।";
+      summary = "$categoryName. ${LocalizedContent.get(widget.selectedLang, 'safe_doc')}.";
     } else if (widget.analysis.severity == DocumentSeverity.warning) {
-      summary = "यह $categoryName दस्तावेज़ है। सावधान! पहले पूरी बात समझें। ध्यान देने योग्य बातें नीचे पीली पट्टी में हैं।";
+      summary = "$categoryName. ${LocalizedContent.get(widget.selectedLang, 'warning_doc')}.";
     } else {
-      summary = "यह $categoryName दस्तावेज़ है। खतरा! इस दस्तावेज़ पर हस्ताक्षर न करें। इसमें खतरे की लाल चेतावनी है।";
+      summary = "$categoryName. ${LocalizedContent.get(widget.selectedLang, 'danger_doc')}.";
     }
 
     widget.ttsService.speak(summary, widget.selectedLang);
@@ -86,7 +86,7 @@ class _DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
     } else if (widget.analysis.isUnrecognized) {
       buffer.write(LocalizedContent.getWarning(widget.selectedLang, 'info_non_legal_document'));
     } else {
-      buffer.write("यह $categoryName दस्तावेज़ है। ");
+      buffer.write("$categoryName. ");
       if (widget.analysis.severity == DocumentSeverity.safe) {
         buffer.write(LocalizedContent.get(widget.selectedLang, 'safe_doc'));
       } else if (widget.analysis.severity == DocumentSeverity.warning) {
@@ -94,14 +94,14 @@ class _DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
       } else {
         buffer.write(LocalizedContent.get(widget.selectedLang, 'danger_doc'));
       }
-      buffer.write("। ");
+      buffer.write(". ");
 
       if (widget.analysis.warningKeys.isNotEmpty) {
-        buffer.write("खतरे की चेतावनियाँ इस प्रकार हैं: ");
+        buffer.write("${LocalizedContent.get(widget.selectedLang, 'red_flags')}: ");
         for (int i = 0; i < widget.analysis.warningKeys.length; i++) {
           final key = widget.analysis.warningKeys[i];
           final desc = LocalizedContent.getWarning(widget.selectedLang, key);
-          buffer.write("नंबर ${i + 1}: $desc ");
+          buffer.write("${i + 1}. $desc ");
         }
       }
     }
@@ -161,9 +161,9 @@ class _DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: AppColors.borderDark),
                 ),
-                child: const Text(
-                  'परिणाम / Result',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                child: Text(
+                  ui['result'] ?? 'परिणाम / Result',
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                 ),
               ),
               const SizedBox(width: 48),
@@ -203,7 +203,7 @@ class _DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
               Expanded(
                 flex: 1,
                 child: TactileButton(
-                  label: 'निर्देश',
+                  label: ui['guide'] ?? 'निर्देश',
                   icon: const Icon(Icons.help_outline_rounded, color: Colors.white, size: 22),
                   style: TactileButtonStyle.secondary,
                   height: 64,
@@ -229,7 +229,7 @@ class _DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
                 const SizedBox(width: 8),
                 Text(
                   widget.analysis.isUnrecognized
-                      ? 'महत्वपूर्ण सूचना (Notice)'
+                      ? (ui['notice'] ?? 'महत्वपूर्ण सूचना')
                       : "${ui['red_flags'] ?? 'खतरे की चेतावनी'} (${widget.analysis.warningKeys.length})",
                   style: const TextStyle(
                     color: Colors.white,
@@ -334,7 +334,7 @@ class _DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
                     border: Border.all(color: AppColors.borderDark),
                   ),
                   child: SelectableText(
-                    widget.analysis.rawText.isEmpty ? 'कोई पाठ उपलब्ध नहीं है।' : widget.analysis.rawText,
+                    widget.analysis.rawText.isEmpty ? (ui['no_text'] ?? 'कोई पाठ उपलब्ध नहीं है।') : widget.analysis.rawText,
                     style: const TextStyle(color: AppColors.textSecondary, fontSize: 13, height: 1.4),
                   ),
                 ),

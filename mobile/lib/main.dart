@@ -5,6 +5,7 @@ import 'data/services/haptic_service.dart';
 import 'data/services/preset_service.dart';
 import 'data/services/tts_service.dart';
 import 'domain/models/document_analysis.dart';
+import 'domain/models/localized_content.dart';
 import 'ui/core/app_colors.dart';
 import 'ui/features/document_analyzer/document_analyzer_view.dart';
 import 'ui/features/document_scanner/camera_scanner_view.dart';
@@ -109,7 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _processImage(String imagePath) async {
     setState(() {
       _currentView = AppView.loading;
-      _loadingMessage = 'दस्तावेज़ की सुरक्षा जांच हो रही है...';
+      _loadingMessage = LocalizedContent.get(_selectedLang, 'analyzing');
     });
     widget.ttsService.speakPrompt('processing', _selectedLang);
 
@@ -149,7 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void _processPreset(DocumentPreset preset) {
     setState(() {
       _currentView = AppView.loading;
-      _loadingMessage = 'दस्तावेज़ की जांच हो रही है...';
+      _loadingMessage = LocalizedContent.get(_selectedLang, 'analyzing');
     });
     widget.ttsService.speakPrompt('processing', _selectedLang);
 
@@ -334,9 +335,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
-              const Text(
-                'कृपया प्रतीक्षा करें...',
-                style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+              Text(
+                LocalizedContent.get(_selectedLang, 'please_wait'),
+                style: const TextStyle(color: AppColors.textSecondary, fontSize: 14),
               ),
             ],
           ),
