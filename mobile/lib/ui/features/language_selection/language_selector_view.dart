@@ -42,7 +42,7 @@ class LanguageSelectorView extends StatelessWidget {
               crossAxisCount: 2,
               crossAxisSpacing: 14,
               mainAxisSpacing: 14,
-              childAspectRatio: 1.45,
+              childAspectRatio: 1.25,
             ),
             itemCount: Language.supportedLanguages.length,
             itemBuilder: (context, index) {
