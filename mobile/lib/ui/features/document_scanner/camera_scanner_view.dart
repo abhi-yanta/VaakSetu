@@ -191,71 +191,82 @@ class _CameraScannerViewState extends State<CameraScannerView> {
           const SizedBox(height: 12),
 
           // Camera Viewport or Fallback
+          // Uses camera controller's actual aspect ratio to prevent squishing
           ClipRRect(
             borderRadius: BorderRadius.circular(20),
             child: Container(
-              height: 340,
               width: double.infinity,
               color: Colors.black,
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  if (_isCameraReady && _cameraController != null)
-                    CameraPreview(_cameraController!)
-                  else
-                    Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+              child: _isCameraReady && _cameraController != null
+                  ? AspectRatio(
+                      // Use the real camera aspect ratio — prevents vertical squishing
+                      aspectRatio: 1 / _cameraController!.value.aspectRatio,
+                      child: Stack(
+                        fit: StackFit.expand,
                         children: [
-                          const Icon(Icons.camera_alt_outlined, color: AppColors.textMuted, size: 56),
-                          const SizedBox(height: 14),
-                          const Text(
-                            'कैमरा तैयार हो रहा है...',
-                            style: TextStyle(color: AppColors.textSecondary, fontSize: 16),
-                          ),
-                          const SizedBox(height: 12),
-                          ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.primarySaffron,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          CameraPreview(_cameraController!),
+                          // Framing Overlay Guide
+                          Container(
+                            margin: const EdgeInsets.all(24),
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: AppColors.primarySaffronLight.withOpacity(0.7),
+                                width: 2.5,
+                              ),
+                              borderRadius: BorderRadius.circular(14),
                             ),
-                            icon: const Icon(Icons.photo_library_rounded, color: Colors.white),
-                            label: Text(
-                              ui['upload_photo'] ?? 'गैलरी से चुनें',
-                              style: const TextStyle(color: Colors.white),
+                            child: Align(
+                              alignment: Alignment.topCenter,
+                              child: Container(
+                                margin: const EdgeInsets.only(top: 12),
+                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.65),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: const Text(
+                                  'दस्तावेज़ को चौखट के अंदर रखें',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
                             ),
-                            onPressed: _pickFromGallery,
                           ),
                         ],
                       ),
-                    ),
-
-                  // Framing Overlay Guide
-                  if (_isCameraReady)
-                    Container(
-                      margin: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: AppColors.primarySaffronLight.withOpacity(0.7), width: 2.5),
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      child: Align(
-                        alignment: Alignment.topCenter,
-                        child: Container(
-                          margin: const EdgeInsets.only(top: 12),
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.65),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: const Text(
-                            'दस्तावेज़ को चौखट के अंदर रखें',
-                            style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
-                          ),
+                    )
+                  : SizedBox(
+                      height: 300,
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.camera_alt_outlined, color: AppColors.textMuted, size: 56),
+                            const SizedBox(height: 14),
+                            const Text(
+                              'कैमरा तैयार हो रहा है...',
+                              style: TextStyle(color: AppColors.textSecondary, fontSize: 16),
+                            ),
+                            const SizedBox(height: 12),
+                            ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.primarySaffron,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              ),
+                              icon: const Icon(Icons.photo_library_rounded, color: Colors.white),
+                              label: Text(
+                                ui['upload_photo'] ?? 'गैलरी से चुनें',
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                              onPressed: _pickFromGallery,
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                ],
-              ),
             ),
           ),
           const SizedBox(height: 18),
