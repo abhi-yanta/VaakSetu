@@ -73,7 +73,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   AppView _currentView = AppView.welcome;
   String _selectedLang = 'hi';
   DocumentAnalysis? _analysis;
@@ -83,8 +83,19 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _documentRepository = DocumentRepository();
     widget.ttsService.addListener(_onTtsStateChanged);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.hidden ||
+        state == AppLifecycleState.detached ||
+        state == AppLifecycleState.inactive) {
+      widget.ttsService.stop();
+    }
   }
 
   void _onTtsStateChanged() {
@@ -191,6 +202,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    widget.ttsService.stop();
     widget.ttsService.removeListener(_onTtsStateChanged);
     _documentRepository.dispose();
     super.dispose();
