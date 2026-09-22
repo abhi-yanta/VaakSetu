@@ -493,4 +493,22 @@ class LocalizedContent {
   static String getPrompt(String langCode, String promptKey) {
     return voicePrompts[langCode]?[promptKey] ?? voicePrompts['hi']?[promptKey] ?? '';
   }
+
+  static String getFrameGuide(String langCode) {
+    const guides = {
+      'hi': 'दस्तावेज़ को चौखट के अंदर रखें',
+      'ta': 'ஆவணத்தை சட்டகத்திற்குள் வைக்கவும்',
+      'te': 'పత్రాన్ని ఫ్రేమ్ లోపల ఉంచండి',
+      'mr': 'कागदपत्र चौकटीत ठेवा',
+      'bn': 'নথিটি ফ্রেমের ভেতরে রাখুন',
+      'gu': 'દસ્તાવેજને ચોકઠાની અંદર રાખો',
+      'kn': 'ದಾಖಲೆಯನ್ನು ಚೌಕಟ್ಟಿನೊಳಗೆ ಇರಿಸಿ',
+      'ml': 'രേഖ ഫ്രെയിമിനുള്ളിൽ വെയ്ക്കുക',
+      'or': 'ଦଲିଲକୁ ଫ୍ରେମ୍ ଭିତରେ ରଖନ୍ତୁ',
+      'pa': 'ਦਸਤਾਵੇਜ਼ ਨੂੰ ਫਰੇਮ ਦੇ ਅੰਦਰ ਰੱਖੋ',
+      'as': 'নথিপত্ৰখন ফ্ৰেমৰ ভিতৰত ৰাখক',
+      'ur': 'دستاویز کو فریم کے اندر رکھیں',
+    };
+    return guides[langCode] ?? guides['hi']!;
+  }
 }

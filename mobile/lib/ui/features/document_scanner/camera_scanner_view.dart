@@ -191,55 +191,63 @@ class _CameraScannerViewState extends State<CameraScannerView> {
           const SizedBox(height: 12),
 
           // Camera Viewport or Fallback
-          // Uses camera controller's actual aspect ratio to prevent squishing
+          // Fixed, comfortable height (340px) with BoxFit.cover:
+          // 1. Zero squishing/stretching (maintains native camera aspect ratio)
+          // 2. Fits on screen with shutter button clearly visible without scrolling!
           ClipRRect(
             borderRadius: BorderRadius.circular(20),
             child: Container(
+              height: 340,
               width: double.infinity,
               color: Colors.black,
               child: _isCameraReady && _cameraController != null
-                  ? AspectRatio(
-                      // Use the real camera aspect ratio — prevents vertical squishing
-                      aspectRatio: 1 / _cameraController!.value.aspectRatio,
-                      child: Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          CameraPreview(_cameraController!),
-                          // Framing Overlay Guide
-                          Container(
-                            margin: const EdgeInsets.all(24),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: AppColors.primarySaffronLight.withOpacity(0.7),
-                                width: 2.5,
-                              ),
-                              borderRadius: BorderRadius.circular(14),
+                  ? Stack(
+                      fit: StackFit.expand,
+                      alignment: Alignment.center,
+                      children: [
+                        FittedBox(
+                          fit: BoxFit.cover,
+                          clipBehavior: Clip.hardEdge,
+                          child: SizedBox(
+                            width: 100,
+                            height: 100 * _cameraController!.value.aspectRatio,
+                            child: CameraPreview(_cameraController!),
+                          ),
+                        ),
+                        // Framing Overlay Guide
+                        Container(
+                          margin: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: AppColors.primarySaffronLight.withOpacity(0.75),
+                              width: 2.5,
                             ),
-                            child: Align(
-                              alignment: Alignment.topCenter,
-                              child: Container(
-                                margin: const EdgeInsets.only(top: 12),
-                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: Colors.black.withOpacity(0.65),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: const Text(
-                                  'दस्तावेज़ को चौखट के अंदर रखें',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          child: Align(
+                            alignment: Alignment.topCenter,
+                            child: Container(
+                              margin: const EdgeInsets.only(top: 10),
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.65),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                LocalizedContent.getFrameGuide(widget.selectedLang),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     )
                   : SizedBox(
-                      height: 300,
+                      height: 340,
                       child: Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -269,7 +277,7 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                     ),
             ),
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 14),
 
           // Shutter & Gallery Controls
           if (_isCameraReady) ...[
@@ -280,8 +288,8 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                   onTap: _capturePhoto,
                   borderRadius: BorderRadius.circular(40),
                   child: Container(
-                    width: 76,
-                    height: 76,
+                    width: 72,
+                    height: 72,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: AppColors.primarySaffron,
@@ -289,17 +297,17 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                       boxShadow: [
                         BoxShadow(
                           color: AppColors.primarySaffron.withOpacity(0.5),
-                          blurRadius: 20,
+                          blurRadius: 18,
                           spreadRadius: 2,
                         ),
                       ],
                     ),
-                    child: const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 36),
+                    child: const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 34),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
           ],
 
           // Upload File Alternative
@@ -307,11 +315,11 @@ class _CameraScannerViewState extends State<CameraScannerView> {
             label: ui['upload_photo'] ?? 'गैलरी से दस्तावेज़ चुनें',
             icon: const Icon(Icons.file_upload_rounded, color: Colors.white, size: 22),
             style: TactileButtonStyle.secondary,
-            height: 56,
-            fontSize: 16,
+            height: 52,
+            fontSize: 15,
             onPressed: _pickFromGallery,
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 18),
 
           // Built-in Demo Documents Section
           Row(
