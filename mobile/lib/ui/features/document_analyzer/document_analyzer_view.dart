@@ -33,22 +33,24 @@ class _DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
   @override
   void initState() {
     super.initState();
-    widget.ttsService.onSpeechStarted = () {
-      if (mounted) setState(() => _isPlaying = true);
-    };
-    widget.ttsService.onSpeechFinished = () {
-      if (mounted) {
-        setState(() {
-          _isPlaying = false;
-          _activeSpeakingWarning = null;
-        });
-      }
-    };
+    widget.ttsService.addListener(_onTtsChanged);
+    _isPlaying = widget.ttsService.isPlaying;
 
     // Trigger initial voice overview
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _announceInitialOverview();
     });
+  }
+
+  void _onTtsChanged() {
+    if (mounted) {
+      setState(() {
+        _isPlaying = widget.ttsService.isPlaying;
+        if (!_isPlaying) {
+          _activeSpeakingWarning = null;
+        }
+      });
+    }
   }
 
   void _announceInitialOverview() {
@@ -116,6 +118,7 @@ class _DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
 
   @override
   void dispose() {
+    widget.ttsService.removeListener(_onTtsChanged);
     widget.ttsService.stop();
     super.dispose();
   }

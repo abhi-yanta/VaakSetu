@@ -23,7 +23,7 @@ import '../../domain/models/localized_content.dart';
 ///   → Always works, even on old Android versions with basic voices
 ///
 /// Priority: HuggingFace AI4Bharat → Device Neural TTS → Basic TTS
-class TtsService {
+class TtsService extends ChangeNotifier {
   // ──────────────────────────────────────────────────────────────────
   // HuggingFace AI4Bharat Configuration (LAYER 1)
   // ──────────────────────────────────────────────────────────────────
@@ -81,19 +81,23 @@ class TtsService {
 
       _flutterTts.setStartHandler(() {
         _isPlaying = true;
+        notifyListeners();
         onSpeechStarted?.call();
       });
       _flutterTts.setCompletionHandler(() {
         _isPlaying = false;
+        notifyListeners();
         onSpeechFinished?.call();
       });
       _flutterTts.setCancelHandler(() {
         _isPlaying = false;
+        notifyListeners();
         onSpeechFinished?.call();
       });
       _flutterTts.setErrorHandler((msg) {
         debugPrint('[TTS Device] Error: $msg');
         _isPlaying = false;
+        notifyListeners();
         onSpeechFinished?.call();
       });
     } catch (e) {
@@ -110,6 +114,7 @@ class TtsService {
     await stop();
 
     _isPlaying = true;
+    notifyListeners();
     onSpeechStarted?.call();
 
     // Layer 1: AI4Bharat via HuggingFace (if token provided)
@@ -137,11 +142,14 @@ class TtsService {
       await _flutterTts.stop();
     } catch (_) {}
     _isPlaying = false;
+    notifyListeners();
     onSpeechFinished?.call();
   }
 
+  @override
   void dispose() {
     _flutterTts.stop();
+    super.dispose();
   }
 
   // ──────────────────────────────────────────────────────────────────
@@ -220,6 +228,7 @@ class TtsService {
 
       // Signal play started
       _isPlaying = true;
+      notifyListeners();
       onSpeechStarted?.call();
 
       // Wait for estimated playback (simplified — future: use audioplayers)
@@ -228,10 +237,12 @@ class TtsService {
       );
 
       _isPlaying = false;
+      notifyListeners();
       onSpeechFinished?.call();
     } catch (e) {
       debugPrint('[TTS HF] Audio playback: $e');
       _isPlaying = false;
+      notifyListeners();
       onSpeechFinished?.call();
     }
   }
@@ -248,6 +259,7 @@ class TtsService {
     } catch (e) {
       debugPrint('[TTS Device] speak error: $e');
       _isPlaying = false;
+      notifyListeners();
       onSpeechFinished?.call();
     }
   }

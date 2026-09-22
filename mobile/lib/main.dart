@@ -83,6 +83,13 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _documentRepository = DocumentRepository();
+    widget.ttsService.addListener(_onTtsStateChanged);
+  }
+
+  void _onTtsStateChanged() {
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   void _onStart() {
@@ -183,6 +190,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
+    widget.ttsService.removeListener(_onTtsStateChanged);
     _documentRepository.dispose();
     super.dispose();
   }
@@ -232,19 +240,39 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         actions: [
-          IconButton(
-            icon: Icon(
-              widget.ttsService.isPlaying ? Icons.volume_up_rounded : Icons.volume_off_rounded,
-              color: widget.ttsService.isPlaying ? AppColors.primarySaffronLight : AppColors.textMuted,
-            ),
-            onPressed: () {
-              if (widget.ttsService.isPlaying) {
-                widget.ttsService.stop();
-              } else {
-                widget.ttsService.speakPrompt('welcome', _selectedLang);
-              }
+          AnimatedBuilder(
+            animation: widget.ttsService,
+            builder: (context, _) {
+              final isPlaying = widget.ttsService.isPlaying;
+              return Container(
+                margin: const EdgeInsets.only(right: 8),
+                decoration: BoxDecoration(
+                  color: isPlaying
+                      ? AppColors.primarySaffron.withOpacity(0.2)
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(12),
+                  border: isPlaying
+                      ? Border.all(color: AppColors.primarySaffronLight.withOpacity(0.6), width: 1.5)
+                      : null,
+                ),
+                child: IconButton(
+                  icon: Icon(
+                    isPlaying ? Icons.volume_up_rounded : Icons.volume_off_rounded,
+                    color: isPlaying ? AppColors.primarySaffronLight : AppColors.textMuted,
+                    size: 24,
+                  ),
+                  onPressed: () {
+                    HapticService.lightTap();
+                    if (widget.ttsService.isPlaying) {
+                      widget.ttsService.stop();
+                    } else {
+                      widget.ttsService.speakPrompt('welcome', _selectedLang);
+                    }
+                  },
+                  tooltip: isPlaying ? 'आवाज बंद करें (Mute)' : 'आवाज सुनें (Audio Guide)',
+                ),
+              );
             },
-            tooltip: 'Audio Guide',
           ),
         ],
       ),
