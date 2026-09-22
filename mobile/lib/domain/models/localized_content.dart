@@ -34,6 +34,8 @@ class LocalizedContent {
       'please_wait': 'कृपया प्रतीक्षा करें...',
       'no_text': 'कोई पाठ उपलब्ध नहीं है।',
       'camera_preparing': 'कैमरा तैयार हो रहा है...',
+      'tap_word_to_listen': 'किसी भी शब्द को सुनने के लिए उस पर दबाएं',
+      'word_mode': 'शब्द-दर-शब्द वाचन',
     },
     'ta': {
       'welcome_title': 'வாக் சேது',
@@ -65,6 +67,8 @@ class LocalizedContent {
       'please_wait': 'தயவுசெய்து காத்திருக்கவும்...',
       'no_text': 'உரை எதுவும் இல்லை.',
       'camera_preparing': 'கேமரா தயாராகிறது...',
+      'tap_word_to_listen': 'எந்த வார்த்தையையும் கேட்க அதை அழுத்தவும்',
+      'word_mode': 'வார்த்தை வாரியாக',
     },
     'te': {
       'welcome_title': 'వాక్ సేతు',

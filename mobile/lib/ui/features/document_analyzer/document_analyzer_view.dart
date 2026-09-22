@@ -4,6 +4,7 @@ import '../../../data/services/tts_service.dart';
 import '../../../domain/models/document_analysis.dart';
 import '../../../domain/models/localized_content.dart';
 import '../../core/app_colors.dart';
+import '../../core/interactive_word_reader.dart';
 import '../../core/security_badge.dart';
 import '../../core/tactile_button.dart';
 import '../../core/wave_visualizer.dart';
@@ -333,9 +334,10 @@ class _DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: AppColors.borderDark),
                   ),
-                  child: SelectableText(
-                    widget.analysis.rawText.isEmpty ? (ui['no_text'] ?? 'कोई पाठ उपलब्ध नहीं है।') : widget.analysis.rawText,
-                    style: const TextStyle(color: AppColors.textSecondary, fontSize: 13, height: 1.4),
+                  child: InteractiveWordReader(
+                    text: widget.analysis.rawText,
+                    langCode: widget.selectedLang,
+                    ttsService: widget.ttsService,
                   ),
                 ),
               ],
