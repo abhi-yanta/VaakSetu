@@ -94,7 +94,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         state == AppLifecycleState.hidden ||
         state == AppLifecycleState.detached ||
         state == AppLifecycleState.inactive) {
-      widget.ttsService.stop();
+      widget.ttsService.pauseForBackground();
+    } else if (state == AppLifecycleState.resumed) {
+      widget.ttsService.resumeFromBackground();
     }
   }
 

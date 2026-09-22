@@ -50,11 +50,16 @@ class TtsService extends ChangeNotifier {
 
   bool _isPlaying = false;
   String _activeTtsLayer = 'device'; // 'ai4bharat' | 'device'
+  String? _lastSpokenText;
+  String? _lastSpokenLangCode;
+  bool _wasSpeakingBeforePause = false;
+
   VoidCallback? onSpeechStarted;
   VoidCallback? onSpeechFinished;
 
   bool get isPlaying => _isPlaying;
   String get activeTtsLayer => _activeTtsLayer;
+  bool get wasSpeakingBeforePause => _wasSpeakingBeforePause;
 
   // ──────────────────────────────────────────────────────────────────
   // Initialization
@@ -113,6 +118,9 @@ class TtsService extends ChangeNotifier {
     if (text.isEmpty) return;
     await stop();
 
+    _lastSpokenText = text;
+    _lastSpokenLangCode = langCode;
+    _wasSpeakingBeforePause = false;
     _isPlaying = true;
     notifyListeners();
     onSpeechStarted?.call();
@@ -137,7 +145,26 @@ class TtsService extends ChangeNotifier {
     if (text.isNotEmpty) await speak(text, langCode);
   }
 
+  Future<void> pauseForBackground() async {
+    if (_isPlaying) {
+      _wasSpeakingBeforePause = true;
+      try {
+        await _flutterTts.stop();
+      } catch (_) {}
+      _isPlaying = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> resumeFromBackground() async {
+    if (_wasSpeakingBeforePause && _lastSpokenText != null && _lastSpokenLangCode != null) {
+      _wasSpeakingBeforePause = false;
+      await speak(_lastSpokenText!, _lastSpokenLangCode!);
+    }
+  }
+
   Future<void> stop() async {
+    _wasSpeakingBeforePause = false;
     try {
       await _flutterTts.stop();
     } catch (_) {}
