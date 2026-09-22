@@ -36,6 +36,8 @@ class LocalizedContent {
       'camera_preparing': 'कैमरा तैयार हो रहा है...',
       'tap_word_to_listen': 'किसी भी शब्द को सुनने के लिए उस पर दबाएं',
       'word_mode': 'शब्द-दर-शब्द वाचन',
+      'read_full_text': 'पूरा पाठ सुनें',
+      'tap_sentence_to_listen': 'किसी भी वाक्य पर दबाकर उसे सुनें',
     },
     'ta': {
       'welcome_title': 'வாக் சேது',
@@ -69,6 +71,8 @@ class LocalizedContent {
       'camera_preparing': 'கேமரா தயாராகிறது...',
       'tap_word_to_listen': 'எந்த வார்த்தையையும் கேட்க அதை அழுத்தவும்',
       'word_mode': 'வார்த்தை வாரியாக',
+      'read_full_text': 'முழு உரையும் கேளுங்கள்',
+      'tap_sentence_to_listen': 'எந்த வாக்கியத்தையும் கேட்க அதை அழுத்தவும்',
     },
     'te': {
       'welcome_title': 'వాక్ సేతు',
