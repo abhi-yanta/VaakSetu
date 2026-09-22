@@ -1,64 +1,68 @@
-# Source 6 — AI4Bharat IndicOCR
+# Source 6 — AI4Bharat IndicOCR & All Datasets
 
 **Project**: AI4Bharat (IIT Madras)  
 **Website**: https://ai4bharat.iitm.ac.in  
 **GitHub**: https://github.com/AI4Bharat  
 **HuggingFace**: https://huggingface.co/ai4bharat  
-**Type**: Indian language printed and handwritten document datasets  
-**Coverage**: 22 scheduled Indian languages  
-**Language**: Hindi, Tamil, Telugu, Bengali, Marathi, Gujarati, Kannada, Malayalam, Odia, Punjabi, Assamese, Urdu + others  
 
 ---
 
-## 📌 Why This Dataset Matters for VaakSetu
+## 📦 Complete AI4Bharat Dataset Catalog (VaakSetu Relevant)
 
-VaakSetu's OCR layer (Google ML Kit) struggles with:
-1. **Handwritten text** on rural loan agreements (thumb impressions + cursive Devanagari)
-2. **Mixed-script** stamp papers (Bengali + English as seen in the West Bengal deed)
-3. **Low-quality scans** from cheap Android cameras in poor lighting
+### 🗣️ Speech (ASR / TTS)
 
-AI4Bharat's datasets let us **fine-tune OCR models** specifically for these challenges.
+| Dataset | Description | Size | VaakSetu Use |
+|---------|-------------|------|-------------|
+| **Shrutilipi** | Labeled ASR corpus from All India Radio | 6,400+ hours, 12 languages | Train offline speech recognition for document dictation |
+| **IndicVoices** | Large-scale multilingual speech (diverse speakers, rural accents) | Thousands of hours | Improve rural accent recognition in voice commands |
+| **Kathbath** | Robust ASR benchmark | 1,684 hrs, 12 languages | Benchmark VaakSetu voice input accuracy |
+| **Rasa** | Expressive multilingual TTS dataset | 12 languages | **Train AI4Bharat TTS** used in VaakSetu |
+| **BhasaAnuvaad** | Speech translation dataset | 44,400 hrs, 13 languages | Cross-language document explanation |
 
-### Key Datasets from AI4Bharat
+### 📝 Text / NLP
 
-| Dataset | Description | Use Case |
-|---------|-------------|----------|
-| **IndicOCR** | Printed text in 13 Indic scripts | Improve stamp paper + deed OCR |
-| **Shrutilipi** | 1600+ hours of Indian language speech | TTS voice quality improvement |
-| **Aksharantar** | 26M transliteration pairs | Cross-script keyword matching |
-| **IndicNLP** | NLP corpora for 22 Indian languages | Legal text classification |
-| **IndicTrans2** | Translation between 22 languages | Multi-language explanation |
+| Dataset | Description | Size | VaakSetu Use |
+|---------|-------------|------|-------------|
+| **Samanantar** | English↔Indic parallel corpus | 49.7M sentence pairs, 11 languages | Legal clause translation between languages |
+| **IndicNLP Corpora** | Monolingual text for 12 Indian languages | Billions of tokens | Language model pre-training |
+| **Sangraha** | Curated high-quality multilingual text | Large | LLM fine-tuning for legal understanding |
+| **Aksharantar** | Roman ↔ Native script transliteration | 26M pairs | Handle mixed-script OCR output |
+| **Naamapadam** | Named Entity Recognition dataset | 400K sentences, 11 languages | Identify party names, land survey numbers in contracts |
+| **IndicGLUE** | NLU benchmark | 11 languages | Evaluate legal text classification models |
 
----
+### 👁️ OCR / Vision
 
-## 📥 How to Access
-
-### Method 1: HuggingFace
-```bash
-pip install datasets
-python -c "from datasets import load_dataset; ds = load_dataset('ai4bharat/indicocr')"
-```
-
-### Method 2: AI4Bharat Website
-1. Visit https://ai4bharat.iitm.ac.in/datasets
-2. Register (free academic access)
-3. Download IndicOCR dataset
-
-### Method 3: GitHub
-```bash
-git clone https://github.com/AI4Bharat/IndicOCR
-```
+| Dataset | Description | Size | VaakSetu Use |
+|---------|-------------|------|-------------|
+| **IndicOCR** | Printed text across 13 Indic scripts | Large | Fine-tune OCR for stamp papers, printed deeds |
 
 ---
 
-## 🔗 Direct Dataset Links
+## 🔗 Download Links
 
-| Resource | URL |
-|----------|-----|
-| IndicOCR Paper | https://arxiv.org/abs/2212.02234 |
-| IndicNLP Suite | https://indicnlp.ai4bharat.org/ |
+| Dataset | Download |
+|---------|----------|
+| Shrutilipi | https://huggingface.co/datasets/ai4bharat/shrutilipi |
+| IndicVoices | https://huggingface.co/datasets/ai4bharat/indicvoices |
+| Kathbath | https://huggingface.co/datasets/ai4bharat/kathbath |
+| Rasa (TTS) | https://huggingface.co/datasets/ai4bharat/rasa |
+| Samanantar | https://huggingface.co/datasets/ai4bharat/samanantar |
 | Aksharantar | https://huggingface.co/datasets/ai4bharat/Aksharantar |
-| IndicTrans2 | https://github.com/AI4Bharat/IndicTrans2 |
+| Naamapadam | https://huggingface.co/datasets/ai4bharat/naamapadam |
+
+---
+
+## 🎙️ AI4Bharat TTS Models (Used in VaakSetu)
+
+VaakSetu now uses **Bhashini API** (Government of India) which hosts AI4Bharat's TTS models:
+
+| Model | Quality | Languages | Access |
+|-------|---------|-----------|--------|
+| **Indic Parler-TTS** | Expressive, natural | 23+ languages | HuggingFace + Bhashini |
+| **IndicF5** | Near-human quality | 22 languages | HuggingFace |
+| **Indic-TTS (FastPitch)** | Lightweight, offline | 13 languages | GitHub |
+
+See `../../mobile/lib/data/services/tts_service.dart` for the implementation.
 
 ---
 
@@ -67,5 +71,6 @@ git clone https://github.com/AI4Bharat/IndicOCR
 | File | Description |
 |------|-------------|
 | `README.md` | This file |
-| `supported_languages.json` | 12 VaakSetu languages mapped to AI4Bharat script codes |
-| `download_indicocr.py` | Script to download relevant OCR training samples |
+| `supported_languages.json` | 12 VaakSetu languages → AI4Bharat script codes |
+| `ai4bharat_datasets_catalog.json` | Full machine-readable catalog of all relevant datasets |
+| `download_datasets.py` | Script to download key datasets from HuggingFace |

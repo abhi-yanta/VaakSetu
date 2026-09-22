@@ -76,5 +76,27 @@ void main() {
       expect(analysis.warningKeys, contains('alert_high_interest'));
       expect(analysis.warningKeys, contains('alert_collateral'));
     });
+
+    test('Correctly identifies West Bengal Non-Judicial Stamp Paper Sale Deed', () {
+      // Simulates partial OCR output from a Rs.5000 stamp paper with mixed Bengali/English
+      const stampPaperOcr =
+          'INDIA NON JUDICIAL Rs.5000 WEST BENGAL '
+          'SALE DEED Total Market Value Rs. 8,19,112/- '
+          'Dist. Murshidabad, P.S. Suti, J.L. No. 56, Mouza-Dafahat, '
+          'Total Area of Land Transferred: 11.347 Decimals or 459.369 SQM. '
+          'This deed of sale is executed on 17th day of May, 2016 '
+          'IN FAVOUR OF A.M. TEACHERS TRAINING INSTITUTE '
+          'hereinafter called the PURCHASER.';
+
+      final analysis = RuleEngine.analyze(stampPaperOcr);
+
+      // Must detect as a land deed — NOT "unclear" or "unrecognized"
+      expect(analysis.category, equals(DocumentCategory.deed));
+      expect(analysis.category, isNot(equals(DocumentCategory.unclear)));
+      expect(analysis.category, isNot(equals(DocumentCategory.unrecognized)));
+      // Market value transfer without irrevocable seizure clause → safe
+      expect(analysis.severity, equals(DocumentSeverity.safe));
+    });
   });
 }
+

@@ -6,6 +6,8 @@ class RuleEngine {
     'agreement', 'contract', 'affidavit', 'notary', 'witness', 'witnesses',
     'party', 'parties', 'signature', 'signed', 'terms and conditions', 'clause',
     'clauses', 'stamp paper', 'hereby', 'whereas', 'undertaking', 'deed',
+    'in favour of', 'purchaser', 'vendor', 'non judicial', 'sale deed',
+    'executed', 'consideration', 'hereinafter', 'schedule', 'attestation',
     'अनुबंध', 'करार', 'दस्तावेज़', 'हस्ताक्षर', 'शर्तें', 'साक्षी', 'शपथ पत्र',
     'ஒப்பந்தம்', 'கையொப்பம்', 'నిబంధనలు', 'సంతకం'
   ];
@@ -15,7 +17,14 @@ class RuleEngine {
     'khasra', 'khatauni', 'khata', 'survey number', 'sub-registrar', 'registrar',
     'registration', 'registra', 'tehsil', 'mauza', 'patta', 'property', 'plot',
     'boundaries', 'land', 'खसरा', 'खतौनी', 'पट्टा', 'पंजीकरण', 'भूमि', 'जमीन',
-    'बिक्री पत्र', 'तहसील', 'चौहद्दी', 'பத்திரம்', 'நிலம்', 'రిజిస్ట్రేషన్', 'భూమి'
+    'बिक्री पत्र', 'तहसील', 'चौहद्दी', 'பத்திரம்', 'நிலம்', 'రిజిస్ట్రేషన్', 'భూమి',
+    // Stamp paper & registry specific
+    'non judicial', 'non-judicial', 'stamp paper', 'stamp duty', 'stamp certificate',
+    'india non judicial', 'भारतीय गैर न्यायिक', 'indian stamp', 'e-stamp',
+    'mouza', 'j.l. no', 'j.l no', 'jl no', 'decimals', 'square feet', 'sqm',
+    'suti', 'murshidabad', 'dafahat', 'in favour of', 'purchaser', 'vendor',
+    'total area', 'area of land', 'market value', 'total market value',
+    'transferred', 'hereinafter', 'west bengal', 'sub registrar', 'district',
   ];
 
   static const List<String> loanKeywords = [
@@ -67,8 +76,11 @@ class RuleEngine {
     final trimmed = text.trim();
     final normalized = trimmed.toLowerCase();
 
-    // 1. Check for insufficient text (blank page, dark photo, unreadable handwriting)
-    if (trimmed.length < 20 || trimmed.split(RegExp(r'\s+')).length < 4) {
+    // 1. Check for insufficient text (blank page, dark photo, unreadable image).
+    // Threshold is deliberately low (10 chars / 2 words) so that even partial OCR
+    // results from complex multi-script stamp papers still get analyzed by the rule engine
+    // rather than being rejected outright as "unclear".
+    if (trimmed.length < 10 || trimmed.split(RegExp(r'\s+')).length < 2) {
       return DocumentAnalysis(
         category: DocumentCategory.unclear,
         severity: DocumentSeverity.unknown,
@@ -78,6 +90,7 @@ class RuleEngine {
         confidenceScore: 0.0,
       );
     }
+
 
     // 2. Score against categories using word boundaries
     final legalScore = _countMatches(normalized, legalMarkers);

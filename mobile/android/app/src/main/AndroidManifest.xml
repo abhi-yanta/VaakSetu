@@ -14,6 +14,9 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
 
+    <!-- Internet: needed for HuggingFace AI4Bharat TTS API (optional — falls back to device TTS offline) -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:label="VaakSetu"
         android:name="${applicationName}"
@@ -41,5 +44,11 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+        <!-- Bundle ML Kit models inside APK — prevents runtime NoClassDefFoundError
+             and avoids requiring internet for model download on first launch -->
+        <meta-data
+            android:name="com.google.mlkit.vision.DEPENDENCIES"
+            android:value="text_latin,text_devanagari,text_chinese" />
     </application>
 </manifest>

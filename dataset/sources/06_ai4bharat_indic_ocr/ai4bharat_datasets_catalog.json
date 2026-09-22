@@ -1,0 +1,101 @@
+[
+  {
+    "id": "shrutilipi",
+    "name": "Shrutilipi",
+    "category": "speech_asr",
+    "description": "Large-scale labeled ASR corpus from All India Radio news bulletins. 6,400+ hours across 12 Indian languages.",
+    "languages": ["hi", "ta", "te", "mr", "bn", "gu", "kn", "ml", "or", "pa", "as", "ur"],
+    "size": "6400+ hours",
+    "huggingface": "https://huggingface.co/datasets/ai4bharat/shrutilipi",
+    "vaaksetu_use": "Train speech recognition for voice input commands in rural Indian accents",
+    "priority": "medium"
+  },
+  {
+    "id": "indicvoices",
+    "name": "IndicVoices",
+    "category": "speech_asr",
+    "description": "Large-scale multilingual speech dataset with diverse speakers, including rural and low-resource accents.",
+    "languages": ["hi", "ta", "te", "mr", "bn", "gu", "kn", "ml", "or", "pa", "as", "ur"],
+    "size": "7,000+ hours",
+    "huggingface": "https://huggingface.co/datasets/ai4bharat/indicvoices",
+    "vaaksetu_use": "Improve recognition of rural accent voice commands when scanning documents",
+    "priority": "medium"
+  },
+  {
+    "id": "rasa_tts",
+    "name": "Rasa",
+    "category": "speech_tts",
+    "description": "Expressive multilingual TTS training dataset. Used to train AI4Bharat's Indic Parler-TTS model.",
+    "languages": ["hi", "ta", "te", "mr", "bn", "gu", "kn", "ml", "or", "pa", "as", "ur"],
+    "size": "~10 hours per language",
+    "huggingface": "https://huggingface.co/datasets/ai4bharat/rasa",
+    "vaaksetu_use": "Foundation for the AI4Bharat TTS voice that reads legal warnings aloud in native Indian languages",
+    "priority": "HIGH"
+  },
+  {
+    "id": "samanantar",
+    "name": "Samanantar",
+    "category": "translation",
+    "description": "Largest publicly available parallel corpus for Indian languages. 49.7M English-to-Indic sentence pairs.",
+    "languages": ["hi", "ta", "te", "mr", "bn", "gu", "kn", "ml", "or", "pa", "as"],
+    "size": "49.7M sentence pairs",
+    "huggingface": "https://huggingface.co/datasets/ai4bharat/samanantar",
+    "vaaksetu_use": "Translate legal clause explanations between Indian languages accurately",
+    "priority": "medium"
+  },
+  {
+    "id": "aksharantar",
+    "name": "Aksharantar",
+    "category": "transliteration",
+    "description": "26M+ pairs for Roman-to-Native script transliteration across 21 Indian languages.",
+    "languages": ["hi", "ta", "te", "mr", "bn", "gu", "kn", "ml", "or", "pa", "as", "ur"],
+    "size": "26M pairs",
+    "huggingface": "https://huggingface.co/datasets/ai4bharat/Aksharantar",
+    "vaaksetu_use": "Handle mixed-script OCR output where Hindi words appear in Roman script (Hinglish)",
+    "priority": "medium"
+  },
+  {
+    "id": "naamapadam",
+    "name": "Naamapadam",
+    "category": "ner",
+    "description": "Large-scale NER dataset for 11 Indian languages with 400K+ annotated sentences.",
+    "languages": ["hi", "ta", "te", "mr", "bn", "gu", "kn", "ml", "or", "pa", "as"],
+    "size": "400K sentences",
+    "huggingface": "https://huggingface.co/datasets/ai4bharat/naamapadam",
+    "vaaksetu_use": "Extract party names, land survey numbers, and financial amounts from legal documents",
+    "priority": "HIGH"
+  },
+  {
+    "id": "indicocr",
+    "name": "IndicOCR",
+    "category": "ocr",
+    "description": "Printed text recognition dataset across 13 Indic scripts. Used for training and benchmarking OCR models.",
+    "languages": ["hi", "ta", "te", "mr", "bn", "gu", "kn", "ml", "or", "pa", "as", "ur"],
+    "size": "Large",
+    "github": "https://github.com/AI4Bharat/IndicOCR",
+    "vaaksetu_use": "Fine-tune OCR model for stamp papers, printed deeds, and registration certificates",
+    "priority": "HIGH"
+  },
+  {
+    "id": "indic_parler_tts",
+    "name": "Indic Parler-TTS Model",
+    "category": "tts_model",
+    "description": "Multilingual, expressive TTS model for 23+ Indian languages. Natural and controllable speech synthesis.",
+    "languages": ["hi", "ta", "te", "mr", "bn", "gu", "kn", "ml", "or", "pa", "as", "ur"],
+    "huggingface": "https://huggingface.co/ai4bharat/indic-parler-tts",
+    "api": "Bhashini Platform (https://bhashini.gov.in/ulca/model-catalog)",
+    "vaaksetu_use": "PRIMARY TTS ENGINE — replaces flutter_tts device speech with high-quality native Indian TTS",
+    "priority": "CRITICAL"
+  },
+  {
+    "id": "bhasha_anuvaad",
+    "name": "BhasaAnuvaad",
+    "category": "speech_translation",
+    "description": "Massive speech translation dataset. 44,400 hours across 13 Indian languages.",
+    "languages": ["hi", "ta", "te", "mr", "bn", "gu", "kn", "ml", "or", "pa", "as", "ur"],
+    "size": "44,400 hours",
+    "huggingface": "https://huggingface.co/datasets/ai4bharat/BhasaAnuvaad",
+    "vaaksetu_use": "Future: Directly translate scanned document audio between Indian languages",
+    "priority": "low"
+  }
+]
