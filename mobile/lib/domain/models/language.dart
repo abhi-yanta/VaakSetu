@@ -3,14 +3,16 @@ class Language {
   final String code;
   final String nativeName;
   final String englishLabel;
-  final String flagEmoji;
+
+  /// A single iconic character from this language's script, used as a visual badge.
+  final String scriptChar;
   final String ttsLocale;
 
   const Language({
     required this.code,
     required this.nativeName,
     required this.englishLabel,
-    required this.flagEmoji,
+    required this.scriptChar,
     required this.ttsLocale,
   });
 
@@ -19,84 +21,84 @@ class Language {
       code: 'hi',
       nativeName: 'हिन्दी',
       englishLabel: 'Hindi',
-      flagEmoji: '🇮🇳',
+      scriptChar: 'अ',
       ttsLocale: 'hi-IN',
     ),
     Language(
       code: 'ta',
       nativeName: 'தமிழ்',
       englishLabel: 'Tamil',
-      flagEmoji: '🇮🇳',
+      scriptChar: 'அ',
       ttsLocale: 'ta-IN',
     ),
     Language(
       code: 'te',
       nativeName: 'తెలుగు',
       englishLabel: 'Telugu',
-      flagEmoji: '🇮🇳',
+      scriptChar: 'అ',
       ttsLocale: 'te-IN',
     ),
     Language(
       code: 'mr',
       nativeName: 'मराठी',
       englishLabel: 'Marathi',
-      flagEmoji: '🇮🇳',
+      scriptChar: 'म',
       ttsLocale: 'mr-IN',
     ),
     Language(
       code: 'bn',
       nativeName: 'বাংলা',
       englishLabel: 'Bengali',
-      flagEmoji: '🇮🇳',
+      scriptChar: 'অ',
       ttsLocale: 'bn-IN',
     ),
     Language(
       code: 'gu',
       nativeName: 'ગુજરાતી',
       englishLabel: 'Gujarati',
-      flagEmoji: '🇮🇳',
+      scriptChar: 'અ',
       ttsLocale: 'gu-IN',
     ),
     Language(
       code: 'kn',
       nativeName: 'ಕನ್ನಡ',
       englishLabel: 'Kannada',
-      flagEmoji: '🇮🇳',
+      scriptChar: 'ಅ',
       ttsLocale: 'kn-IN',
     ),
     Language(
       code: 'ml',
       nativeName: 'മലയാളം',
       englishLabel: 'Malayalam',
-      flagEmoji: '🇮🇳',
+      scriptChar: 'അ',
       ttsLocale: 'ml-IN',
     ),
     Language(
       code: 'or',
       nativeName: 'ଓଡ଼ିଆ',
       englishLabel: 'Odia',
-      flagEmoji: '🇮🇳',
+      scriptChar: 'ଅ',
       ttsLocale: 'or-IN',
     ),
     Language(
       code: 'pa',
       nativeName: 'ਪੰਜਾਬੀ',
       englishLabel: 'Punjabi',
-      flagEmoji: '🇮🇳',
+      scriptChar: 'ਅ',
       ttsLocale: 'pa-IN',
     ),
     Language(
       code: 'as',
       nativeName: 'অসমীয়া',
       englishLabel: 'Assamese',
-      flagEmoji: '🇮🇳',
+      scriptChar: 'ক',
       ttsLocale: 'as-IN',
     ),
     Language(
       code: 'ur',
       nativeName: 'اردو',
       englishLabel: 'Urdu',
-      flagEmoji: '🇮🇳',
+      scriptChar: 'ا',
       ttsLocale: 'ur-IN',
     ),
   ];
