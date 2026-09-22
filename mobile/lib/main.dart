@@ -287,7 +287,7 @@ class _HomeScreenState extends State<HomeScreen> {
         color: AppColors.surfaceDark,
         alignment: Alignment.center,
         child: const Text(
-          'Offline & Private • On-Device AI',
+          'VaakSetu • AI Document Assistant',
           style: TextStyle(color: AppColors.textMuted, fontSize: 11, fontWeight: FontWeight.w500),
         ),
       ),
