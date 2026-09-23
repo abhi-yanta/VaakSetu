@@ -840,3 +840,587 @@
     70% { transform: scale(1.03); box-shadow: 0 0 0 15px rgba(255, 109, 31, 0); }
     100% { transform: scale(0.97); box-shadow: 0 0 0 0 rgba(255, 109, 31, 0); }
   }
+
+  /* ==========================================================================
+     FORM FIELD GUIDE & MODE TOGGLE STYLES
+     ========================================================================== */
+
+  .mode-toggle-bar {
+    display: flex;
+    gap: 8px;
+    background: #F1F5F9;
+    padding: 6px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+  }
+
+  .mode-toggle-btn {
+    flex: 1;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: none;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    background: transparent;
+    color: var(--color-gray);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .mode-toggle-btn.active {
+    background: #FFFFFF;
+    color: var(--color-navy);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  }
+
+  /* Form Guide Suggestion Banner */
+  .form-guide-suggestion-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(135deg, #FFF7ED, #FFEDD5);
+    border: 1.5px solid #FDBA74;
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    cursor: pointer;
+    text-align: left;
+    transition: transform 0.15s ease;
+  }
+
+  .form-guide-suggestion-card:active {
+    transform: scale(0.98);
+  }
+
+  .suggestion-icon-badge {
+    font-size: 1.5rem;
+    background: #FFFFFF;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(255, 109, 31, 0.2);
+    flex-shrink: 0;
+  }
+
+  .suggestion-body {
+    flex: 1;
+  }
+
+  .suggestion-body h4 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #9A3412;
+    margin-bottom: 2px;
+  }
+
+  .suggestion-body p {
+    font-size: 0.78rem;
+    color: #7C2D12;
+    line-height: 1.3;
+  }
+
+  .suggestion-action-btn {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--color-saffron);
+    white-space: nowrap;
+    background: #FFFFFF;
+    padding: 6px 10px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+
+  /* Form Field Guide Component */
+  .form-guide-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    position: relative;
+    padding-bottom: 220px; /* Space for sticky step card */
+  }
+
+  .form-guide-mode-tag {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 109, 31, 0.12);
+    color: var(--color-saffron);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
+  .form-progress-bar-container {
+    background: #FFFFFF;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 12px;
+  }
+
+  .progress-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .step-counter {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--color-navy);
+  }
+
+  .btn-list-toggle {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: #F1F5F9;
+    border: 1px solid #CBD5E1;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--color-navy);
+    cursor: pointer;
+  }
+
+  .progress-track {
+    height: 8px;
+    background: #E2E8F0;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-saffron), var(--color-green));
+    border-radius: 4px;
+    transition: width 0.3s ease;
+  }
+
+  /* Field List Modal */
+  .field-list-modal {
+    position: absolute;
+    top: 60px;
+    left: 0;
+    right: 0;
+    background: #FFFFFF;
+    border: 1.5px solid var(--color-border);
+    border-radius: 14px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    z-index: 50;
+    padding: 14px;
+    max-height: 400px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .field-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+  }
+
+  .field-list-header h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-navy);
+  }
+
+  .btn-close-list {
+    background: #F1F5F9;
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .field-list-items {
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .field-list-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    cursor: pointer;
+    font-size: 0.88rem;
+  }
+
+  .field-list-row.active-row {
+    background: #EFF6FF;
+    border-color: #3B82F6;
+    font-weight: 700;
+  }
+
+  .status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .status-dot.green { background: var(--color-green); }
+  .status-dot.yellow { background: var(--color-yellow); }
+  .status-dot.red { background: var(--color-danger); }
+
+  .field-row-name {
+    flex: 1;
+    color: var(--color-navy);
+  }
+
+  .field-row-badge {
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  .field-row-badge.green { background: #DCFCE7; color: #166534; }
+  .field-row-badge.yellow { background: #FEF9C3; color: #854D0E; }
+  .field-row-badge.red { background: #FEE2E2; color: #991B1B; }
+
+  /* Document Viewport & Overlays */
+  .document-viewport-wrapper {
+    width: 100%;
+    background: #F8FAFC;
+    border: 1.5px solid var(--color-border);
+    border-radius: 12px;
+    overflow: auto;
+    position: relative;
+    max-height: 480px;
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.04);
+  }
+
+  .document-canvas-container {
+    min-width: 680px;
+    min-height: 900px;
+    background: #FFFFFF;
+  }
+
+  .scanned-doc-img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .form-svg-wrapper {
+    width: 100%;
+    height: auto;
+  }
+
+  /* Label Overlays */
+  .label-bbox-overlay {
+    border: 1.5px solid #94A3B8;
+    background: rgba(148, 163, 184, 0.12);
+    border-radius: 4px;
+    pointer-events: auto;
+    transition: all 0.2s ease;
+  }
+
+  .label-bbox-overlay.active-label {
+    border: 2px solid var(--color-navy);
+    background: rgba(15, 30, 54, 0.2);
+    box-shadow: 0 0 10px rgba(15, 30, 54, 0.35);
+  }
+
+  .bbox-step-badge {
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--color-navy);
+    color: #FFFFFF;
+    font-size: 0.7rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Blank Region Overlays (Green, Yellow, Red Hierarchy) */
+  .blank-region-overlay {
+    border-radius: 6px;
+    pointer-events: auto;
+    transition: all 0.2s ease;
+  }
+
+  .blank-region-overlay.conf-green {
+    border: 2px solid var(--color-green);
+    background: rgba(39, 155, 97, 0.14);
+  }
+
+  .blank-region-overlay.conf-yellow {
+    border: 2px dashed var(--color-yellow);
+    background: rgba(234, 161, 0, 0.14);
+  }
+
+  .blank-region-overlay.conf-red {
+    border: 2px dashed var(--color-danger);
+    background: rgba(223, 46, 46, 0.14);
+  }
+
+  .blank-region-overlay.active-blank {
+    box-shadow: 0 0 14px rgba(39, 155, 97, 0.6);
+  }
+
+  .blank-region-overlay.active-blank.conf-yellow {
+    box-shadow: 0 0 14px rgba(234, 161, 0, 0.6);
+  }
+
+  .pulse-glow {
+    animation: active-field-glow 1.5s infinite ease-in-out;
+  }
+
+  @keyframes active-field-glow {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.85; transform: scale(1.02); }
+  }
+
+  .blank-here-tag {
+    position: absolute;
+    top: -14px;
+    left: 8px;
+    font-size: 0.68rem;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: var(--color-green);
+    color: #FFFFFF;
+    white-space: nowrap;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  }
+
+  .conf-yellow .blank-here-tag {
+    background: var(--color-yellow);
+    color: #000000;
+  }
+
+  .red-fallback-overlay {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #FEE2E2;
+    border: 1px solid #F87171;
+    color: #991B1B;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 700;
+  }
+
+  /* Floating Active Step Guidance Card */
+  .active-step-card {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 32px);
+    max-width: 450px;
+    background: #FFFFFF;
+    border: 2px solid var(--color-navy);
+    border-radius: 18px;
+    box-shadow: 0 12px 36px rgba(15, 30, 54, 0.22);
+    padding: 16px;
+    z-index: 90;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    animation: slide-up 0.25s ease-out;
+  }
+
+  @keyframes slide-up {
+    from { opacity: 0; transform: translate(-50%, 20px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+  }
+
+  .active-step-card.status-card-green {
+    border-color: var(--color-green);
+  }
+
+  .active-step-card.status-card-yellow {
+    border-color: var(--color-yellow);
+  }
+
+  .active-step-card.status-card-red {
+    border-color: var(--color-danger);
+  }
+
+  .step-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .step-badge-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--color-navy);
+    color: #FFFFFF;
+    font-weight: 900;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .status-card-green .step-badge-circle {
+    background: var(--color-green);
+  }
+
+  .status-card-yellow .step-badge-circle {
+    background: var(--color-yellow);
+    color: #000000;
+  }
+
+  .status-card-red .step-badge-circle {
+    background: var(--color-danger);
+  }
+
+  .step-title-group {
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .step-field-name {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--color-navy);
+    line-height: 1.2;
+    margin: 0;
+  }
+
+  .step-canonical-name {
+    font-size: 0.8rem;
+    color: var(--color-gray);
+  }
+
+  .step-confidence-pill {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+
+  .step-confidence-pill.green {
+    background: #DCFCE7;
+    color: #166534;
+  }
+
+  .step-confidence-pill.yellow {
+    background: #FEF9C3;
+    color: #854D0E;
+  }
+
+  .step-confidence-pill.red {
+    background: #FEE2E2;
+    color: #991B1B;
+  }
+
+  .step-guidance-text {
+    background: #F8FAFC;
+    border-radius: 10px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .position-note {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--color-navy);
+    line-height: 1.35;
+  }
+
+  .instruction-note {
+    font-size: 0.82rem;
+    color: #334155;
+    line-height: 1.35;
+  }
+
+  /* Audio & Navigation Row */
+  .walkthrough-controls-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .btn-nav-prev, .btn-nav-next {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 48px;
+    background: #F1F5F9;
+    border: 1px solid #CBD5E1;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--color-navy);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .btn-nav-prev:disabled, .btn-nav-next:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .btn-nav-audio {
+    flex: 1.4;
+    height: 48px;
+    background: linear-gradient(135deg, var(--color-saffron), #EA580C);
+    border: none;
+    border-radius: 12px;
+    color: #FFFFFF;
+    font-weight: 800;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(255, 109, 31, 0.3);
+    transition: transform 0.15s ease;
+  }
+
+  .btn-nav-audio.is-speaking {
+    background: linear-gradient(135deg, #DF2E2E, #B91C1C);
+    box-shadow: 0 4px 12px rgba(223, 46, 46, 0.4);
+  }
+
+  .btn-nav-audio:active {
+    transform: scale(0.97);
+  }
+

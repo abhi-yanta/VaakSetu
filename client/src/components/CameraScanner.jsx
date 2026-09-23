@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Camera, Upload, AlertCircle, FileText, RefreshCw, X } from 'lucide-react';
 import { guider } from '../utils/voiceGuider';
 
+import { SAMPLE_FORMS } from '../utils/sampleForms';
+
 export default function CameraScanner({ selectedLang, onScanCompleted, onBack }) {
   const [stream, setStream] = useState(null);
   const [useCamera, setUseCamera] = useState(false);
@@ -38,13 +40,39 @@ export default function CameraScanner({ selectedLang, onScanCompleted, onBack })
       const res = await fetch(`${apiBase}/api/presets`);
       if (res.ok) {
         const data = await res.json();
-        setPresets(data);
+        setPresets([
+          {
+            id: "kisan_welfare_form",
+            name: "📝 Kisan Yojana Registration Form (Form Guide)",
+            isForm: true,
+            ...SAMPLE_FORMS[0]
+          },
+          {
+            id: "scholarship_form",
+            name: "📝 Rural Youth Scholarship Form (Form Guide)",
+            isForm: true,
+            ...SAMPLE_FORMS[1]
+          },
+          ...data
+        ]);
       } else {
         throw new Error("Local server not running");
       }
     } catch (e) {
-      console.log("Could not load presets from kiosk server. Using local offline backups.");
+      console.log("Using local offline backups with form guide presets.");
       setPresets([
+        {
+          id: "kisan_welfare_form",
+          name: "📝 Kisan Yojana Registration Form (Form Guide)",
+          isForm: true,
+          ...SAMPLE_FORMS[0]
+        },
+        {
+          id: "scholarship_form",
+          name: "📝 Rural Youth Scholarship Form (Form Guide)",
+          isForm: true,
+          ...SAMPLE_FORMS[1]
+        },
         {
           id: "loan_fraud",
           name: "36% Interest Private Loan (High Risk)",
@@ -209,7 +237,18 @@ export default function CameraScanner({ selectedLang, onScanCompleted, onBack })
   const selectPreset = (preset) => {
     stopCamera();
     guider.speak(`Loading preset ${preset.name}`, selectedLang);
-    onScanCompleted({ type: 'text', text: preset.text, name: preset.name });
+    if (preset.isForm) {
+      onScanCompleted({ 
+        type: 'form', 
+        name: preset.name, 
+        text: preset.ocrData?.text || preset.text,
+        ocrData: preset.ocrData,
+        generateSvg: preset.generateSvg,
+        isForm: true 
+      });
+    } else {
+      onScanCompleted({ type: 'text', text: preset.text, name: preset.name });
+    }
   };
 
   return (

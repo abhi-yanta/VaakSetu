@@ -3,7 +3,8 @@ import { createWorker } from 'tesseract.js';
 import { analyzeDocumentText, SEVERITIES } from '../utils/ruleEngine';
 import { guider } from '../utils/voiceGuider';
 import WaveVisualizer from './WaveVisualizer';
-import { AlertTriangle, ShieldCheck, HelpCircle, Volume2, Play, Square, Loader } from 'lucide-react';
+import FormFieldGuide from './FormFieldGuide';
+import { AlertTriangle, ShieldCheck, HelpCircle, Volume2, Play, Square, Loader, Sparkles } from 'lucide-react';
 
 export default function DocumentAnalyzer({ scanData, selectedLang, onReset }) {
   const [loading, setLoading] = useState(true);
@@ -12,6 +13,8 @@ export default function DocumentAnalyzer({ scanData, selectedLang, onReset }) {
   const [speakingSection, setSpeakingSection] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [showRawText, setShowRawText] = useState(false);
+  const [activeTab, setActiveTab] = useState(scanData?.isForm ? 'formGuide' : 'safety');
+  const [ocrData, setOcrData] = useState(scanData?.ocrData || null);
 
   const LOCALIZED_UI = {
     hi: {
@@ -33,7 +36,9 @@ export default function DocumentAnalyzer({ scanData, selectedLang, onReset }) {
       unrecognized: "अज्ञात / गैर-कानूनी दस्तावेज़",
       unclear: "अस्पष्ट या कम लिखावट",
       unrecognized_doc: "यह कोई आधिकारिक कानूनी दस्तावेज़ नहीं लगता",
-      unclear_doc: "लिखावट बहुत कम है या पन्ना स्पष्ट नहीं है"
+      unclear_doc: "लिखावट बहुत कम है या पन्ना स्पष्ट नहीं है",
+      safety_tab: "सुरक्षा जांच (Safety)",
+      form_guide_tab: "फॉर्म गाइड (Form Guide)"
     },
     ta: {
       loading_ocr: "ஆவணம் வாசிக்கப்படுகிறது...",
@@ -337,7 +342,23 @@ export default function DocumentAnalyzer({ scanData, selectedLang, onReset }) {
   }, [scanData]);
 
   const runOCRAndAnalysis = async () => {
-    if (scanData.type === 'text') {
+    if (scanData.type === 'form') {
+      setLoading(true);
+      setProgress(uiText.loading_rules);
+      setOcrData(scanData.ocrData);
+      setTimeout(() => {
+        const text = scanData.ocrData?.text || scanData.text || '';
+        const results = analyzeDocumentText(text);
+        setAnalysis({
+          rawText: text,
+          ...results
+        });
+        setLoading(false);
+        if (!scanData.isForm) {
+          triggerInitialAnnouncement(results);
+        }
+      }, 400);
+    } else if (scanData.type === 'text') {
       setLoading(true);
       setProgress(uiText.loading_rules);
       
@@ -375,6 +396,9 @@ export default function DocumentAnalyzer({ scanData, selectedLang, onReset }) {
               severity: data.severity,
               warnings: data.warnings.map(w => w.key)
             });
+            if (data.ocrData) {
+              setOcrData(data.ocrData);
+            }
             processedSuccessfully = true;
             setLoading(false);
             triggerInitialAnnouncement(data);
@@ -389,6 +413,7 @@ export default function DocumentAnalyzer({ scanData, selectedLang, onReset }) {
           
           const ret = await worker.recognize(scanData.file);
           const text = ret.data.text;
+          setOcrData(ret.data);
           await worker.terminate();
 
           setProgress(uiText.loading_rules);
@@ -513,6 +538,44 @@ export default function DocumentAnalyzer({ scanData, selectedLang, onReset }) {
     );
   }
 
+  if (activeTab === 'formGuide') {
+    return (
+      <div className="analyzer-container">
+        <div className="scanner-header">
+          <button
+            onClick={() => { stopSpeaking(); onReset(); }}
+            className="btn-back"
+          >
+            ← Scan Again
+          </button>
+          <span className="badge-mode">Form Guide Mode</span>
+        </div>
+
+        <div className="mode-toggle-bar">
+          <button
+            onClick={() => { stopSpeaking(); setActiveTab('safety'); }}
+            className="mode-toggle-btn"
+          >
+            🛡️ {uiText.safety_tab || 'सुरक्षा जांच (Safety Check)'}
+          </button>
+          <button
+            onClick={() => { stopSpeaking(); setActiveTab('formGuide'); }}
+            className="mode-toggle-btn active"
+          >
+            📝 {uiText.form_guide_tab || 'फॉर्म गाइड (Form Guide)'}
+          </button>
+        </div>
+
+        <FormFieldGuide
+          scanData={scanData}
+          selectedLang={selectedLang}
+          initialOcrData={ocrData}
+          onBack={() => { stopSpeaking(); setActiveTab('safety'); }}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="analyzer-container">
       
@@ -524,6 +587,36 @@ export default function DocumentAnalyzer({ scanData, selectedLang, onReset }) {
           ← Scan Again
         </button>
         <span className="badge-mode">Analysis Result</span>
+      </div>
+
+      <div className="mode-toggle-bar">
+        <button
+          onClick={() => { stopSpeaking(); setActiveTab('safety'); }}
+          className="mode-toggle-btn active"
+        >
+          🛡️ {uiText.safety_tab || 'सुरक्षा जांच (Safety Check)'}
+        </button>
+        <button
+          onClick={() => { stopSpeaking(); setActiveTab('formGuide'); }}
+          className="mode-toggle-btn"
+        >
+          📝 {uiText.form_guide_tab || 'फॉर्म गाइड (Form Guide)'}
+        </button>
+      </div>
+
+      {/* Form Field Guide Banner */}
+      <div 
+        onClick={() => { stopSpeaking(); setActiveTab('formGuide'); }}
+        className="form-guide-suggestion-card tap-target"
+      >
+        <div className="suggestion-icon-badge">📝</div>
+        <div className="suggestion-body">
+          <h4>फॉर्म भरना सीखें (Form Field Guide)</h4>
+          <p>नाम, पता, हस्ताक्षर और अन्य खाली डिब्बे भरने के लिए बोलकर निर्देश सुनें</p>
+        </div>
+        <div className="suggestion-action-btn">
+          गाइड खोलें ➔
+        </div>
       </div>
 
       <div className={`security-indicator-card ${analysis.severity}`}>
