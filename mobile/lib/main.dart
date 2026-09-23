@@ -6,6 +6,7 @@ import 'data/services/preset_service.dart';
 import 'data/services/tts_service.dart';
 import 'domain/models/document_analysis.dart';
 import 'domain/models/localized_content.dart';
+import 'ui/core/animated_logo.dart';
 import 'ui/core/app_colors.dart';
 import 'ui/features/document_analyzer/document_analyzer_view.dart';
 import 'ui/features/document_scanner/camera_scanner_view.dart';
@@ -331,15 +332,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const SizedBox(
-                width: 60,
-                height: 60,
-                child: CircularProgressIndicator(
-                  strokeWidth: 4,
-                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.primarySaffron),
-                ),
-              ),
-              const SizedBox(height: 24),
+              const AnimatedLogo(size: 80, isLoading: true),
+              const SizedBox(height: 32),
               Text(
                 _loadingMessage,
                 style: const TextStyle(

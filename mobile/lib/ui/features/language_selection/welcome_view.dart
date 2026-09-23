@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/animated_logo.dart';
 import '../../core/app_colors.dart';
 import '../../core/tactile_button.dart';
 
@@ -18,27 +19,8 @@ class WelcomeView extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Logo Badge
-            ClipRRect(
-              borderRadius: BorderRadius.circular(28),
-              child: Container(
-                decoration: BoxDecoration(
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primarySaffron.withOpacity(0.4),
-                      blurRadius: 28,
-                      spreadRadius: 4,
-                    ),
-                  ],
-                ),
-                child: Image.asset(
-                  'assets/icon/app_icon.png',
-                  width: 120,
-                  height: 120,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
+            // Animated Logo Badge
+            const AnimatedLogo(size: 110),
             const SizedBox(height: 32),
 
             // Titles
