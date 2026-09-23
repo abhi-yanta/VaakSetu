@@ -3,17 +3,50 @@ class DocumentPreset {
   final String title;
   final String previewDescription;
   final String fullText;
+  final bool isForm;
 
   const DocumentPreset({
     required this.id,
     required this.title,
     required this.previewDescription,
     required this.fullText,
+    this.isForm = false,
   });
 }
 
 class PresetService {
   static const List<DocumentPreset> presets = [
+    DocumentPreset(
+      id: 'kisan_welfare_form',
+      title: '📝 Kisan Kalyan Registration Form (Form Guide)',
+      previewDescription: 'Government welfare scheme beneficiary form with 8 fields',
+      isForm: true,
+      fullText:
+          'Government Welfare Registration Form\n'
+          '1. Full Name / पूरा नाम: Ramesh Kumar\n'
+          '2. Date of Birth / जन्म तिथि: 15/08/1982\n'
+          '3. Gender / लिंग: Male\n'
+          '4. Mobile Number / मोबाइल नंबर: 9876543210\n'
+          '5. Aadhaar Number / आधार संख्या: 1234 5678 9012\n'
+          '6. Residential Address / निवास का पता: Village Rampur, District Varanasi, UP\n'
+          '7. Date / दिनांक: 23/09/2026\n'
+          '8. Applicant Signature / हस्ताक्षर / अंगूठे का निशान: [Sign Here]',
+    ),
+    DocumentPreset(
+      id: 'scholarship_form',
+      title: '📝 Rural Youth Scholarship Form (Form Guide)',
+      previewDescription: 'Student scholarship application form',
+      isForm: true,
+      fullText:
+          'National Student Welfare Council Scholarship Application Form\n'
+          'Applicant Name / विद्यार्थी का नाम:\n'
+          'Date of Birth / जन्म तिथि:\n'
+          'Mobile Number / मोबाइल नंबर:\n'
+          'Identity Number / पहचान पत्र:\n'
+          'Permanent Address / स्थायी पता:\n'
+          'Date / दिनांक:\n'
+          'Signature of Applicant / हस्ताक्षर:',
+    ),
     DocumentPreset(
       id: 'loan_fraud',
       title: '36% High-Interest Loan (High Risk)',

@@ -10,6 +10,7 @@ import 'ui/core/animated_logo.dart';
 import 'ui/core/app_colors.dart';
 import 'ui/features/document_analyzer/document_analyzer_view.dart';
 import 'ui/features/document_scanner/camera_scanner_view.dart';
+import 'ui/features/language_selection/character_welcome_view.dart';
 import 'ui/features/language_selection/language_selector_view.dart';
 import 'ui/features/language_selection/welcome_view.dart';
 
@@ -59,6 +60,7 @@ class VaakSetuApp extends StatelessWidget {
 
 enum AppView {
   welcome,
+  featureTour,
   language,
   scanner,
   loading,
@@ -79,6 +81,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   String _selectedLang = 'hi';
   DocumentAnalysis? _analysis;
   String _loadingMessage = 'दस्तावेज़ पढ़ा जा रहा है...';
+  bool _isFormMode = false;
   late final DocumentRepository _documentRepository;
 
   @override
@@ -109,6 +112,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   void _onStart() {
     HapticService.lightTap();
+    widget.ttsService.stop();
+    setState(() => _currentView = AppView.featureTour);
+  }
+
+  void _onTourFinished() {
+    HapticService.lightTap();
+    widget.ttsService.stop();
     setState(() => _currentView = AppView.language);
     widget.ttsService.speakPrompt('welcome', 'hi');
   }
@@ -180,6 +190,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       if (mounted) {
         setState(() {
           _analysis = analysis;
+          _isFormMode = preset.isForm;
           _currentView = AppView.analyzer;
         });
       }
@@ -190,6 +201,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     widget.ttsService.stop();
     setState(() {
       _analysis = null;
+      _isFormMode = false;
       _currentView = AppView.scanner;
     });
     widget.ttsService.speakPrompt('scan_prompt', _selectedLang);
@@ -316,6 +328,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       case AppView.welcome:
         return WelcomeView(onStart: _onStart);
 
+      case AppView.featureTour:
+        return CharacterWelcomeView(
+          ttsService: widget.ttsService,
+          onFinished: _onTourFinished,
+        );
+
       case AppView.language:
         return LanguageSelectorView(onLanguageSelected: _onLanguageSelected);
 
@@ -358,6 +376,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           selectedLang: _selectedLang,
           ttsService: widget.ttsService,
           onReset: _resetToScanner,
+          initialShowFormGuide: _isFormMode,
         );
     }
   }

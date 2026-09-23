@@ -8,12 +8,14 @@ import '../../core/document_text_reader.dart';
 import '../../core/security_badge.dart';
 import '../../core/tactile_button.dart';
 import '../../core/wave_visualizer.dart';
+import '../form_guide/form_field_guide_view.dart';
 
 class DocumentAnalyzerView extends StatefulWidget {
   final DocumentAnalysis analysis;
   final String selectedLang;
   final TtsService ttsService;
   final VoidCallback onReset;
+  final bool initialShowFormGuide;
 
   const DocumentAnalyzerView({
     super.key,
@@ -21,6 +23,7 @@ class DocumentAnalyzerView extends StatefulWidget {
     required this.selectedLang,
     required this.ttsService,
     required this.onReset,
+    this.initialShowFormGuide = false,
   });
 
   @override
@@ -30,17 +33,21 @@ class DocumentAnalyzerView extends StatefulWidget {
 class _DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
   bool _isPlaying = false;
   String? _activeSpeakingWarning;
+  late bool _showFormGuide;
 
   @override
   void initState() {
     super.initState();
+    _showFormGuide = widget.initialShowFormGuide;
     widget.ttsService.addListener(_onTtsChanged);
     _isPlaying = widget.ttsService.isPlaying;
 
-    // Trigger initial voice overview
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _announceInitialOverview();
-    });
+    // Trigger initial voice overview if not in form guide mode
+    if (!_showFormGuide) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _announceInitialOverview();
+      });
+    }
   }
 
   void _onTtsChanged() {
@@ -139,6 +146,23 @@ class _DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
       waveColor = AppColors.safeGreen;
     }
 
+    if (_showFormGuide) {
+      return FormFieldGuideView(
+        rawText: widget.analysis.rawText,
+        selectedLang: widget.selectedLang,
+        ttsService: widget.ttsService,
+        onBack: () {
+          widget.ttsService.stop();
+          widget.onReset();
+        },
+        onSwitchToSafety: () {
+          widget.ttsService.stop();
+          setState(() => _showFormGuide = false);
+          _announceInitialOverview();
+        },
+      );
+    }
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -169,6 +193,100 @@ class _DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
               ),
               const SizedBox(width: 48),
             ],
+          ),
+          const SizedBox(height: 12),
+
+          // Mode Switcher Bar
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: AppColors.safeGreen.withOpacity(0.18),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: AppColors.safeGreen),
+                  ),
+                  child: const Text(
+                    '🛡️ सुरक्षा जांच (Safety)',
+                    style: TextStyle(
+                      color: AppColors.safeGreen,
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: InkWell(
+                  onTap: () {
+                    widget.ttsService.stop();
+                    setState(() => _showFormGuide = true);
+                  },
+                  borderRadius: BorderRadius.circular(10),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: AppColors.surfaceDark,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: AppColors.borderDark),
+                    ),
+                    child: const Text(
+                      '📝 फॉर्म गाइड (Form Guide)',
+                      style: TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+
+          // Suggestion banner to switch to Form Guide
+          InkWell(
+            onTap: () {
+              widget.ttsService.stop();
+              setState(() => _showFormGuide = true);
+            },
+            borderRadius: BorderRadius.circular(14),
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.orange.shade900.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: AppColors.primarySaffron.withOpacity(0.6)),
+              ),
+              child: const Row(
+                children: [
+                  Text('📝', style: TextStyle(fontSize: 24)),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'फॉर्म भरना सीखें (Form Field Guide)',
+                          style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(height: 2),
+                        Text(
+                          'खाली डिब्बे भरने के लिए बोलकर निर्देश सुनें',
+                          style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(Icons.arrow_forward_ios_rounded, color: AppColors.primarySaffron, size: 16),
+                ],
+              ),
+            ),
           ),
           const SizedBox(height: 14),
 
