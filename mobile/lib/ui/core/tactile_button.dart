@@ -18,6 +18,8 @@ class TactileButton extends StatelessWidget {
   final bool isFullWidth;
   final double height;
   final double fontSize;
+  final EdgeInsetsGeometry? contentPadding;
+  final double iconSpacing;
 
   const TactileButton({
     super.key,
@@ -28,6 +30,8 @@ class TactileButton extends StatelessWidget {
     this.isFullWidth = true,
     this.height = 64.0,
     this.fontSize = 18.0,
+    this.contentPadding,
+    this.iconSpacing = 12.0,
   });
 
   @override
@@ -56,6 +60,12 @@ class TactileButton extends StatelessWidget {
         break;
     }
 
+    final padding = contentPadding ??
+        EdgeInsets.symmetric(
+          horizontal: height <= 52 ? 8 : 20,
+          vertical: height <= 52 ? 6 : 12,
+        );
+
     final button = Material(
       color: bgColor,
       borderRadius: BorderRadius.circular(16),
@@ -70,7 +80,7 @@ class TactileButton extends StatelessWidget {
         splashColor: Colors.white.withOpacity(0.2),
         child: Container(
           height: height,
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          padding: padding,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: borderColor, width: 1.5),
@@ -81,7 +91,7 @@ class TactileButton extends StatelessWidget {
             children: [
               if (icon != null) ...[
                 icon!,
-                const SizedBox(width: 12),
+                SizedBox(width: iconSpacing),
               ],
               Flexible(
                 child: Text(
@@ -90,10 +100,12 @@ class TactileButton extends StatelessWidget {
                     color: textColor,
                     fontSize: fontSize,
                     fontWeight: FontWeight.bold,
-                    letterSpacing: 0.3,
+                    letterSpacing: 0.2,
+                    height: 1.15,
                   ),
                   textAlign: TextAlign.center,
                   maxLines: 2,
+                  softWrap: true,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),

@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vaaksetu.local/dataset/form_guide/schema.json",
+  "title": "VaakSetu Form Field Guide Dataset",
+  "description": "Exported field dictionary and bilingual form presets used by FormFieldEngine (OCR + rules, not neural training labels).",
+  "type": "object",
+  "oneOf": [
+    { "$ref": "#/$defs/fieldsFile" },
+    { "$ref": "#/$defs/presetsFile" }
+  ],
+  "$defs": {
+    "fieldsFile": {
+      "type": "object",
+      "required": ["fields"],
+      "additionalProperties": false,
+      "properties": {
+        "fields": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/fieldDefinition" }
+        }
+      }
+    },
+    "presetsFile": {
+      "type": "object",
+      "required": ["presets"],
+      "additionalProperties": false,
+      "properties": {
+        "presets": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/formPreset" }
+        }
+      }
+    },
+    "fieldDefinition": {
+      "type": "object",
+      "required": ["key", "defaultLabel", "keywords", "labels", "spokenHelp"],
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "type": "string",
+          "description": "Stable field id (e.g. name, dob, id_number)."
+        },
+        "defaultLabel": {
+          "type": "string",
+          "description": "English UI default label."
+        },
+        "keywords": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "OCR match phrases across English + Indian languages."
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": { "type": "string" },
+          "description": "Short display label keyed by BCP-47-ish lang code (en, hi, ta, …)."
+        },
+        "spokenHelp": {
+          "type": "object",
+          "additionalProperties": { "type": "string" },
+          "description": "TTS guidance string per language."
+        }
+      }
+    },
+    "formPreset": {
+      "type": "object",
+      "required": ["id", "title", "previewDescription", "fullText", "isForm"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "previewDescription": { "type": "string" },
+        "fullText": {
+          "type": "string",
+          "description": "Synthetic bilingual form OCR text used for demos and FormFieldEngine evaluation."
+        },
+        "isForm": {
+          "const": true,
+          "description": "Always true in this export (form-guide subset of PresetService)."
+        }
+      }
+    }
+  }
+}

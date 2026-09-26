@@ -1,23 +1,22 @@
 import 'package:flutter/material.dart';
 import '../../../data/services/haptic_service.dart';
 import '../../../data/services/tts_service.dart';
+import '../../../domain/models/localized_content.dart';
 import '../../core/app_colors.dart';
 import '../../core/tactile_button.dart';
 import '../../core/vaaksetu_mascot.dart';
 
-class _TourPage {
-  final String titleHi;
-  final String titleEn;
-  final String bodyHi;
-  final String speakText;
+class _TourPageDef {
+  final String titleKey;
+  final String bodyKey;
+  final String speakKey;
   final MascotPose pose;
   final IconData icon;
 
-  const _TourPage({
-    required this.titleHi,
-    required this.titleEn,
-    required this.bodyHi,
-    required this.speakText,
+  const _TourPageDef({
+    required this.titleKey,
+    required this.bodyKey,
+    required this.speakKey,
     required this.pose,
     required this.icon,
   });
@@ -25,39 +24,31 @@ class _TourPage {
 
 /// Feature showcase — standing character with a hand gesture per feature.
 const _tourPages = [
-  _TourPage(
-    titleHi: 'कैमरा स्कैन',
-    titleEn: 'Document Scan',
-    bodyHi: 'दस्तावेज़ की फोटो लें — हम पाठ पढ़कर बताएंगे।',
-    speakText:
-        'फ़ीचर एक: कैमरा स्कैन। दस्तावेज़ की फोटो लें, और वाक् सेतु पाठ पढ़कर आवाज़ में बताएगा।',
+  _TourPageDef(
+    titleKey: 'tour_scan_title',
+    bodyKey: 'tour_scan_body',
+    speakKey: 'tour_scan_speak',
     pose: MascotPose.point,
     icon: Icons.document_scanner_rounded,
   ),
-  _TourPage(
-    titleHi: 'सुरक्षा जांच',
-    titleEn: 'Safety Check',
-    bodyHi: 'खतरे और लाल झंडे तुरंत पहचाने जाते हैं।',
-    speakText:
-        'फ़ीचर दो: सुरक्षा जांच। दस्तावेज़ में धोखाधड़ी या खतरे के संकेत मिलने पर तुरंत चेतावनी मिलेगी।',
+  _TourPageDef(
+    titleKey: 'tour_safety_title',
+    bodyKey: 'tour_safety_body',
+    speakKey: 'tour_safety_speak',
     pose: MascotPose.wave,
     icon: Icons.shield_rounded,
   ),
-  _TourPage(
-    titleHi: 'फॉर्म गाइड',
-    titleEn: 'Form Guide',
-    bodyHi: 'हर फ़ील्ड पर कदम-दर-कदम भरने की मदद।',
-    speakText:
-        'फ़ीचर तीन: फॉर्म गाइड। पंजीकरण फ़ॉर्म के हर खाने को क्रम से समझाया जाएगा।',
+  _TourPageDef(
+    titleKey: 'tour_form_title',
+    bodyKey: 'tour_form_body',
+    speakKey: 'tour_form_speak',
     pose: MascotPose.namaste,
     icon: Icons.edit_note_rounded,
   ),
-  _TourPage(
-    titleHi: '१२ भाषाएँ',
-    titleEn: '12 Languages',
-    bodyHi: 'हिंदी से उर्दू तक — अपनी भाषा चुनें।',
-    speakText:
-        'फ़ीचर चार: बारह भाषाओं का समर्थन। आगे बढ़ने पर अपनी पसंदीदा भाषा चुनें।',
+  _TourPageDef(
+    titleKey: 'tour_langs_title',
+    bodyKey: 'tour_langs_body',
+    speakKey: 'tour_langs_speak',
     pose: MascotPose.celebrate,
     icon: Icons.translate_rounded,
   ),
@@ -66,11 +57,13 @@ const _tourPages = [
 /// Feature showcase with the friendly VaakSetu mascot guide.
 class CharacterWelcomeView extends StatefulWidget {
   final TtsService ttsService;
+  final String selectedLang;
   final VoidCallback onFinished;
 
   const CharacterWelcomeView({
     super.key,
     required this.ttsService,
+    required this.selectedLang,
     required this.onFinished,
   });
 
@@ -82,6 +75,8 @@ class _CharacterWelcomeViewState extends State<CharacterWelcomeView> {
   final PageController _pageController = PageController();
   int _page = 0;
   bool _hasSpoken = false;
+
+  String _t(String key) => LocalizedContent.get(widget.selectedLang, key);
 
   @override
   void initState() {
@@ -109,7 +104,7 @@ class _CharacterWelcomeViewState extends State<CharacterWelcomeView> {
   void _speakPage(int index) {
     if (!mounted) return;
     if (index < 0 || index >= _tourPages.length) return;
-    widget.ttsService.speak(_tourPages[index].speakText, 'hi');
+    widget.ttsService.speak(_t(_tourPages[index].speakKey), widget.selectedLang);
   }
 
   void _goToPage(int index) {
@@ -149,9 +144,9 @@ class _CharacterWelcomeViewState extends State<CharacterWelcomeView> {
           alignment: Alignment.centerRight,
           child: TextButton(
             onPressed: _onSkip,
-            child: const Text(
-              'छोड़ें / Skip',
-              style: TextStyle(
+            child: Text(
+              _t('skip'),
+              style: const TextStyle(
                 color: AppColors.textMuted,
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -167,73 +162,71 @@ class _CharacterWelcomeViewState extends State<CharacterWelcomeView> {
             onPageChanged: _onPageChanged,
             itemBuilder: (context, index) {
               final page = _tourPages[index];
-              return SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 4),
-                    Text(
-                      page.titleHi,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.w800,
-                        height: 1.3,
-                      ),
-                      textAlign: TextAlign.center,
+              return Column(
+                children: [
+                  Text(
+                    _t(page.titleKey),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w800,
+                      height: 1.25,
                     ),
-                    const SizedBox(height: 6),
-                    Text(
-                      page.titleEn,
-                      style: const TextStyle(
-                        color: AppColors.deepTealLight,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      textAlign: TextAlign.center,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
                     ),
-                    const SizedBox(height: 12),
-                    Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 8),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 10,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.surfaceDark,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: AppColors.borderDark),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            page.icon,
-                            color: AppColors.primarySaffronLight,
-                            size: 22,
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              page.bodyHi,
-                              style: const TextStyle(
-                                color: AppColors.textSecondary,
-                                fontSize: 14,
-                                height: 1.35,
-                              ),
+                    decoration: BoxDecoration(
+                      color: AppColors.surfaceDark,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: AppColors.borderDark),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          page.icon,
+                          color: AppColors.primarySaffronLight,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            _t(page.bodyKey),
+                            style: const TextStyle(
+                              color: AppColors.textSecondary,
+                              fontSize: 13,
+                              height: 1.3,
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 8),
-                    VaakSetuMascot(
-                      key: ValueKey('mascot_${page.pose}'),
-                      size: 160,
-                      pose: page.pose,
+                  ),
+                  const SizedBox(height: 4),
+                  Expanded(
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final maxW = constraints.maxWidth;
+                        final maxH = constraints.maxHeight;
+                        final sizeByH = maxH / 1.2;
+                        final sizeByW = maxW * 0.92;
+                        final size = sizeByH < sizeByW ? sizeByH : sizeByW;
+                        return Center(
+                          child: VaakSetuMascot(
+                            key: ValueKey('mascot_${page.pose}'),
+                            size: size.clamp(180.0, 360.0),
+                            pose: page.pose,
+                          ),
+                        );
+                      },
                     ),
-                    const SizedBox(height: 4),
-                  ],
-                ),
+                  ),
+                ],
               );
             },
           ),
@@ -260,7 +253,7 @@ class _CharacterWelcomeViewState extends State<CharacterWelcomeView> {
         const SizedBox(height: 18),
 
         TactileButton(
-          label: isLast ? 'भाषा चुनें / Choose Language' : 'अगला / Next',
+          label: isLast ? _t('continue') : _t('next'),
           icon: Icon(
             isLast ? Icons.arrow_forward_rounded : Icons.navigate_next_rounded,
             color: Colors.white,
@@ -275,9 +268,9 @@ class _CharacterWelcomeViewState extends State<CharacterWelcomeView> {
         if (_page > 0)
           TextButton(
             onPressed: () => _goToPage(_page - 1),
-            child: const Text(
-              'पीछे / Back',
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+            child: Text(
+              _t('back'),
+              style: const TextStyle(color: AppColors.textSecondary, fontSize: 14),
             ),
           )
         else

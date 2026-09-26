@@ -6,6 +6,7 @@ import 'data/services/preset_service.dart';
 import 'data/services/tts_service.dart';
 import 'domain/models/document_analysis.dart';
 import 'domain/models/localized_content.dart';
+import 'domain/rules/form_field_engine.dart';
 import 'ui/core/animated_logo.dart';
 import 'ui/core/app_colors.dart';
 import 'ui/features/document_analyzer/document_analyzer_view.dart';
@@ -13,6 +14,7 @@ import 'ui/features/document_scanner/camera_scanner_view.dart';
 import 'ui/features/language_selection/character_welcome_view.dart';
 import 'ui/features/language_selection/language_selector_view.dart';
 import 'ui/features/language_selection/welcome_view.dart';
+import 'ui/features/mode_chooser/mode_chooser_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -62,6 +64,7 @@ enum AppView {
   welcome,
   featureTour,
   language,
+  modeChooser,
   scanner,
   loading,
   analyzer,
@@ -80,8 +83,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   AppView _currentView = AppView.welcome;
   String _selectedLang = 'hi';
   DocumentAnalysis? _analysis;
-  String _loadingMessage = 'दस्तावेज़ पढ़ा जा रहा है...';
+  String _loadingMessage = '';
   bool _isFormMode = false;
+  /// True when user chose Form Field Guide — scanner routes to form guide after OCR.
+  bool _isFormGuideIntent = false;
+  /// True after the user finishes (or skips) the post-language feature tour.
+  bool _tourCompleted = false;
   late final DocumentRepository _documentRepository;
 
   @override
@@ -113,22 +120,49 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void _onStart() {
     HapticService.lightTap();
     widget.ttsService.stop();
-    setState(() => _currentView = AppView.featureTour);
+    setState(() => _currentView = AppView.language);
+    widget.ttsService.speakPrompt('welcome', 'hi');
   }
 
   void _onTourFinished() {
     HapticService.lightTap();
     widget.ttsService.stop();
-    setState(() => _currentView = AppView.language);
-    widget.ttsService.speakPrompt('welcome', 'hi');
+    setState(() {
+      _tourCompleted = true;
+      _currentView = AppView.modeChooser;
+    });
   }
 
   void _onLanguageSelected(String langCode) {
     setState(() {
       _selectedLang = langCode;
+      _currentView = _tourCompleted ? AppView.modeChooser : AppView.featureTour;
+    });
+    if (_tourCompleted) {
+      widget.ttsService.speakPrompt('welcome', langCode);
+    }
+  }
+
+  void _onScannerModeSelected() {
+    HapticService.lightTap();
+    widget.ttsService.stop();
+    setState(() {
+      _isFormGuideIntent = false;
+      _isFormMode = false;
       _currentView = AppView.scanner;
     });
-    widget.ttsService.speakPrompt('scan_prompt', langCode);
+    widget.ttsService.speakPrompt('scan_prompt', _selectedLang);
+  }
+
+  void _onFormGuideModeSelected() {
+    HapticService.lightTap();
+    widget.ttsService.stop();
+    setState(() {
+      _isFormGuideIntent = true;
+      _isFormMode = true;
+      _currentView = AppView.scanner;
+    });
+    widget.ttsService.speakPrompt('scan_prompt', _selectedLang);
   }
 
   Future<void> _processImage(String imagePath) async {
@@ -152,6 +186,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
       setState(() {
         _analysis = analysis;
+        // Form Guide intent always opens the guide; otherwise detect form-like text.
+        _isFormMode =
+            _isFormGuideIntent || FormFieldEngine.looksLikeForm(analysis.rawText);
         _currentView = AppView.analyzer;
       });
     } catch (e) {
@@ -166,6 +203,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       );
       setState(() {
         _analysis = fallback;
+        _isFormMode = _isFormGuideIntent;
         _currentView = AppView.analyzer;
       });
     }
@@ -190,7 +228,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       if (mounted) {
         setState(() {
           _analysis = analysis;
-          _isFormMode = preset.isForm;
+          _isFormMode = _isFormGuideIntent || preset.isForm;
           _currentView = AppView.analyzer;
         });
       }
@@ -201,18 +239,35 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     widget.ttsService.stop();
     setState(() {
       _analysis = null;
-      _isFormMode = false;
+      // Keep form-guide intent so back returns to the form scanner.
+      _isFormMode = _isFormGuideIntent;
       _currentView = AppView.scanner;
     });
     widget.ttsService.speakPrompt('scan_prompt', _selectedLang);
+  }
+
+  void _resetToModeChooser() {
+    widget.ttsService.stop();
+    setState(() {
+      _analysis = null;
+      _isFormMode = false;
+      _isFormGuideIntent = false;
+      _currentView = AppView.modeChooser;
+    });
   }
 
   void _resetToLanguage() {
     widget.ttsService.stop();
     setState(() {
       _analysis = null;
+      _isFormMode = false;
+      _isFormGuideIntent = false;
       _currentView = AppView.language;
     });
+  }
+
+  void _onAnalyzerReset() {
+    _resetToScanner();
   }
 
   @override
@@ -298,7 +353,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       widget.ttsService.speakPrompt('welcome', _selectedLang);
                     }
                   },
-                  tooltip: isPlaying ? 'आवाज बंद करें (Mute)' : 'आवाज सुनें (Audio Guide)',
+                  tooltip: isPlaying
+                      ? LocalizedContent.get(_selectedLang, 'mute')
+                      : LocalizedContent.get(_selectedLang, 'unmute'),
                 ),
               );
             },
@@ -331,18 +388,28 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       case AppView.featureTour:
         return CharacterWelcomeView(
           ttsService: widget.ttsService,
+          selectedLang: _selectedLang,
           onFinished: _onTourFinished,
         );
 
       case AppView.language:
         return LanguageSelectorView(onLanguageSelected: _onLanguageSelected);
 
+      case AppView.modeChooser:
+        return ModeChooserView(
+          selectedLang: _selectedLang,
+          onScannerSelected: _onScannerModeSelected,
+          onFormGuideSelected: _onFormGuideModeSelected,
+          onBack: _resetToLanguage,
+        );
+
       case AppView.scanner:
         return CameraScannerView(
           selectedLang: _selectedLang,
+          forFormGuide: _isFormGuideIntent,
           onImageCaptured: _processImage,
           onPresetSelected: _processPreset,
-          onBack: _resetToLanguage,
+          onBack: _resetToModeChooser,
         );
 
       case AppView.loading:
@@ -372,10 +439,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
       case AppView.analyzer:
         return DocumentAnalyzerView(
+          key: ValueKey(
+            'analyzer_${_analysis!.analyzedAt.millisecondsSinceEpoch}_$_isFormMode',
+          ),
           analysis: _analysis!,
           selectedLang: _selectedLang,
           ttsService: widget.ttsService,
-          onReset: _resetToScanner,
+          onReset: _onAnalyzerReset,
           initialShowFormGuide: _isFormMode,
         );
     }

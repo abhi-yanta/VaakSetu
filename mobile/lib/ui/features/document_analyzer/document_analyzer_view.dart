@@ -187,7 +187,7 @@ class _DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
                   border: Border.all(color: AppColors.borderDark),
                 ),
                 child: Text(
-                  ui['result'] ?? 'परिणाम / Result',
+                  ui['result'] ?? LocalizedContent.get(widget.selectedLang, 'result'),
                   style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -208,9 +208,9 @@ class _DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(color: AppColors.safeGreen),
                   ),
-                  child: const Text(
-                    '🛡️ सुरक्षा जांच (Safety)',
-                    style: TextStyle(
+                  child: Text(
+                    '🛡️ ${LocalizedContent.get(widget.selectedLang, 'safety_tab')}',
+                    style: const TextStyle(
                       color: AppColors.safeGreen,
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
@@ -234,9 +234,9 @@ class _DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(color: AppColors.borderDark),
                     ),
-                    child: const Text(
-                      '📝 फॉर्म गाइड (Form Guide)',
-                      style: TextStyle(
+                    child: Text(
+                      '📝 ${LocalizedContent.get(widget.selectedLang, 'form_guide_tab')}',
+                      style: const TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
@@ -263,27 +263,27 @@ class _DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(color: AppColors.primarySaffron.withOpacity(0.6)),
               ),
-              child: const Row(
+              child: Row(
                 children: [
-                  Text('📝', style: TextStyle(fontSize: 24)),
-                  SizedBox(width: 12),
+                  const Text('📝', style: TextStyle(fontSize: 24)),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'फॉर्म भरना सीखें (Form Field Guide)',
-                          style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                          LocalizedContent.get(widget.selectedLang, 'learn_form_fill'),
+                          style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
                         ),
-                        SizedBox(height: 2),
+                        const SizedBox(height: 2),
                         Text(
-                          'खाली डिब्बे भरने के लिए बोलकर निर्देश सुनें',
-                          style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                          LocalizedContent.get(widget.selectedLang, 'learn_form_fill_desc'),
+                          style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
                         ),
                       ],
                     ),
                   ),
-                  Icon(Icons.arrow_forward_ios_rounded, color: AppColors.primarySaffron, size: 16),
+                  const Icon(Icons.arrow_forward_ios_rounded, color: AppColors.primarySaffron, size: 16),
                 ],
               ),
             ),
@@ -310,7 +310,9 @@ class _DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
               Expanded(
                 flex: 2,
                 child: TactileButton(
-                  label: _isPlaying ? (ui['stop'] ?? 'आवाज बंद करें') : (ui['listen_all'] ?? 'पूरी जानकारी सुनें'),
+                  label: _isPlaying
+                      ? (ui['stop'] ?? LocalizedContent.get(widget.selectedLang, 'stop'))
+                      : (ui['listen_all'] ?? LocalizedContent.get(widget.selectedLang, 'listen_all')),
                   icon: Icon(_isPlaying ? Icons.stop_rounded : Icons.play_arrow_rounded, color: Colors.white, size: 26),
                   style: _isPlaying ? TactileButtonStyle.danger : TactileButtonStyle.primary,
                   height: 64,
@@ -322,7 +324,7 @@ class _DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
               Expanded(
                 flex: 1,
                 child: TactileButton(
-                  label: ui['guide'] ?? 'निर्देश',
+                  label: ui['guide'] ?? LocalizedContent.get(widget.selectedLang, 'guide'),
                   icon: const Icon(Icons.help_outline_rounded, color: Colors.white, size: 22),
                   style: TactileButtonStyle.secondary,
                   height: 64,
@@ -348,8 +350,8 @@ class _DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
                 const SizedBox(width: 8),
                 Text(
                   widget.analysis.isUnrecognized
-                      ? (ui['notice'] ?? 'महत्वपूर्ण सूचना')
-                      : "${ui['red_flags'] ?? 'खतरे की चेतावनी'} (${widget.analysis.warningKeys.length})",
+                      ? (ui['notice'] ?? LocalizedContent.get(widget.selectedLang, 'notice'))
+                      : "${ui['red_flags'] ?? LocalizedContent.get(widget.selectedLang, 'red_flags')} (${widget.analysis.warningKeys.length})",
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18,
@@ -440,7 +442,7 @@ class _DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
             data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
             child: ExpansionTile(
               title: Text(
-                ui['view_raw'] ?? 'मूल दस्तावेज़ का पाठ (टैक्स्ट)',
+                ui['view_raw'] ?? LocalizedContent.get(widget.selectedLang, 'view_raw'),
                 style: const TextStyle(color: AppColors.textMuted, fontSize: 14),
               ),
               children: [

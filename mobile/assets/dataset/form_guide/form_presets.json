@@ -1,0 +1,39 @@
+{
+  "presets": [
+    {
+      "id": "kisan_welfare_form",
+      "title": "📝 Kisan Kalyan Registration Form (Form Guide)",
+      "previewDescription": "Government welfare scheme beneficiary form with bilingual labels",
+      "fullText": "Government Welfare Registration Form\nPersonal Details / व्यक्तिगत विवरण\n1. Full Name / पूरा नाम: Ramesh Kumar\n2. Father's Name / पिता का नाम: Suresh Kumar\n3. Date of Birth / जन्म तिथि: 15/08/1982\n4. Age / आयु: 43\n5. Gender / लिंग: Male\n6. Category / श्रेणी: OBC\n7. Mobile Number / मोबाइल नंबर: 9876543210\n8. Aadhaar Number / आधार संख्या: 1234 5678 9012\n9. Residential Address / निवास का पता: Village Rampur, District Varanasi, UP\n10. Village / गाँव: Rampur\n11. District / जिला: Varanasi\n12. PIN Code / पिन कोड: 221001\n13. Annual Income / वार्षिक आय: 85000\n14. Date / दिनांक: 23/09/2026\n15. Applicant Signature / हस्ताक्षर / अंगूठे का निशान: [Sign Here]",
+      "isForm": true
+    },
+    {
+      "id": "scholarship_form",
+      "title": "📝 Rural Youth Scholarship Form (Form Guide)",
+      "previewDescription": "Student scholarship application with education & family fields",
+      "fullText": "National Student Welfare Council Scholarship Application Form\nApplicant Details / आवेदक विवरण\nApplicant Name / विद्यार्थी का नाम:\nFather's Name / पिता का नाम:\nMother's Name / माता का नाम:\nDate of Birth / जन्म तिथि:\nGender / लिंग:\nCategory / जाति श्रेणी:\nMobile Number / मोबाइल नंबर:\nEmail / ईमेल:\nEducational Qualification / शैक्षणिक योग्यता:\nIdentity Number / पहचान पत्र:\nPermanent Address / स्थायी पता:\nPIN Code / पिन कोड:\nAnnual Family Income / पारिवारिक आय:\nDate / दिनांक:\nSignature of Applicant / हस्ताक्षर:",
+      "isForm": true
+    },
+    {
+      "id": "ration_card_form",
+      "title": "📝 Ration Card Application Form (Form Guide)",
+      "previewDescription": "PDS ration card bilingual registration layout",
+      "fullText": "Public Distribution System — Ration Card Application Form\nराशन कार्ड आवेदन पत्र\n1. Full Name / पूरा नाम:\n2. Father's Name / पिता का नाम:\n3. Mother's Name / माता का नाम:\n4. Date of Birth / जन्म तिथि:\n5. Age / उम्र:\n6. Gender / लिंग:\n7. Marital Status / वैवाहिक स्थिति:\n8. Occupation / व्यवसाय:\n9. Mobile Number / मोबाइल नंबर:\n10. Aadhaar Number / आधार नंबर:\n11. Address / पता:\n12. Village / गाँव:\n13. District / जिला:\n14. PIN Code / पिन कोड:\n15. Category / श्रेणी:\n16. Annual Income / वार्षिक आय:\n17. Date / दिनांक:\n18. Signature / Thumb Impression / हस्ताक्षर / अंगूठे का निशान:",
+      "isForm": true
+    },
+    {
+      "id": "bank_kyc_form",
+      "title": "📝 Bank Account KYC Form (Form Guide)",
+      "previewDescription": "Bank KYC-style form with account, IFSC, and ID fields",
+      "fullText": "Bank Customer KYC / Account Opening Form\nबैंक केवाईसी / खाता खोलने का फॉर्म\nPersonal Details / व्यक्तिगत विवरण\nAccount Holder Name / खाताधारक का नाम:\nFather's Name / पिता का नाम:\nDate of Birth / जन्म तिथि:\nGender / लिंग:\nMarital Status / वैवाहिक स्थिति:\nMobile Number / मोबाइल नंबर:\nEmail ID / ईमेल आईडी:\nAadhaar Number / आधार संख्या:\nPAN / Identity Number / पहचान पत्र:\nOccupation / पेशा:\nPermanent Address / स्थायी पता:\nPIN Code / पिन कोड:\nBank Details / बैंक विवरण\nBank Account Number / बैंक खाता संख्या:\nIFSC Code / आईएफएससी कोड:\nDate / दिनांक:\nApplicant Signature / हस्ताक्षर:",
+      "isForm": true
+    },
+    {
+      "id": "job_application_form",
+      "title": "📝 Job Application Form (Form Guide)",
+      "previewDescription": "Employment application with education and contact fields",
+      "fullText": "Employment / Job Application Form\nनौकरी आवेदन पत्र\n1. Candidate Name / उम्मीदवार का नाम:\n2. Father's Name / पिता का नाम:\n3. Date of Birth / जन्म तिथि:\n4. Age / आयु:\n5. Gender / लिंग:\n6. Category / आरक्षण श्रेणी:\n7. Mobile Number / मोबाइल नंबर:\n8. Email / ईमेल:\n9. Educational Qualification / शैक्षणिक योग्यता:\n10. Occupation / वर्तमान व्यवसाय:\n11. Aadhaar / ID Number / आधार / पहचान संख्या:\n12. Permanent Address / स्थायी पता:\n13. District / जिला:\n14. PIN Code / पिन कोड:\n15. Date of Application / आवेदन की तिथि:\n16. Signature of Applicant / आवेदक के हस्ताक्षर:",
+      "isForm": true
+    }
+  ]
+}

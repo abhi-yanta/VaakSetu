@@ -37,5 +37,6 @@ flutter:
   uses-material-design: true
   assets:
     - assets/presets/
+    - assets/dataset/form_guide/
     - assets/icon/
     - assets/mascot/

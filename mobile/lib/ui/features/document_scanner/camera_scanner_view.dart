@@ -12,6 +12,8 @@ class CameraScannerView extends StatefulWidget {
   final Function(String imagePath) onImageCaptured;
   final Function(DocumentPreset preset) onPresetSelected;
   final VoidCallback onBack;
+  /// When true, prioritizes form demos and titles the screen for form scanning.
+  final bool forFormGuide;
 
   const CameraScannerView({
     super.key,
@@ -19,6 +21,7 @@ class CameraScannerView extends StatefulWidget {
     required this.onImageCaptured,
     required this.onPresetSelected,
     required this.onBack,
+    this.forFormGuide = false,
   });
 
   @override
@@ -133,6 +136,13 @@ class _CameraScannerViewState extends State<CameraScannerView> {
   @override
   Widget build(BuildContext context) {
     final ui = LocalizedContent.uiTexts[widget.selectedLang] ?? LocalizedContent.uiTexts['hi']!;
+    final allPresets = PresetService.getPresets();
+    final presets = widget.forFormGuide
+        ? allPresets.where((p) => p.isForm).toList()
+        : allPresets;
+    final scanTitle = widget.forFormGuide
+        ? LocalizedContent.get(widget.selectedLang, 'mode_form_title')
+        : (ui['take_photo'] ?? 'Scan Document');
 
     return SingleChildScrollView(
       child: Column(
@@ -149,22 +159,36 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                   widget.onBack();
                 },
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceDark,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.borderDark),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.document_scanner_rounded, color: AppColors.primarySaffronLight, size: 18),
-                    const SizedBox(width: 8),
-                    Text(
-                      ui['take_photo'] ?? 'Scan Document',
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                    ),
-                  ],
+              Flexible(
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceDark,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppColors.borderDark),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        widget.forFormGuide
+                            ? Icons.edit_note_rounded
+                            : Icons.document_scanner_rounded,
+                        color: AppColors.primarySaffronLight,
+                        size: 18,
+                      ),
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: Text(
+                          scanTitle,
+                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               if (_isCameraReady)
@@ -255,7 +279,7 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                             const Icon(Icons.camera_alt_outlined, color: AppColors.textMuted, size: 56),
                             const SizedBox(height: 14),
                             Text(
-                              ui['camera_preparing'] ?? 'कैमरा तैयार हो रहा है...',
+                              ui['camera_preparing'] ?? LocalizedContent.get(widget.selectedLang, 'camera_preparing'),
                               style: const TextStyle(color: AppColors.textSecondary, fontSize: 16),
                             ),
                             const SizedBox(height: 12),
@@ -266,7 +290,7 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                               ),
                               icon: const Icon(Icons.photo_library_rounded, color: Colors.white),
                               label: Text(
-                                ui['upload_photo'] ?? 'गैलरी से चुनें',
+                                ui['upload_photo'] ?? LocalizedContent.get(widget.selectedLang, 'upload_photo'),
                                 style: const TextStyle(color: Colors.white),
                               ),
                               onPressed: _pickFromGallery,
@@ -312,7 +336,7 @@ class _CameraScannerViewState extends State<CameraScannerView> {
 
           // Upload File Alternative
           TactileButton(
-            label: ui['upload_photo'] ?? 'गैलरी से दस्तावेज़ चुनें',
+            label: ui['upload_photo'] ?? LocalizedContent.get(widget.selectedLang, 'upload_photo'),
             icon: const Icon(Icons.file_upload_rounded, color: Colors.white, size: 22),
             style: TactileButtonStyle.secondary,
             height: 52,
@@ -322,12 +346,43 @@ class _CameraScannerViewState extends State<CameraScannerView> {
           const SizedBox(height: 18),
 
           // Built-in Demo Documents Section
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppColors.primarySaffron.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: AppColors.primarySaffron.withValues(alpha: 0.5)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '📝 ${LocalizedContent.get(widget.selectedLang, 'try_form_guide')}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  LocalizedContent.get(widget.selectedLang, 'try_form_guide_hint'),
+                  style: const TextStyle(color: AppColors.textSecondary, fontSize: 12, height: 1.35),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 14),
+
           Row(
             children: [
               const Icon(Icons.description_rounded, color: AppColors.primarySaffronLight, size: 20),
               const SizedBox(width: 8),
               Text(
-                ui['demo_docs'] ?? 'नमूना दस्तावेज़ (Demo Docs):',
+                widget.forFormGuide
+                    ? LocalizedContent.get(widget.selectedLang, 'try_form_guide')
+                    : (ui['demo_docs'] ?? LocalizedContent.get(widget.selectedLang, 'demo_docs')),
                 style: const TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 17,
@@ -341,12 +396,15 @@ class _CameraScannerViewState extends State<CameraScannerView> {
           ListView.separated(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: PresetService.getPresets().length,
+            itemCount: presets.length,
             separatorBuilder: (_, __) => const SizedBox(height: 10),
             itemBuilder: (context, index) {
-              final preset = PresetService.getPresets()[index];
+              final preset = presets[index];
+              final isForm = preset.isForm;
               return Material(
-                color: AppColors.surfaceDark,
+                color: isForm
+                    ? AppColors.primarySaffron.withValues(alpha: 0.14)
+                    : AppColors.surfaceDark,
                 borderRadius: BorderRadius.circular(14),
                 child: InkWell(
                   onTap: () {
@@ -358,11 +416,18 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: AppColors.borderDark),
+                      border: Border.all(
+                        color: isForm ? AppColors.primarySaffron : AppColors.borderDark,
+                        width: isForm ? 1.5 : 1,
+                      ),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.article_rounded, color: AppColors.primarySaffronLight, size: 28),
+                        Icon(
+                          isForm ? Icons.edit_note_rounded : Icons.article_rounded,
+                          color: AppColors.primarySaffronLight,
+                          size: 28,
+                        ),
                         const SizedBox(width: 14),
                         Expanded(
                           child: Column(
@@ -387,7 +452,24 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                             ],
                           ),
                         ),
-                        const Icon(Icons.chevron_right_rounded, color: AppColors.textMuted),
+                        if (isForm)
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: AppColors.primarySaffron,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Text(
+                              'GUIDE',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          )
+                        else
+                          const Icon(Icons.chevron_right_rounded, color: AppColors.textMuted),
                       ],
                     ),
                   ),

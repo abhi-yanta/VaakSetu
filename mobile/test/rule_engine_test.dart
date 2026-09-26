@@ -28,8 +28,11 @@ void main() {
       expect(analysis.warningKeys, contains('alert_unclear_image'));
     });
 
+    DocumentPreset presetById(String id) =>
+        PresetService.presets.firstWhere((p) => p.id == id);
+
     test('Identifies predatory loan with high interest and land collateral as DANGER', () {
-      final loanText = PresetService.presets[0].fullText;
+      final loanText = presetById('loan_fraud').fullText;
       final analysis = RuleEngine.analyze(loanText);
 
       expect(analysis.category, equals(DocumentCategory.loan));
@@ -40,7 +43,7 @@ void main() {
     });
 
     test('Identifies standard land deed with mutual consent as SAFE', () {
-      final deedText = PresetService.presets[1].fullText;
+      final deedText = presetById('land_deed_safe').fullText;
       final analysis = RuleEngine.analyze(deedText);
 
       expect(analysis.category, equals(DocumentCategory.deed));
@@ -49,7 +52,7 @@ void main() {
     });
 
     test('Identifies exploitative labor contract with unpaid overtime and bond as DANGER', () {
-      final jobText = PresetService.presets[2].fullText;
+      final jobText = presetById('labor_bond').fullText;
       final analysis = RuleEngine.analyze(jobText);
 
       expect(analysis.category, equals(DocumentCategory.job));
@@ -59,7 +62,7 @@ void main() {
     });
 
     test('Identifies hospital negligence waiver as WARNING', () {
-      final medicalText = PresetService.presets[3].fullText;
+      final medicalText = presetById('medical_waiver').fullText;
       final analysis = RuleEngine.analyze(medicalText);
 
       expect(analysis.category, equals(DocumentCategory.medical));

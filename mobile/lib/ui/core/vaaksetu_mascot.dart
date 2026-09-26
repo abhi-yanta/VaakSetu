@@ -14,7 +14,7 @@ class VaakSetuMascot extends StatelessWidget {
 
   const VaakSetuMascot({
     super.key,
-    this.size = 160,
+    this.size = 260,
     this.pose = MascotPose.namaste,
   });
 
@@ -35,7 +35,7 @@ class VaakSetuMascot extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: size,
-      height: size * 1.25,
+      height: size * 1.2,
       child: Image.asset(
         assetForPose(pose),
         fit: BoxFit.contain,
