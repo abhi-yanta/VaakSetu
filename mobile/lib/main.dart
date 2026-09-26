@@ -22,6 +22,13 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+    statusBarIconBrightness: Brightness.dark,
+    statusBarBrightness: Brightness.light,
+    systemNavigationBarColor: AppColors.surfaceDark,
+    systemNavigationBarIconBrightness: Brightness.dark,
+  ));
 
   final ttsService = TtsService();
   await ttsService.init();
@@ -41,14 +48,20 @@ class VaakSetuApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
-        brightness: Brightness.dark,
+        brightness: Brightness.light,
         scaffoldBackgroundColor: AppColors.bgDark,
         primaryColor: AppColors.primarySaffron,
-        colorScheme: const ColorScheme.dark(
+        colorScheme: const ColorScheme.light(
           primary: AppColors.primarySaffron,
           secondary: AppColors.deepTeal,
           surface: AppColors.surfaceDark,
           error: AppColors.dangerRed,
+        ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: AppColors.surfaceDark,
+          foregroundColor: AppColors.textPrimary,
+          elevation: 0,
+          surfaceTintColor: Colors.transparent,
         ),
         textTheme: const TextTheme(
           bodyLarge: TextStyle(color: AppColors.textPrimary),
@@ -121,7 +134,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     HapticService.lightTap();
     widget.ttsService.stop();
     setState(() => _currentView = AppView.language);
-    widget.ttsService.speakPrompt('welcome', 'hi');
+    // Language picker: one Hindi welcome/select-language prompt only.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _currentView != AppView.language) return;
+      widget.ttsService.speakPrompt('welcome', 'hi');
+    });
   }
 
   void _onTourFinished() {
@@ -131,16 +148,30 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       _tourCompleted = true;
       _currentView = AppView.modeChooser;
     });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _currentView != AppView.modeChooser) return;
+      _speakModeChooser();
+    });
   }
 
   void _onLanguageSelected(String langCode) {
+    widget.ttsService.stop();
     setState(() {
       _selectedLang = langCode;
       _currentView = _tourCompleted ? AppView.modeChooser : AppView.featureTour;
     });
+    // Feature tour speaks its own page prompts after mount.
     if (_tourCompleted) {
-      widget.ttsService.speakPrompt('welcome', langCode);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || _currentView != AppView.modeChooser) return;
+        _speakModeChooser();
+      });
     }
+  }
+
+  void _speakModeChooser() {
+    final text = LocalizedContent.getModeChooserPrompt(_selectedLang);
+    widget.ttsService.speak(text, _selectedLang);
   }
 
   void _onScannerModeSelected() {
@@ -151,7 +182,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       _isFormMode = false;
       _currentView = AppView.scanner;
     });
-    widget.ttsService.speakPrompt('scan_prompt', _selectedLang);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _currentView != AppView.scanner) return;
+      widget.ttsService.speakPrompt('scan_prompt', _selectedLang);
+    });
   }
 
   void _onFormGuideModeSelected() {
@@ -162,10 +196,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       _isFormMode = true;
       _currentView = AppView.scanner;
     });
-    widget.ttsService.speakPrompt('scan_prompt', _selectedLang);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _currentView != AppView.scanner) return;
+      widget.ttsService.speakPrompt('scan_prompt', _selectedLang);
+    });
   }
 
   Future<void> _processImage(String imagePath) async {
+    await widget.ttsService.stop();
     setState(() {
       _currentView = AppView.loading;
       _loadingMessage = LocalizedContent.get(_selectedLang, 'analyzing');
@@ -184,6 +222,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         HapticService.warningFeedback();
       }
 
+      // Stop processing speech before the analyzer/form guide prompt.
+      await widget.ttsService.stop();
+      if (!mounted) return;
       setState(() {
         _analysis = analysis;
         // Form Guide intent always opens the guide; otherwise detect form-like text.
@@ -201,6 +242,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         analyzedAt: DateTime.now(),
         confidenceScore: 0.0,
       );
+      await widget.ttsService.stop();
+      if (!mounted) return;
       setState(() {
         _analysis = fallback;
         _isFormMode = _isFormGuideIntent;
@@ -210,13 +253,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   void _processPreset(DocumentPreset preset) {
+    widget.ttsService.stop();
     setState(() {
       _currentView = AppView.loading;
       _loadingMessage = LocalizedContent.get(_selectedLang, 'analyzing');
     });
     widget.ttsService.speakPrompt('processing', _selectedLang);
 
-    Future.delayed(const Duration(milliseconds: 600), () {
+    Future.delayed(const Duration(milliseconds: 600), () async {
       final analysis = _documentRepository.analyzeFromText(preset.fullText);
 
       if (analysis.severity == DocumentSeverity.danger) {
@@ -225,6 +269,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         HapticService.warningFeedback();
       }
 
+      await widget.ttsService.stop();
       if (mounted) {
         setState(() {
           _analysis = analysis;
@@ -243,7 +288,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       _isFormMode = _isFormGuideIntent;
       _currentView = AppView.scanner;
     });
-    widget.ttsService.speakPrompt('scan_prompt', _selectedLang);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _currentView != AppView.scanner) return;
+      widget.ttsService.speakPrompt('scan_prompt', _selectedLang);
+    });
   }
 
   void _resetToModeChooser() {
@@ -253,6 +301,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       _isFormMode = false;
       _isFormGuideIntent = false;
       _currentView = AppView.modeChooser;
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _currentView != AppView.modeChooser) return;
+      _speakModeChooser();
     });
   }
 
@@ -264,10 +316,46 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       _isFormGuideIntent = false;
       _currentView = AppView.language;
     });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _currentView != AppView.language) return;
+      widget.ttsService.speakPrompt('welcome', 'hi');
+    });
   }
 
   void _onAnalyzerReset() {
     _resetToScanner();
+  }
+
+  /// Replay the prompt that belongs to the current screen only.
+  void _replayCurrentScreenPrompt() {
+    switch (_currentView) {
+      case AppView.welcome:
+        break;
+      case AppView.language:
+        widget.ttsService.speakPrompt('welcome', 'hi');
+        break;
+      case AppView.featureTour:
+        // Tour pages store the spoken text in TtsService; replay that.
+        widget.ttsService.replayLast();
+        break;
+      case AppView.modeChooser:
+        _speakModeChooser();
+        break;
+      case AppView.scanner:
+        widget.ttsService.speakPrompt('scan_prompt', _selectedLang);
+        break;
+      case AppView.loading:
+        widget.ttsService.speakPrompt('processing', _selectedLang);
+        break;
+      case AppView.analyzer:
+        // Prefer last spoken safety/warning text; fall back to result_ready.
+        if (widget.ttsService.hasLastSpoken) {
+          widget.ttsService.replayLast();
+        } else {
+          widget.ttsService.speakPrompt('result_ready', _selectedLang);
+        }
+        break;
+    }
   }
 
   @override
@@ -306,7 +394,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   Text(
                     'VaakSetu',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: AppColors.textPrimary,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
@@ -350,7 +438,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     if (widget.ttsService.isPlaying) {
                       widget.ttsService.stop();
                     } else {
-                      widget.ttsService.speakPrompt('welcome', _selectedLang);
+                      _replayCurrentScreenPrompt();
                     }
                   },
                   tooltip: isPlaying
@@ -370,7 +458,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       ),
       bottomNavigationBar: Container(
         height: 36,
-        color: AppColors.surfaceDark,
+        color: AppColors.surfaceDarkElevated,
         alignment: Alignment.center,
         child: const Text(
           'VaakSetu • AI Document Assistant',
@@ -393,11 +481,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         );
 
       case AppView.language:
-        return LanguageSelectorView(onLanguageSelected: _onLanguageSelected);
+        return LanguageSelectorView(
+          onLanguageSelected: _onLanguageSelected,
+          ttsService: widget.ttsService,
+        );
 
       case AppView.modeChooser:
         return ModeChooserView(
           selectedLang: _selectedLang,
+          ttsService: widget.ttsService,
           onScannerSelected: _onScannerModeSelected,
           onFormGuideSelected: _onFormGuideModeSelected,
           onBack: _resetToLanguage,
@@ -422,7 +514,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               Text(
                 _loadingMessage,
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: AppColors.textPrimary,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),

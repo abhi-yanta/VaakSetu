@@ -145,7 +145,7 @@ class _DocumentTextReaderState extends State<DocumentTextReader> {
                 child: Text(
                   tipText,
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: AppColors.textPrimary,
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
                   ),
@@ -197,7 +197,7 @@ class _DocumentTextReaderState extends State<DocumentTextReader> {
                         child: Text(
                           sentence,
                           style: TextStyle(
-                            color: isSpeaking ? Colors.white : AppColors.textPrimary,
+                            color: isSpeaking ? AppColors.primarySaffron : AppColors.textPrimary,
                             fontSize: 14,
                             height: 1.45,
                             fontWeight: isSpeaking ? FontWeight.bold : FontWeight.w400,

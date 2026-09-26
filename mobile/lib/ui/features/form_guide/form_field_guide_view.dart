@@ -68,6 +68,7 @@ class _FormFieldGuideViewState extends State<FormFieldGuideView> {
   }
 
   void _speakField(int index) {
+    if (!mounted) return;
     if (index < 0 || index >= _fields.length) return;
     final field = _fields[index];
     final def = FormFieldDictionary.definitions[field.fieldKey];
@@ -138,6 +139,8 @@ class _FormFieldGuideViewState extends State<FormFieldGuideView> {
   void dispose() {
     _scrollController.dispose();
     widget.ttsService.removeListener(_onTtsStateChanged);
+    // Parent stops TTS on navigation; skip stop here to avoid racing the
+    // next screen's speak() after this widget is removed.
     super.dispose();
   }
 
@@ -216,7 +219,7 @@ class _FormFieldGuideViewState extends State<FormFieldGuideView> {
               Text(
                 fieldProgress,
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: AppColors.textPrimary,
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
                 ),
@@ -270,7 +273,7 @@ class _FormFieldGuideViewState extends State<FormFieldGuideView> {
               border: Border.all(color: AppColors.borderDark),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
+                  color: Colors.black.withOpacity(0.08),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -376,7 +379,7 @@ class _FormFieldGuideViewState extends State<FormFieldGuideView> {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.4),
+                  color: Colors.black.withOpacity(0.1),
                   blurRadius: 16,
                   offset: const Offset(0, -4),
                 ),
@@ -417,7 +420,7 @@ class _FormFieldGuideViewState extends State<FormFieldGuideView> {
                           Text(
                             currentField.translatedLabel,
                             style: const TextStyle(
-                              color: Colors.white,
+                              color: AppColors.textPrimary,
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
@@ -456,7 +459,7 @@ class _FormFieldGuideViewState extends State<FormFieldGuideView> {
                                 ? '📍 ${FormFieldDictionary.positionRight[widget.selectedLang] ?? FormFieldDictionary.positionRight['hi']}'
                                 : '📍 ${FormFieldDictionary.positionBelow[widget.selectedLang] ?? FormFieldDictionary.positionBelow['hi']}',
                         style: const TextStyle(
-                          color: Colors.white,
+                          color: AppColors.textPrimary,
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
                         ),
@@ -480,7 +483,7 @@ class _FormFieldGuideViewState extends State<FormFieldGuideView> {
                       flex: 2,
                       child: TactileButton(
                         label: _t('prev'),
-                        icon: const Icon(Icons.chevron_left_rounded, color: Colors.white, size: 18),
+                        icon: const Icon(Icons.chevron_left_rounded, color: AppColors.textPrimary, size: 18),
                         style: TactileButtonStyle.secondary,
                         height: 50,
                         fontSize: 12,
@@ -709,7 +712,7 @@ class _FormFieldGuideViewState extends State<FormFieldGuideView> {
                       Text(
                         '${_t('all_fields_list')} (${_fields.length})',
                         style: const TextStyle(
-                          color: Colors.white,
+                          color: AppColors.textPrimary,
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -751,7 +754,7 @@ class _FormFieldGuideViewState extends State<FormFieldGuideView> {
                                 title: Text(
                                   f.translatedLabel,
                                   style: TextStyle(
-                                    color: isSel ? AppColors.primarySaffron : Colors.white,
+                                    color: isSel ? AppColors.primarySaffron : AppColors.textPrimary,
                                     fontWeight: isSel ? FontWeight.bold : FontWeight.normal,
                                   ),
                                 ),

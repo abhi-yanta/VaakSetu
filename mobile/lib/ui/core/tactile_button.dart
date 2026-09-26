@@ -47,6 +47,7 @@ class TactileButton extends StatelessWidget {
       case TactileButtonStyle.secondary:
         bgColor = AppColors.surfaceDarkElevated;
         borderColor = AppColors.borderDark;
+        textColor = AppColors.textPrimary;
         break;
       case TactileButtonStyle.safe:
         bgColor = AppColors.safeGreen;

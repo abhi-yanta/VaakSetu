@@ -597,7 +597,7 @@ class LocalizedContent {
       'field_label': 'फ़ील्ड',
       'list': 'सूची',
       'prev': 'पिछला',
-      'listen_again': 'फिर सुनें',
+      'listen_again': 'फिर से सुनो',
       'nav_stop': 'बंद',
       'no_fields': 'कोई फॉर्म फ़ील्ड नहीं पहचानी जा सकी।',
       'try_kisan_form': 'नमूना दस्तावेज़ से "Kisan Kalyan Registration Form" आज़माएँ।',
@@ -650,7 +650,7 @@ class LocalizedContent {
       'field_label': 'புலம்',
       'list': 'பட்டியல்',
       'prev': 'முன்',
-      'listen_again': 'மீண்டும்',
+      'listen_again': 'மீண்டும் கேளுங்கள்',
       'nav_stop': 'நிறுத்து',
       'no_fields': 'படிவப் புலங்கள் எதுவும் கண்டறியப்படவில்லை.',
       'try_kisan_form': 'மாதிரி ஆவணங்களில் "Kisan Kalyan Registration Form" முயற்சிக்கவும்.',
@@ -703,7 +703,7 @@ class LocalizedContent {
       'field_label': 'ఫీల్డ్',
       'list': 'జాబితా',
       'prev': 'ముందు',
-      'listen_again': 'మళ్లీ',
+      'listen_again': 'మళ్లీ వినండి',
       'nav_stop': 'ఆపు',
       'no_fields': 'ఫారమ్ ఫీల్డ్‌లు కనుగొనబడలేదు.',
       'try_kisan_form': 'నమూనా పత్రాల నుండి "Kisan Kalyan Registration Form" ప్రయత్నించండి.',
@@ -756,7 +756,7 @@ class LocalizedContent {
       'field_label': 'फील्ड',
       'list': 'यादी',
       'prev': 'मागील',
-      'listen_again': 'पुन्हा',
+      'listen_again': 'पुन्हा ऐका',
       'nav_stop': 'बंद',
       'no_fields': 'कोणतीही फॉर्म फील्ड ओळखता आली नाही.',
       'try_kisan_form': 'नमुना दस्तऐवजांतून "Kisan Kalyan Registration Form" वापरून पहा.',
@@ -809,7 +809,7 @@ class LocalizedContent {
       'field_label': 'ক্ষেত্র',
       'list': 'তালিকা',
       'prev': 'আগের',
-      'listen_again': 'আবার',
+      'listen_again': 'আবার শুনুন',
       'nav_stop': 'থামুন',
       'no_fields': 'কোনো ফর্ম ক্ষেত্র চিহ্নিত করা যায়নি।',
       'try_kisan_form': 'নমুনা দলিল থেকে "Kisan Kalyan Registration Form" চেষ্টা করুন।',
@@ -862,7 +862,7 @@ class LocalizedContent {
       'field_label': 'ફીલ્ડ',
       'list': 'યાદી',
       'prev': 'પાછલું',
-      'listen_again': 'ફરી',
+      'listen_again': 'ફરી સાંભળો',
       'nav_stop': 'બંધ',
       'no_fields': 'કોઈ ફોર્મ ફીલ્ડ ઓળખાઈ નથી.',
       'try_kisan_form': 'નમૂના દસ્તાવેજમાંથી "Kisan Kalyan Registration Form" અજમાવો.',
@@ -915,7 +915,7 @@ class LocalizedContent {
       'field_label': 'ಕ್ಷೇತ್ರ',
       'list': 'ಪಟ್ಟಿ',
       'prev': 'ಹಿಂದಿನ',
-      'listen_again': 'ಮತ್ತೆ',
+      'listen_again': 'ಮತ್ತೆ ಕೇಳಿ',
       'nav_stop': 'ನಿಲ್ಲಿಸು',
       'no_fields': 'ಯಾವುದೇ ಫಾರ್ಮ್ ಕ್ಷೇತ್ರಗಳು ಗುರುತಿಸಲಾಗಲಿಲ್ಲ.',
       'try_kisan_form': 'ಮಾದರಿ ದಾಖಲೆಗಳಿಂದ "Kisan Kalyan Registration Form" ಪ್ರಯತ್ನಿಸಿ.',
@@ -968,7 +968,7 @@ class LocalizedContent {
       'field_label': 'ഫീൽഡ്',
       'list': 'പട്ടിക',
       'prev': 'മുമ്പ്',
-      'listen_again': 'വീണ്ടും',
+      'listen_again': 'വീണ്ടും കേൾക്കുക',
       'nav_stop': 'നിർത്തുക',
       'no_fields': 'ഫോം ഫീൽഡുകളൊന്നും തിരിച്ചറിഞ്ഞില്ല.',
       'try_kisan_form': 'മാതൃകാ രേഖകളിൽ നിന്ന് "Kisan Kalyan Registration Form" പരീക്ഷിക്കുക.',
@@ -1021,7 +1021,7 @@ class LocalizedContent {
       'field_label': 'ଫିଲ୍ଡ',
       'list': 'ତାଲିକା',
       'prev': 'ପୂର୍ବ',
-      'listen_again': 'ପୁଣି',
+      'listen_again': 'ପୁଣି ଶୁଣନ୍ତୁ',
       'nav_stop': 'ବନ୍ଦ',
       'no_fields': 'କୌଣସି ଫର୍ମ ଫିଲ୍ଡ ଚିହ୍ନିତ ହେଲା ନାହିଁ।',
       'try_kisan_form': 'ନମୁନା ଦଲିଲରୁ "Kisan Kalyan Registration Form" ଚେଷ୍ଟା କରନ୍ତୁ।',
@@ -1074,7 +1074,7 @@ class LocalizedContent {
       'field_label': 'ਖੇਤਰ',
       'list': 'ਸੂਚੀ',
       'prev': 'ਪਿਛਲਾ',
-      'listen_again': 'ਦੁਬਾਰਾ',
+      'listen_again': 'ਫਿਰ ਸੁਣੋ',
       'nav_stop': 'ਬੰਦ',
       'no_fields': 'ਕੋਈ ਫਾਰਮ ਖੇਤਰ ਨਹੀਂ ਪਛਾਣਿਆ ਗਿਆ।',
       'try_kisan_form': 'ਨਮੂਨਾ ਦਸਤਾਵੇਜ਼ ਤੋਂ "Kisan Kalyan Registration Form" ਅਜ਼ਮਾਓ।',
@@ -1127,7 +1127,7 @@ class LocalizedContent {
       'field_label': 'ক্ষেত্ৰ',
       'list': 'তালিকা',
       'prev': 'আগৰ',
-      'listen_again': 'পুনৰ',
+      'listen_again': 'পুনৰ শুনক',
       'nav_stop': 'বন্ধ',
       'no_fields': 'কোনো ফৰ্ম ক্ষেত্ৰ চিনাক্ত কৰা নগ’ল।',
       'try_kisan_form': 'নমুনা নথিৰ পৰা "Kisan Kalyan Registration Form" চেষ্টা কৰক।',
@@ -1180,7 +1180,7 @@ class LocalizedContent {
       'field_label': 'خانہ',
       'list': 'فہرست',
       'prev': 'پچھلا',
-      'listen_again': 'پھر سنیں',
+      'listen_again': 'پھر سے سنو',
       'nav_stop': 'روکیں',
       'no_fields': 'کوئی فارم خانہ نہیں پہچانا جا سکا۔',
       'try_kisan_form': 'نمونہ دستاویزات سے "Kisan Kalyan Registration Form" آزمائیں۔',
@@ -1216,6 +1216,14 @@ class LocalizedContent {
 
   static String getPrompt(String langCode, String promptKey) {
     return voicePrompts[langCode]?[promptKey] ?? voicePrompts['hi']?[promptKey] ?? '';
+  }
+
+  /// Spoken prompt for the post-language mode chooser (scanner vs form guide).
+  static String getModeChooserPrompt(String langCode) {
+    final title = get(langCode, 'mode_title');
+    final scanner = get(langCode, 'mode_scanner_title');
+    final form = get(langCode, 'mode_form_title');
+    return '$title. $scanner. $form.';
   }
 
   static String getFrameGuide(String langCode) {

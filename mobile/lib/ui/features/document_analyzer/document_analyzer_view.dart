@@ -5,6 +5,7 @@ import '../../../domain/models/document_analysis.dart';
 import '../../../domain/models/localized_content.dart';
 import '../../core/app_colors.dart';
 import '../../core/document_text_reader.dart';
+import '../../core/listen_again_button.dart';
 import '../../core/security_badge.dart';
 import '../../core/tactile_button.dart';
 import '../../core/wave_visualizer.dart';
@@ -45,6 +46,7 @@ class _DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
     // Trigger initial voice overview if not in form guide mode
     if (!_showFormGuide) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
         _announceInitialOverview();
       });
     }
@@ -62,6 +64,7 @@ class _DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
   }
 
   void _announceInitialOverview() {
+    if (!mounted) return;
     final categoryName = LocalizedContent.get(widget.selectedLang, widget.analysis.category.key);
     String summary;
 
@@ -137,7 +140,7 @@ class _DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
 
     Color waveColor;
     if (widget.analysis.isUnrecognized) {
-      waveColor = const Color(0xFF38BDF8);
+      waveColor = AppColors.infoBlue;
     } else if (widget.analysis.severity == DocumentSeverity.danger) {
       waveColor = AppColors.dangerRed;
     } else if (widget.analysis.severity == DocumentSeverity.warning) {
@@ -158,7 +161,10 @@ class _DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
         onSwitchToSafety: () {
           widget.ttsService.stop();
           setState(() => _showFormGuide = false);
-          _announceInitialOverview();
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) return;
+            _announceInitialOverview();
+          });
         },
       );
     }
@@ -172,7 +178,7 @@ class _DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 24),
+                icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textPrimary, size: 24),
                 onPressed: () {
                   widget.ttsService.stop();
                   HapticService.lightTap();
@@ -188,7 +194,7 @@ class _DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
                 ),
                 child: Text(
                   ui['result'] ?? LocalizedContent.get(widget.selectedLang, 'result'),
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
                 ),
               ),
               const SizedBox(width: 48),
@@ -259,7 +265,7 @@ class _DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
             child: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.orange.shade900.withOpacity(0.15),
+                color: AppColors.primarySaffron.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(color: AppColors.primarySaffron.withOpacity(0.6)),
               ),
@@ -273,7 +279,7 @@ class _DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
                       children: [
                         Text(
                           LocalizedContent.get(widget.selectedLang, 'learn_form_fill'),
-                          style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                          style: const TextStyle(color: AppColors.textPrimary, fontSize: 14, fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 2),
                         Text(
@@ -325,7 +331,7 @@ class _DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
                 flex: 1,
                 child: TactileButton(
                   label: ui['guide'] ?? LocalizedContent.get(widget.selectedLang, 'guide'),
-                  icon: const Icon(Icons.help_outline_rounded, color: Colors.white, size: 22),
+                  icon: const Icon(Icons.help_outline_rounded, color: AppColors.textPrimary, size: 22),
                   style: TactileButtonStyle.secondary,
                   height: 64,
                   fontSize: 15,
@@ -336,6 +342,20 @@ class _DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
               ),
             ],
           ),
+          const SizedBox(height: 10),
+          ListenAgainButton(
+            langCode: widget.selectedLang,
+            height: 52,
+            fontSize: 15,
+            onPressed: () {
+              HapticService.lightTap();
+              if (widget.ttsService.hasLastSpoken) {
+                widget.ttsService.replayLast();
+              } else {
+                _announceInitialOverview();
+              }
+            },
+          ),
           const SizedBox(height: 24),
 
           // Warning Cards or Informational Guidance
@@ -344,7 +364,7 @@ class _DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
               children: [
                 Icon(
                   widget.analysis.isUnrecognized ? Icons.info_outline_rounded : Icons.warning_amber_rounded,
-                  color: widget.analysis.isUnrecognized ? const Color(0xFF38BDF8) : AppColors.dangerRed,
+                  color: widget.analysis.isUnrecognized ? AppColors.infoBlue : AppColors.dangerRed,
                   size: 24,
                 ),
                 const SizedBox(width: 8),
@@ -353,7 +373,7 @@ class _DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
                       ? (ui['notice'] ?? LocalizedContent.get(widget.selectedLang, 'notice'))
                       : "${ui['red_flags'] ?? LocalizedContent.get(widget.selectedLang, 'red_flags')} (${widget.analysis.warningKeys.length})",
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: AppColors.textPrimary,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -385,7 +405,7 @@ class _DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
                           color: isCurrentSpeaking
-                              ? (isInfo ? const Color(0xFF38BDF8) : AppColors.dangerRed)
+                              ? (isInfo ? AppColors.infoBlue : AppColors.dangerRed)
                               : AppColors.borderDark,
                           width: isCurrentSpeaking ? 2.0 : 1.0,
                         ),
@@ -396,12 +416,12 @@ class _DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: (isInfo ? const Color(0xFF0284C7) : AppColors.dangerRedBg).withOpacity(0.4),
+                              color: (isInfo ? AppColors.infoBlueBg : AppColors.dangerRedBg),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
                               isInfo ? Icons.lightbulb_outline_rounded : Icons.priority_high_rounded,
-                              color: isInfo ? const Color(0xFF38BDF8) : AppColors.dangerRed,
+                              color: isInfo ? AppColors.infoBlue : AppColors.dangerRed,
                               size: 18,
                             ),
                           ),
@@ -410,7 +430,7 @@ class _DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
                             child: Text(
                               desc,
                               style: const TextStyle(
-                                color: Colors.white,
+                                color: AppColors.textPrimary,
                                 fontSize: 15,
                                 height: 1.45,
                                 fontWeight: FontWeight.w500,
@@ -422,7 +442,7 @@ class _DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
                             icon: Icon(
                               isCurrentSpeaking ? Icons.volume_up_rounded : Icons.volume_down_rounded,
                               color: isCurrentSpeaking
-                                  ? (isInfo ? const Color(0xFF38BDF8) : AppColors.dangerRed)
+                                  ? (isInfo ? AppColors.infoBlue : AppColors.dangerRed)
                                   : AppColors.textMuted,
                             ),
                             onPressed: () => _speakSingleWarning(key),
@@ -450,7 +470,7 @@ class _DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: Colors.black45,
+                    color: AppColors.surfaceDarkElevated,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: AppColors.borderDark),
                   ),

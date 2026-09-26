@@ -79,13 +79,13 @@ class _InteractiveWordReaderState extends State<InteractiveWordReader> {
                   children: [
                     Icon(
                       _isWordMode ? Icons.notes_rounded : Icons.touch_app_rounded,
-                      color: Colors.white70,
+                      color: AppColors.textSecondary,
                       size: 14,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       _isWordMode ? 'Full Text' : 'Tap-to-Speak',
-                      style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w500),
+                      style: const TextStyle(color: AppColors.textPrimary, fontSize: 11, fontWeight: FontWeight.w500),
                     ),
                   ],
                 ),
@@ -113,7 +113,7 @@ class _InteractiveWordReaderState extends State<InteractiveWordReader> {
                   child: Text(
                     tipText,
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: AppColors.textPrimary,
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
                     ),

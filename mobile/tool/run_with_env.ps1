@@ -1,5 +1,6 @@
 # Reads mobile/.env (or .env.local) and runs Flutter with --dart-define flags.
-# Matches the existing HF_TOKEN String.fromEnvironment pattern — no extra packages.
+# Passes BHASHINI_* and HF_TOKEN into String.fromEnvironment — no extra packages.
+# Secrets are never printed.
 #
 # Usage (from mobile/):
 #   .\tool\run_with_env.ps1

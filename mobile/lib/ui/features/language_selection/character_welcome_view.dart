@@ -3,6 +3,7 @@ import '../../../data/services/haptic_service.dart';
 import '../../../data/services/tts_service.dart';
 import '../../../domain/models/localized_content.dart';
 import '../../core/app_colors.dart';
+import '../../core/listen_again_button.dart';
 import '../../core/tactile_button.dart';
 import '../../core/vaaksetu_mascot.dart';
 
@@ -82,15 +83,16 @@ class _CharacterWelcomeViewState extends State<CharacterWelcomeView> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!_hasSpoken) {
-        _hasSpoken = true;
-        _speakPage(0);
-      }
+      if (!mounted || _hasSpoken) return;
+      _hasSpoken = true;
+      _speakPage(0);
     });
   }
 
   @override
   void dispose() {
+    // Parent navigation already stops TTS; avoid racing a late stop() against
+    // the next screen's speak().
     _pageController.dispose();
     super.dispose();
   }
@@ -104,7 +106,10 @@ class _CharacterWelcomeViewState extends State<CharacterWelcomeView> {
   void _speakPage(int index) {
     if (!mounted) return;
     if (index < 0 || index >= _tourPages.length) return;
-    widget.ttsService.speak(_t(_tourPages[index].speakKey), widget.selectedLang);
+    widget.ttsService.speak(
+      _t(_tourPages[index].speakKey),
+      widget.selectedLang,
+    );
   }
 
   void _goToPage(int index) {
@@ -167,7 +172,7 @@ class _CharacterWelcomeViewState extends State<CharacterWelcomeView> {
                   Text(
                     _t(page.titleKey),
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: AppColors.textPrimary,
                       fontSize: 22,
                       fontWeight: FontWeight.w800,
                       height: 1.25,
@@ -251,6 +256,14 @@ class _CharacterWelcomeViewState extends State<CharacterWelcomeView> {
           }),
         ),
         const SizedBox(height: 18),
+
+        ListenAgainButton(
+          langCode: widget.selectedLang,
+          height: 52,
+          fontSize: 15,
+          onPressed: () => _speakPage(_page),
+        ),
+        const SizedBox(height: 10),
 
         TactileButton(
           label: isLast ? _t('continue') : _t('next'),

@@ -27,7 +27,7 @@ class WelcomeView extends StatelessWidget {
             const Text(
               'वाक् सेतु',
               style: TextStyle(
-                color: Colors.white,
+                color: AppColors.textPrimary,
                 fontSize: 38,
                 fontWeight: FontWeight.w900,
                 letterSpacing: 0.5,
@@ -37,7 +37,7 @@ class WelcomeView extends StatelessWidget {
             const Text(
               'VaakSetu — The Voice Bridge',
               style: TextStyle(
-                color: AppColors.primarySaffronLight,
+                color: AppColors.primarySaffron,
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
               ),

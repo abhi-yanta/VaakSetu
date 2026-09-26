@@ -153,7 +153,7 @@ class _CameraScannerViewState extends State<CameraScannerView> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 24),
+                icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textPrimary, size: 24),
                 onPressed: () {
                   HapticService.lightTap();
                   widget.onBack();
@@ -182,7 +182,7 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                       Flexible(
                         child: Text(
                           scanTitle,
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                          style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 13),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -197,13 +197,13 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                     IconButton(
                       icon: Icon(
                         _isFlashOn ? Icons.flash_on_rounded : Icons.flash_off_rounded,
-                        color: _isFlashOn ? AppColors.warningYellow : Colors.white70,
+                        color: _isFlashOn ? AppColors.warningYellow : AppColors.textSecondary,
                       ),
                       onPressed: _toggleFlash,
                     ),
                     if (_cameras.length > 1)
                       IconButton(
-                        icon: const Icon(Icons.flip_camera_ios_rounded, color: Colors.white70),
+                        icon: const Icon(Icons.flip_camera_ios_rounded, color: AppColors.textSecondary),
                         onPressed: _toggleCamera,
                       ),
                   ],
@@ -337,7 +337,7 @@ class _CameraScannerViewState extends State<CameraScannerView> {
           // Upload File Alternative
           TactileButton(
             label: ui['upload_photo'] ?? LocalizedContent.get(widget.selectedLang, 'upload_photo'),
-            icon: const Icon(Icons.file_upload_rounded, color: Colors.white, size: 22),
+            icon: const Icon(Icons.file_upload_rounded, color: AppColors.textPrimary, size: 22),
             style: TactileButtonStyle.secondary,
             height: 52,
             fontSize: 15,
@@ -360,7 +360,7 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                 Text(
                   '📝 ${LocalizedContent.get(widget.selectedLang, 'try_form_guide')}',
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: AppColors.textPrimary,
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
                   ),
@@ -436,7 +436,7 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                               Text(
                                 preset.title,
                                 style: const TextStyle(
-                                  color: Colors.white,
+                                  color: AppColors.textPrimary,
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
                                 ),

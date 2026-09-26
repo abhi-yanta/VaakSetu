@@ -23,30 +23,30 @@ class SecurityBadge extends StatelessWidget {
 
     switch (analysis.severity) {
       case DocumentSeverity.safe:
-        cardBg = AppColors.safeGreenBg.withOpacity(0.35);
+        cardBg = AppColors.safeGreenBg;
         borderColor = AppColors.safeGreen;
         iconColor = AppColors.safeGreen;
         icon = Icons.verified_user_rounded;
         statusText = LocalizedContent.get(langCode, 'safe_doc');
         break;
       case DocumentSeverity.warning:
-        cardBg = AppColors.warningYellowBg.withOpacity(0.35);
+        cardBg = AppColors.warningYellowBg;
         borderColor = AppColors.warningYellow;
         iconColor = AppColors.warningYellow;
         icon = Icons.warning_amber_rounded;
         statusText = LocalizedContent.get(langCode, 'warning_doc');
         break;
       case DocumentSeverity.danger:
-        cardBg = AppColors.dangerRedBg.withOpacity(0.4);
+        cardBg = AppColors.dangerRedBg;
         borderColor = AppColors.dangerRed;
         iconColor = AppColors.dangerRed;
         icon = Icons.gpp_bad_rounded;
         statusText = LocalizedContent.get(langCode, 'danger_doc');
         break;
       case DocumentSeverity.unknown:
-        cardBg = const Color(0xFF0C2136).withOpacity(0.6);
-        borderColor = const Color(0xFF38BDF8);
-        iconColor = const Color(0xFF38BDF8);
+        cardBg = AppColors.infoBlueBg;
+        borderColor = AppColors.infoBlue;
+        iconColor = AppColors.infoBlue;
         icon = Icons.info_outline_rounded;
         statusText = analysis.category == DocumentCategory.unclear
             ? LocalizedContent.get(langCode, 'unclear_doc')
@@ -110,7 +110,7 @@ class SecurityBadge extends StatelessWidget {
                 Text(
                   statusText,
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: AppColors.textPrimary,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     height: 1.25,

@@ -1,16 +1,25 @@
 import 'package:flutter/material.dart';
 import '../../../data/services/haptic_service.dart';
+import '../../../data/services/tts_service.dart';
 import '../../../domain/models/language.dart';
 import '../../../domain/models/localized_content.dart';
 import '../../core/app_colors.dart';
+import '../../core/listen_again_button.dart';
 
 class LanguageSelectorView extends StatelessWidget {
   final Function(String langCode) onLanguageSelected;
+  final TtsService ttsService;
 
   const LanguageSelectorView({
     super.key,
     required this.onLanguageSelected,
+    required this.ttsService,
   });
+
+  void _replayWelcome() {
+    HapticService.lightTap();
+    ttsService.speakPrompt('welcome', 'hi');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,18 +32,29 @@ class LanguageSelectorView extends StatelessWidget {
             children: [
               const Icon(Icons.translate_rounded, color: AppColors.primarySaffronLight, size: 28),
               const SizedBox(width: 10),
-              Text(
-                LocalizedContent.get('hi', 'select_lang'),
-                style: const TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
+              Expanded(
+                child: Text(
+                  LocalizedContent.get('hi', 'select_lang'),
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],
           ),
         ),
-        const SizedBox(height: 12),
+        Padding(
+          padding: const EdgeInsets.only(left: 4, right: 4, bottom: 8),
+          child: ListenAgainButton(
+            langCode: 'hi',
+            height: 52,
+            fontSize: 15,
+            onPressed: _replayWelcome,
+          ),
+        ),
+        const SizedBox(height: 4),
         Expanded(
           child: GridView.builder(
             padding: const EdgeInsets.only(bottom: 24),
@@ -77,7 +97,7 @@ class _LanguageTile extends StatelessWidget {
       color: AppColors.surfaceDark,
       borderRadius: BorderRadius.circular(16),
       elevation: 3,
-      shadowColor: Colors.black45,
+      shadowColor: Colors.black26,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
@@ -125,7 +145,7 @@ class _LanguageTile extends StatelessWidget {
               Text(
                 language.nativeName,
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: AppColors.textPrimary,
                   fontSize: 17,
                   fontWeight: FontWeight.bold,
                 ),

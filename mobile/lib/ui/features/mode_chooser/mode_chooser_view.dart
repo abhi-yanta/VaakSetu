@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import '../../../data/services/haptic_service.dart';
+import '../../../data/services/tts_service.dart';
 import '../../../domain/models/localized_content.dart';
 import '../../core/app_colors.dart';
+import '../../core/listen_again_button.dart';
 
 /// Post-language chooser: Legal Document Scanner vs Form Field Guide.
 class ModeChooserView extends StatelessWidget {
   final String selectedLang;
+  final TtsService ttsService;
   final VoidCallback onScannerSelected;
   final VoidCallback onFormGuideSelected;
   final VoidCallback onBack;
@@ -13,12 +16,23 @@ class ModeChooserView extends StatelessWidget {
   const ModeChooserView({
     super.key,
     required this.selectedLang,
+    required this.ttsService,
     required this.onScannerSelected,
     required this.onFormGuideSelected,
     required this.onBack,
   });
 
   String _t(String key) => LocalizedContent.get(selectedLang, key);
+
+  void _replayPrompt() {
+    HapticService.lightTap();
+    final text = LocalizedContent.getModeChooserPrompt(selectedLang);
+    if (text.isNotEmpty) {
+      ttsService.speak(text, selectedLang);
+    } else {
+      ttsService.replayLast();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +65,15 @@ class ModeChooserView extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 8),
+        Padding(
+          padding: const EdgeInsets.only(left: 16, right: 16, bottom: 12),
+          child: ListenAgainButton(
+            langCode: selectedLang,
+            height: 52,
+            fontSize: 15,
+            onPressed: _replayPrompt,
+          ),
+        ),
         Expanded(
           child: ListView(
             padding: const EdgeInsets.only(bottom: 24),
@@ -106,7 +128,7 @@ class _ModeOptionCard extends StatelessWidget {
       color: AppColors.surfaceDark,
       borderRadius: BorderRadius.circular(20),
       elevation: 4,
-      shadowColor: Colors.black54,
+      shadowColor: Colors.black26,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(20),
@@ -138,7 +160,7 @@ class _ModeOptionCard extends StatelessWidget {
                     Text(
                       title,
                       style: const TextStyle(
-                        color: Colors.white,
+                        color: AppColors.textPrimary,
                         fontSize: 19,
                         fontWeight: FontWeight.bold,
                         height: 1.25,
