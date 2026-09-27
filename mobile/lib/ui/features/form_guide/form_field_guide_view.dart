@@ -24,14 +24,25 @@ class FormFieldGuideView extends StatefulWidget {
   });
 
   @override
-  State<FormFieldGuideView> createState() => _FormFieldGuideViewState();
+  FormFieldGuideViewState createState() => FormFieldGuideViewState();
 }
 
-class _FormFieldGuideViewState extends State<FormFieldGuideView> {
+class FormFieldGuideViewState extends State<FormFieldGuideView> {
   List<FormFieldItem> _fields = [];
   int _currentIndex = 0;
   bool _isPlaying = false;
   final ScrollController _scrollController = ScrollController();
+
+  /// Handles Android system back. Previous field, or [onBack] at first field.
+  bool handleSystemBack() {
+    if (_currentIndex > 0) {
+      _handlePrev();
+      return true;
+    }
+    widget.ttsService.stop();
+    widget.onBack();
+    return true;
+  }
 
   @override
   void initState() {

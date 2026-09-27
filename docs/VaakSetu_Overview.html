@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>VaakSetu — Complete Project Explainer</title>
+<style>
+@page { size: A4; margin: 18mm 16mm 18mm 16mm; }
+* { box-sizing: border-box; }
+body {
+  font-family: "Segoe UI", "Nirmala UI", "Noto Sans Devanagari", Arial, sans-serif;
+  font-size: 11pt;
+  line-height: 1.45;
+  color: #1e293b;
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 12px 8px 32px;
+}
+h1 {
+  font-size: 22pt;
+  color: #0f172a;
+  border-bottom: 3px solid #e65100;
+  padding-bottom: 8px;
+  margin-top: 0;
+}
+h2 {
+  font-size: 14pt;
+  color: #00695c;
+  margin-top: 1.6em;
+  border-bottom: 1px solid #d4cec4;
+  padding-bottom: 4px;
+  page-break-after: avoid;
+}
+h3 {
+  font-size: 12pt;
+  color: #334155;
+  margin-top: 1.2em;
+  page-break-after: avoid;
+}
+p, li { orphans: 3; widows: 3; }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0.8em 0 1.2em;
+  font-size: 10pt;
+  page-break-inside: avoid;
+}
+th, td {
+  border: 1px solid #d4cec4;
+  padding: 6px 8px;
+  text-align: left;
+  vertical-align: top;
+}
+th { background: #efeae2; }
+code, pre {
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 9.5pt;
+  background: #f7f3eb;
+}
+pre {
+  padding: 10px 12px;
+  border: 1px solid #d4cec4;
+  border-radius: 6px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  page-break-inside: avoid;
+}
+code { padding: 1px 4px; border-radius: 3px; }
+blockquote {
+  border-left: 4px solid #e65100;
+  margin: 1em 0;
+  padding: 4px 12px;
+  color: #475569;
+  background: #fff8f3;
+}
+hr { border: none; border-top: 1px solid #d4cec4; margin: 1.5em 0; }
+a { color: #00695c; }
+.meta {
+  background: #f7f3eb;
+  border: 1px solid #d4cec4;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 1.2em;
+}
+</style>
+</head>
+<body>
+<h1 id="vaaksetu-complete-project-explainer">VaakSetu (वाक् सेतु) — Complete Project Explainer</h1>
+<p><strong>The Voice Bridge for document safety in rural India</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Repository</strong></td>
+<td>https://github.com/abhi-yanta/VaakSetu</td>
+</tr>
+<tr>
+<td><strong>Audience for this doc</strong></td>
+<td>Founder / teammate with zero prior context</td>
+</tr>
+<tr>
+<td><strong>Primary product today</strong></td>
+<td>Flutter Android app in <code>mobile/</code></td>
+</tr>
+<tr>
+<td><strong>Last verified against</strong></td>
+<td>Repo code as of overview generation</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="table-of-contents">Table of contents</h2>
+<ol>
+<li><a href="#1-what-it-is-in-one-minute">What it is (in one minute)</a></li>
+<li><a href="#2-why-it-exists">Why it exists</a></li>
+<li><a href="#3-who-it-is-for">Who it is for</a></li>
+<li><a href="#4-problems-it-solves">Problems it solves</a></li>
+<li><a href="#5-design-principles">Design principles</a></li>
+<li><a href="#6-user-journey-app-flow">User journey (app flow)</a></li>
+<li><a href="#7-major-features">Major features</a></li>
+<li><a href="#8-key-screens-and-ui">Key screens and UI</a></li>
+<li><a href="#9-tech-stack">Tech stack</a></li>
+<li><a href="#10-how-speech-works-tts">How speech works (TTS)</a></li>
+<li><a href="#11-ocr-and-analysis-pipeline">OCR and analysis pipeline</a></li>
+<li><a href="#12-form-field-guide">Form Field Guide</a></li>
+<li><a href="#13-datasets-and-presets">Datasets and presets</a></li>
+<li><a href="#14-project-structure">Project structure</a></li>
+<li><a href="#15-how-to-run-the-app">How to run the app</a></li>
+<li><a href="#16-what-has-been-built-so-far">What has been built so far</a></li>
+<li><a href="#17-limitations-and-gaps">Limitations and gaps</a></li>
+<li><a href="#18-related-folders-web-mockups">Related folders (web, mockups)</a></li>
+</ol>
+<hr>
+<h2 id="1-what-it-is-in-one-minute">1. What it is (in one minute)</h2>
+<p><strong>VaakSetu</strong> means <em>Voice Bridge</em> (वाक् = voice/speech, सेतु = bridge).</p>
+<p>It is an <strong>audio-first Android app</strong> that helps people who struggle to read protect themselves when dealing with:</p>
+<ul>
+<li>Loan papers and microfinance agreements  </li>
+<li>Land / sale deeds and stamp papers  </li>
+<li>Labor / job contracts  </li>
+<li>Hospital consent / liability forms  </li>
+<li>Government-style <strong>registration forms</strong> (name, phone, KYC fields, etc.)</li>
+</ul>
+<p><strong>Core idea:</strong> Point a low-cost phone camera at a document → the app reads the text on-device → speaks a clear safety summary (or walks through form fields) in the user’s language.</p>
+<p>The flagship experience lives in <strong><code>mobile/</code></strong> (Flutter). There is also an older <strong>React web/kiosk</strong> path under <code>client/</code> + <code>server/</code>, and a <strong><code>dataset/</code></strong> hub for legal/OCR reference data.</p>
+<hr>
+<h2 id="2-why-it-exists">2. Why it exists</h2>
+<p>In rural and semi-urban India, many people are functionally low-literacy. Complex English or legalese on stamp paper is effectively invisible to them. Common harms include:</p>
+<ol>
+<li><strong>Predatory loans</strong> — high interest (often framed as “per month”), blank cheques, land as collateral for small cash.  </li>
+<li><strong>Land grabs</strong> — papers presented as “loan receipts” that are actually sale deeds or irrevocable powers of attorney.  </li>
+<li><strong>Exploitative labor</strong> — bonded-labor style clauses, unpaid overtime, resignation penalties.  </li>
+<li><strong>Medical waivers</strong> — emergency signatures that wipe hospital liability.  </li>
+<li><strong>Form anxiety</strong> — even when a form is “safe,” people cannot tell what each blank means.</li>
+</ol>
+<p>Cloud-only AI fails in villages with weak connectivity and raises privacy concerns for land and ID documents. VaakSetu’s intended answer: <strong>on-device OCR + explainable rules + spoken guidance</strong>.</p>
+<hr>
+<h2 id="3-who-it-is-for">3. Who it is for</h2>
+<table>
+<thead>
+<tr>
+<th>Group</th>
+<th>Need</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rural / low-literacy adults</td>
+<td>Hear warnings without reading</td>
+</tr>
+<tr>
+<td>Semi-literate workers &amp; farmers</td>
+<td>Spot red-flag clauses before signing</td>
+</tr>
+<tr>
+<td>Family helpers</td>
+<td>Guide a relative through a form field-by-field</td>
+</tr>
+<tr>
+<td>CSC / legal-aid volunteers (web/kiosk vision)</td>
+<td>Assist others on a shared laptop</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Languages in the mobile app (12):</strong> Hindi, Tamil, Telugu, Marathi, Bengali, Gujarati, Kannada, Malayalam, Odia, Punjabi, Assamese, Urdu.</p>
+<p>UI strings, spoken prompts, and form field help are localized via <code>LocalizedContent</code> (plus English labels in the form dictionary).</p>
+<hr>
+<h2 id="4-problems-it-solves">4. Problems it solves</h2>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>How VaakSetu responds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>“I can’t read this paper”</td>
+<td>Speaks category + severity + warning lines aloud</td>
+</tr>
+<tr>
+<td>“Is this a dangerous loan?”</td>
+<td>Rule engine scores interest / collateral / blank-sign patterns</td>
+</tr>
+<tr>
+<td>“Is this even a legal document?”</td>
+<td>Marks non-legal text as unrecognized (not “safe to sign”)</td>
+</tr>
+<tr>
+<td>“Photo is blurry”</td>
+<td>Marks unclear; asks to rescan</td>
+</tr>
+<tr>
+<td>“What do I write in this form blank?”</td>
+<td>Form Field Guide: match OCR labels → spoken help per field</td>
+</tr>
+<tr>
+<td>“Say that again”</td>
+<td><strong>फिर से सुनो</strong> (Listen again) on guided screens + AppBar speaker</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="5-design-principles">5. Design principles</h2>
+<p>From product docs and code behavior:</p>
+<ol>
+<li><strong>Offline-first for core safety</strong> — ML Kit OCR and the Dart rule engine run on device. Documents need not leave the phone for analysis. Online TTS is optional enhancement.  </li>
+<li><strong>Audio + color + haptics</strong> — green / yellow / red / blue severity; vibration intensity rises with danger.  </li>
+<li><strong>Don’t cry wolf / don’t false-reassure</strong> — ambiguous notebooks must not get a green “safe” badge.  </li>
+<li><strong>Large touch targets</strong> — tactile buttons, simple grids, cream light theme for outdoor readability.</li>
+</ol>
+<hr>
+<h2 id="6-user-journey-app-flow">6. User journey (app flow)</h2>
+<p>Exact navigation is owned by <code>mobile/lib/main.dart</code> (<code>AppView</code> enum).</p>
+<pre><code>Welcome
+   │  (Start)
+   ▼
+Language grid (12 languages)
+   │  (pick language)
+   ▼
+Feature tour (mascot pages)   ← only first time after language
+   │  (finish / continue)
+   ▼
+Mode chooser
+   ├─ Document scanner ──► Camera / gallery / presets ──► Loading ──► Safety analyzer
+   └─ Form Field Guide ──► Camera / gallery / form presets ──► Loading ──► Form guide UI
+</code></pre>
+<p><strong>Notes verified in code:</strong></p>
+<ul>
+<li>After the tour once (<code>_tourCompleted</code>), choosing language again skips the tour and goes to the mode chooser.  </li>
+<li>Form mode can also open if document mode OCR text “looks like a form” (<code>FormFieldEngine.looksLikeForm</code>).  </li>
+<li>AppBar logo tap returns to language selection.  </li>
+<li>Back from scanner returns to mode chooser.  </li>
+<li>TTS pauses when the app goes to background and can resume when returning.</li>
+</ul>
+<h3 id="simple-flow-diagram">Simple flow diagram</h3>
+<pre><code>┌─────────┐   ┌──────────┐   ┌──────┐   ┌────────────┐
+│ Welcome │→│ Language │→│ Tour │→│ Mode chooser │
+└─────────┘   └──────────┘   └──────┘   └─────┬──────┘
+                                              │
+                     ┌────────────────────────┼────────────────────────┐
+                     ▼                                                 ▼
+              Scan document                                      Scan form
+                     │                                                 │
+                     ▼                                                 ▼
+            Safety result                                      Field-by-field
+            (badge + TTS)                                      guide + TTS
+</code></pre>
+<hr>
+<h2 id="7-major-features">7. Major features</h2>
+<h3 id="71-legal-document-safety-analyzer">7.1 Legal document safety analyzer</h3>
+<p><strong>User view:</strong> After a photo or preset, the app announces what kind of paper it thinks it is and whether it looks safe, cautionary, or dangerous. Warnings can be tapped to hear again. Raw OCR text can be heard word-by-word or sentence-by-sentence.</p>
+<p><strong>Tech view:</strong></p>
+<ul>
+<li><code>OcrService</code> → text  </li>
+<li><code>RuleEngine.analyze</code> → <code>DocumentAnalysis</code> (category, severity, warning keys, raw text, confidence)  </li>
+<li><code>DocumentAnalyzerView</code> → <code>SecurityBadge</code>, wave visualizer, localized warnings, interactive readers  </li>
+</ul>
+<p><strong>Categories:</strong> loan, deed, job, medical, unrecognized, unclear.<br>
+<strong>Severities:</strong> safe, warning, danger, unknown.</p>
+<p>Example danger patterns (rule-based, not an LLM): interest above ~24% APR, land collateral on small loans, bonded-labor style clauses, blanket medical liability waivers.</p>
+<h3 id="72-form-field-guide">7.2 Form Field Guide</h3>
+<p><strong>User view:</strong> Choose “form” mode, scan an application/KYC-style sheet (or pick a demo form). The app steps through fields (name, DOB, phone, address, …), speaks what each blank means, and shows where to write (below / right heuristics).</p>
+<p><strong>Tech view:</strong> <code>FormFieldEngine</code> dictionary matching + <code>FormFieldGuideView</code> interactive canvas. Runtime dictionary is Dart (<code>FormFieldDictionary</code>); JSON under <code>dataset/form_guide/</code> is an export for docs/ML, not the live loader.</p>
+<h3 id="73-camera-scanner-presets">7.3 Camera scanner + presets</h3>
+<ul>
+<li>Live camera preview, shutter, gallery picker, flash (where supported).  </li>
+<li>Framing prompt spoken in the selected language.  </li>
+<li><strong>Offline demo presets</strong> for loans, deeds, labor, medical, and five form samples (scholarship, ration card, KYC, etc.) so demos work without a printed page.</li>
+</ul>
+<h3 id="74-multilingual-voice-ui">7.4 Multilingual voice UI</h3>
+<ul>
+<li>Welcome / language / tour / mode / scan / processing / result prompts.  </li>
+<li>Per-warning narration.  </li>
+<li>Listen-again on most guided screens.  </li>
+<li>AppBar mute / replay control synced to <code>TtsService</code> (<code>ChangeNotifier</code>).</li>
+</ul>
+<h3 id="75-accessibility-extras">7.5 Accessibility extras</h3>
+<ul>
+<li>Haptic patterns (<code>HapticService</code>) — light tap, warning, danger.  </li>
+<li>Pulsing / orbiting logo animation while analyzing.  </li>
+<li>Cream light surfaces (<code>AppColors</code>) for rural outdoor use.</li>
+</ul>
+<h3 id="76-what-is-not-built-speech-input">7.6 What is <em>not</em> built (speech input)</h3>
+<p>There is <strong>no speech-to-text (STT)</strong> / voice-command pipeline in the Flutter app today. Interaction is tap + TTS playback. (Camera audio is disabled.)</p>
+<hr>
+<h2 id="8-key-screens-and-ui">8. Key screens and UI</h2>
+<table>
+<thead>
+<tr>
+<th>Screen</th>
+<th>File (approx.)</th>
+<th>What the user sees</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Welcome</td>
+<td><code>welcome_view.dart</code></td>
+<td>Logo, वाक् सेतु title, Hindi start prompt, Start button</td>
+</tr>
+<tr>
+<td>Language</td>
+<td><code>language_selector_view.dart</code></td>
+<td>12-language grid with script badges; listen-again</td>
+</tr>
+<tr>
+<td>Feature tour</td>
+<td><code>character_welcome_view.dart</code></td>
+<td>Mascot poses + 4 pages: scan, safety, forms, languages</td>
+</tr>
+<tr>
+<td>Mode chooser</td>
+<td><code>mode_chooser_view.dart</code></td>
+<td>Document scanner vs Form Field Guide</td>
+</tr>
+<tr>
+<td>Scanner</td>
+<td><code>camera_scanner_view.dart</code></td>
+<td>Viewfinder, shutter, gallery, preset list</td>
+</tr>
+<tr>
+<td>Loading</td>
+<td><code>main.dart</code></td>
+<td>Animated logo + “analyzing” copy</td>
+</tr>
+<tr>
+<td>Analyzer</td>
+<td><code>document_analyzer_view.dart</code></td>
+<td>Color badge, listen-all, warnings, text readers</td>
+</tr>
+<tr>
+<td>Form guide</td>
+<td><code>form_field_guide_view.dart</code></td>
+<td>Field list / canvas walkthrough</td>
+</tr>
+</tbody>
+</table>
+<h3 id="visual-language">Visual language</h3>
+<ul>
+<li><strong>Background cream:</strong> <code>#F7F3EB</code> (<code>AppColors.bgDark</code> — name is historical; theme is light).  </li>
+<li><strong>Accents:</strong> saffron / deep teal.  </li>
+<li><strong>Safety:</strong> green / amber / red / cyan info.  </li>
+<li><strong>Mascot:</strong> guide character with poses (point, wave, namaste, celebrate).  </li>
+<li><strong>फिर से सुनो:</strong> <code>ListenAgainButton</code> — localized “listen again” control.</li>
+</ul>
+<h3 id="ux-mockups-note">UX mockups note</h3>
+<p><code>docs/ux-mockups/</code> contains exploratory images (A–D listen / helper concepts). Those were <strong>rejected as product direction</strong> and are <strong>not</strong> the shipped UI. The live product is the cream Flutter flow above.</p>
+<hr>
+<h2 id="9-tech-stack">9. Tech stack</h2>
+<h3 id="mobile-primary">Mobile (primary)</h3>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Choice</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Framework</td>
+<td>Flutter 3.x, Dart</td>
+</tr>
+<tr>
+<td>OCR</td>
+<td><code>google_mlkit_text_recognition</code> (on-device)</td>
+</tr>
+<tr>
+<td>Camera / gallery</td>
+<td><code>camera</code>, <code>image_picker</code></td>
+</tr>
+<tr>
+<td>TTS playback</td>
+<td><code>flutter_tts</code>, <code>audioplayers</code></td>
+</tr>
+<tr>
+<td>Networking (optional TTS)</td>
+<td><code>http</code></td>
+</tr>
+<tr>
+<td>State / prefs</td>
+<td><code>provider</code> pattern via <code>ChangeNotifier</code>, <code>shared_preferences</code></td>
+</tr>
+<tr>
+<td>Haptics</td>
+<td><code>vibration</code></td>
+</tr>
+</tbody>
+</table>
+<p>See <code>mobile/pubspec.yaml</code> for pinned versions.</p>
+<h3 id="web-kiosk-secondary">Web &amp; kiosk (secondary)</h3>
+<ul>
+<li><code>client/</code> — React + Vite PWA-style document UI (Tesseract / browser TTS historically described in root README).  </li>
+<li><code>server/</code> — Express hotspot/kiosk helper.</li>
+</ul>
+<p>Treat the <strong>Flutter app</strong> as the current source of truth for features; the root README still emphasizes the older web stack.</p>
+<h3 id="data-tooling">Data / tooling</h3>
+<ul>
+<li><code>dataset/</code> — legal sources + synthetic 88-case benchmark + form-guide export.  </li>
+<li><code>mobile/tool/</code> — <code>run_with_env.ps1</code>, dataset generate/evaluate, mascot tooling, form export tests.</li>
+</ul>
+<hr>
+<h2 id="10-how-speech-works-tts">10. How speech works (TTS)</h2>
+<p>Implemented in <code>mobile/lib/data/services/tts_service.dart</code>.</p>
+<p><strong>Priority cascade:</strong></p>
+<pre><code>Layer 1  Bhashini / ULCA (MeitY)     ← needs BHASHINI_* keys
+   ↓ if missing / fails
+Layer 2  HuggingFace AI4Bharat       ← needs HF_TOKEN
+         (indic-parler-tts)
+   ↓ if missing / fails
+Layer 3  Device neural TTS           ← always available offline
+         (flutter_tts, slow rate ~0.45)
+</code></pre>
+<p><strong>Important:</strong></p>
+<ul>
+<li>Keys are injected at run time via <code>--dart-define</code> (never hard-coded).  </li>
+<li>Use <code>mobile/.env.example</code> as a template; copy to <code>.env</code> locally.  </li>
+<li><strong>Never commit real keys.</strong> This overview intentionally shows empty placeholders only.</li>
+</ul>
+<p>Conceptual <code>.env</code> keys:</p>
+<pre><code>BHASHINI_USER_ID=
+BHASHINI_UDYAT_KEY=
+BHASHINI_INFERENCE_KEY=
+HF_TOKEN=
+</code></pre>
+<p>Without any online keys, the app still speaks using <strong>device TTS</strong>.</p>
+<hr>
+<h2 id="11-ocr-and-analysis-pipeline">11. OCR and analysis pipeline</h2>
+<pre><code>Image / preset text
+        │
+        ▼
+┌───────────────────┐
+│ OcrService        │  Devanagari + Latin in parallel;
+│ (ML Kit)          │  Chinese script pass if yield &lt; ~80 chars
+└─────────┬─────────┘
+          │ merged text
+          ▼
+┌───────────────────┐
+│ RuleEngine        │  unclear / unrecognized gates
+│                   │  category + severity + warning keys
+└─────────┬─────────┘
+          │
+          ├─► DocumentAnalyzerView (safety path)
+          │
+          └─► FormFieldEngine (if form intent or looksLikeForm)
+                    └─► FormFieldGuideView
+</code></pre>
+<p>OCR details live in <code>ocr_service.dart</code>. Rule details live in <code>rule_engine.dart</code>. Repository wiring: <code>document_repository.dart</code>.</p>
+<hr>
+<h2 id="12-form-field-guide">12. Form Field Guide</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Field keys</td>
+<td>~22 (name, dob, phone, address, id_number, bank_account, ifsc, …)</td>
+</tr>
+<tr>
+<td>Matching</td>
+<td>Keyword / similarity / token overlap against OCR lines</td>
+</tr>
+<tr>
+<td>Languages for field help</td>
+<td>13 codes including English</td>
+</tr>
+<tr>
+<td>Demo forms</td>
+<td>kisan welfare, scholarship, ration card, bank KYC, job application</td>
+</tr>
+<tr>
+<td>Blank placement</td>
+<td>Heuristics: below vs right of label</td>
+</tr>
+</tbody>
+</table>
+<p>This is <strong>dictionary + heuristics</strong>, not a neural layout model. Layout-aware DocAI is future work (notes exist in <code>dataset/form_guide/README.md</code>).</p>
+<hr>
+<h2 id="13-datasets-and-presets">13. Datasets and presets</h2>
+<h3 id="datasetsources"><code>dataset/sources/</code></h3>
+<ol>
+<li>Indian Kanoon samples / notes  </li>
+<li>State registry / deed checklists  </li>
+<li>RBI fair practices rules  </li>
+<li>CUAD (contract understanding) references  </li>
+<li>CLAUDETTE unfair-clause patterns  </li>
+<li>AI4Bharat Indic OCR catalogs  </li>
+</ol>
+<h3 id="datasetsynthetic"><code>dataset/synthetic/</code></h3>
+<ul>
+<li>~88 labelled samples + evaluate script for rule-engine benchmarking.</li>
+</ul>
+<h3 id="app-assets">App assets</h3>
+<ul>
+<li><code>mobile/assets/presets/</code> — scanner demos.  </li>
+<li><code>mobile/assets/dataset/form_guide/</code> — exported JSON mirror.  </li>
+<li><code>mobile/assets/mascot/</code>, <code>mobile/assets/icon/</code>.</li>
+</ul>
+<hr>
+<h2 id="14-project-structure">14. Project structure</h2>
+<pre><code>vaaksetu/
+├── mobile/                 ← Flagship Flutter Android app
+│   ├── lib/
+│   │   ├── main.dart       ← App shell &amp; navigation
+│   │   ├── data/           ← OCR, TTS, haptics, presets, repository
+│   │   ├── domain/         ← Models, LocalizedContent, RuleEngine, FormFieldEngine
+│   │   └── ui/             ← Screens + shared widgets
+│   ├── assets/
+│   ├── tool/run_with_env.ps1
+│   ├── .env.example
+│   ├── test/
+│   └── pubspec.yaml
+├── dataset/                ← Legal / OCR / form datasets
+├── client/                 ← React web UI (kiosk / CSC path)
+├── server/                 ← Express companion for web
+├── docs/                   ← This explainer + ux-mockups (exploratory only)
+├── README.md               ← Older web-first overview
+└── VAAKSETU_SYSTEM_DESCRIPTION.md  ← Deep system/domain notes for developers
+</code></pre>
+<hr>
+<h2 id="15-how-to-run-the-app">15. How to run the app</h2>
+<h3 id="prerequisites">Prerequisites</h3>
+<ul>
+<li>Flutter SDK (project uses Flutter 3.x)  </li>
+<li>Android Studio / SDK (API 21+)  </li>
+<li>Android phone or emulator with camera (optional for presets)</li>
+</ul>
+<h3 id="install-test">Install &amp; test</h3>
+<pre><code class="language-powershell">cd mobile
+flutter pub get
+flutter test
+flutter run
+</code></pre>
+<h3 id="optional-online-tts">Optional online TTS</h3>
+<pre><code class="language-powershell">cd mobile
+Copy-Item .env.example .env
+# Edit .env locally with your own keys (do not commit)
+.\tool\run_with_env.ps1
+</code></pre>
+<p><code>run_with_env.ps1</code> reads <code>.env</code> / <code>.env.local</code> and passes non-empty values as <code>flutter run --dart-define=KEY=value</code> without printing secrets.</p>
+<h3 id="release-apk">Release APK</h3>
+<pre><code class="language-powershell">cd mobile
+flutter build apk --release
+# Output: mobile/build/app/outputs/flutter-apk/app-release.apk
+</code></pre>
+<h3 id="web-stack-optional">Web stack (optional)</h3>
+<pre><code class="language-bash">cd server &amp;&amp; npm install &amp;&amp; npm start   # often :5000
+cd client &amp;&amp; npm install &amp;&amp; npm run dev # often :3000
+</code></pre>
+<hr>
+<h2 id="16-what-has-been-built-so-far">16. What has been built so far</h2>
+<p>Narrative of capabilities from recent commit themes (newest first):</p>
+<ol>
+<li><strong>Rural UX polish</strong> — cream light theme, listen-again replay, mascot alpha fixes.  </li>
+<li><strong>Form Field Guide</strong> — interactive canvas, TTS walkthrough, form presets, mode chooser.  </li>
+<li><strong>Mascot feature tour</strong> after language selection.  </li>
+<li><strong>Startup motion</strong> — pulsing logo; orbiting ring on long OCR loads.  </li>
+<li><strong>TTS lifecycle</strong> — pause on background; smart resume on foreground.  </li>
+<li><strong>Document verbalizer</strong> — full-document + sentence-level audio on OCR text.  </li>
+<li><strong>Tap-to-speak words</strong> on raw text.  </li>
+<li><strong>Full localization</strong> of analyzer UI / loading / speech across 12 Indic languages.  </li>
+<li><strong>Language cards</strong> use script-character badges (not flag emoji).  </li>
+<li><strong>Camera layout fixes</strong> — correct aspect ratio, shutter always reachable.  </li>
+<li><strong>Stamp-paper OCR resilience</strong> + AI4Bharat/Bhashini TTS layers + dataset hub.  </li>
+<li><strong>Dataset folder</strong> with six sources + synthetic 88-case benchmark.  </li>
+<li><strong>Initial Flutter app</strong> + classification rules + ML Kit OCR.</li>
+</ol>
+<p>Older history also includes the React client, Express server, and early camera work.</p>
+<hr>
+<h2 id="17-limitations-and-gaps">17. Limitations and gaps</h2>
+<p>Be honest with yourself when demoing:</p>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Current state</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>STT / voice commands</strong></td>
+<td>Not implemented</td>
+</tr>
+<tr>
+<td><strong>True offline “AI voice”</strong></td>
+<td>Device TTS only unless Bhashini/HF configured</td>
+</tr>
+<tr>
+<td><strong>Legal analysis</strong></td>
+<td>Deterministic keyword/rules — not a lawyer, not an LLM</td>
+</tr>
+<tr>
+<td><strong>OCR quality</strong></td>
+<td>Struggles on bad lighting, tiny stamp fonts, some scripts</td>
+</tr>
+<tr>
+<td><strong>Form guide layout</strong></td>
+<td>Heuristic blank positions; not trained pixel layout detection</td>
+</tr>
+<tr>
+<td><strong>Form dictionary runtime</strong></td>
+<td>Dart source of truth; JSON export is secondary</td>
+</tr>
+<tr>
+<td><strong>iOS</strong></td>
+<td>Project is Android-oriented; iOS packaging not the focus</td>
+</tr>
+<tr>
+<td><strong>Web vs mobile parity</strong></td>
+<td>Features diverge; Flutter is ahead for rural UX</td>
+</tr>
+<tr>
+<td><strong>Root README</strong></td>
+<td>Still describes PWA/Tesseract-first story; prefer this doc + <code>VAAKSETU_SYSTEM_DESCRIPTION.md</code> for mobile truth</td>
+</tr>
+<tr>
+<td><strong>UX mockups A–D</strong></td>
+<td>Exploratory only — not product</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="18-related-folders-web-mockups">18. Related folders (web, mockups)</h2>
+<ul>
+<li><strong><code>client/</code> + <code>server/</code></strong> — institutional kiosk / browser path; useful for CSC demos, not the cream mobile UX.  </li>
+<li><strong><code>docs/ux-mockups/</code></strong> — discarded direction sketches.  </li>
+<li><strong><code>VAAKSETU_SYSTEM_DESCRIPTION.md</code></strong> — longer developer/domain reference (some TTS layer naming may lag the code; <strong>code order is Bhashini → HuggingFace → device</strong>).</li>
+</ul>
+<hr>
+<h2 id="quick-forgotten-founder-cheat-sheet">Quick “forgotten founder” cheat sheet</h2>
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Answer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>What did we build?</td>
+<td>Audio-first Flutter app that scans docs/forms and speaks risks or field help</td>
+</tr>
+<tr>
+<td>For whom?</td>
+<td>Low-literacy / rural Indian users needing spoken safety</td>
+</tr>
+<tr>
+<td>Killer modes?</td>
+<td>(1) Document danger check (2) Form field walkthrough</td>
+</tr>
+<tr>
+<td>Offline?</td>
+<td>OCR + rules yes; best voices need optional internet keys</td>
+</tr>
+<tr>
+<td>How to demo without papers?</td>
+<td>Use built-in presets on the scanner screen</td>
+</tr>
+<tr>
+<td>How to run with nice voices?</td>
+<td><code>.env</code> + <code>.\tool\run_with_env.ps1</code> (never commit secrets)</td>
+</tr>
+<tr>
+<td>Where is truth?</td>
+<td><code>mobile/lib/</code> code &gt; this overview &gt; older root README</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p><em>Generated as an internal explainer. No API keys or secrets included.</em></p>
+</body>
+</html>

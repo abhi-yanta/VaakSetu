@@ -18,7 +18,6 @@ class RuleEngine {
     'registration', 'registra', 'tehsil', 'mauza', 'patta', 'property', 'plot',
     'boundaries', 'land', 'खसरा', 'खतौनी', 'पट्टा', 'पंजीकरण', 'भूमि', 'जमीन',
     'बिक्री पत्र', 'तहसील', 'चौहद्दी', 'பத்திரம்', 'நிலம்', 'రిజిస్ట్రేషన్', 'భూమి',
-    // Stamp paper & registry specific
     'non judicial', 'non-judicial', 'stamp paper', 'stamp duty', 'stamp certificate',
     'india non judicial', 'भारतीय गैर न्यायिक', 'indian stamp', 'e-stamp',
     'mouza', 'j.l. no', 'j.l no', 'jl no', 'decimals', 'square feet', 'sqm',
@@ -51,35 +50,105 @@ class RuleEngine {
   ];
 
   static bool _matchesKeyword(String text, String keyword) {
-    // If keyword is ASCII/Latin, use word boundary regex to avoid partial matches like "1-D and" -> "land"
     final isAscii = RegExp(r'^[a-zA-Z0-9\s\-]+$').hasMatch(keyword);
     if (isAscii) {
       final pattern = r'\b' + RegExp.escape(keyword) + r'\b';
       return RegExp(pattern, caseSensitive: false).hasMatch(text);
-    } else {
-      // Indic scripts (Devanagari, Tamil, etc.)
-      return text.contains(keyword);
     }
+    return text.contains(keyword);
   }
 
   static int _countMatches(String text, List<String> keywords) {
     int count = 0;
     for (final kw in keywords) {
-      if (_matchesKeyword(text, kw)) {
-        count++;
-      }
+      if (_matchesKeyword(text, kw)) count++;
     }
     return count;
+  }
+
+  /// Find [needle] in [original] (case-insensitive for Latin), return highlight or null.
+  static ClauseHighlight? _findHighlight(
+    String original,
+    String needle,
+    String warningKey,
+  ) {
+    if (needle.trim().isEmpty) return null;
+    final lowerOrig = original.toLowerCase();
+    final lowerNeedle = needle.toLowerCase();
+    var idx = lowerOrig.indexOf(lowerNeedle);
+    if (idx < 0) {
+      // Try original script needle as-is
+      idx = original.indexOf(needle);
+      if (idx < 0) return null;
+      return ClauseHighlight(
+        start: idx,
+        end: idx + needle.length,
+        warningKey: warningKey,
+        matchedText: original.substring(idx, idx + needle.length),
+      );
+    }
+    return ClauseHighlight(
+      start: idx,
+      end: idx + needle.length,
+      warningKey: warningKey,
+      matchedText: original.substring(idx, idx + needle.length),
+    );
+  }
+
+  static void _addKeywordHighlight({
+    required String original,
+    required String normalized,
+    required List<String> needles,
+    required String warningKey,
+    required List<ClauseHighlight> highlights,
+  }) {
+    for (final needle in needles) {
+      if (!_matchesKeyword(normalized, needle) &&
+          !normalized.contains(needle.toLowerCase()) &&
+          !original.contains(needle)) {
+        continue;
+      }
+      final h = _findHighlight(original, needle, warningKey);
+      if (h != null) {
+        // Avoid duplicate overlapping spans for same key+range
+        final exists = highlights.any(
+          (e) => e.warningKey == warningKey && e.start == h.start && e.end == h.end,
+        );
+        if (!exists) highlights.add(h);
+        return; // one visible phrase per keyword set is enough
+      }
+    }
+  }
+
+  static void _addRegexHighlight({
+    required String original,
+    required String normalized,
+    required RegExp pattern,
+    required String warningKey,
+    required List<ClauseHighlight> highlights,
+  }) {
+    final match = pattern.firstMatch(normalized);
+    if (match == null) return;
+    // Map normalized index to original (same length if only case differs)
+    final start = match.start;
+    final end = match.end;
+    if (start < 0 || end > original.length) return;
+    highlights.add(
+      ClauseHighlight(
+        start: start,
+        end: end,
+        warningKey: warningKey,
+        matchedText: original.substring(start, end),
+      ),
+    );
   }
 
   static DocumentAnalysis analyze(String text) {
     final trimmed = text.trim();
     final normalized = trimmed.toLowerCase();
+    // Keep original casing for display highlights — use trimmed as base
+    final original = trimmed;
 
-    // 1. Check for insufficient text (blank page, dark photo, unreadable image).
-    // Threshold is deliberately low (10 chars / 2 words) so that even partial OCR
-    // results from complex multi-script stamp papers still get analyzed by the rule engine
-    // rather than being rejected outright as "unclear".
     if (trimmed.length < 10 || trimmed.split(RegExp(r'\s+')).length < 2) {
       return DocumentAnalysis(
         category: DocumentCategory.unclear,
@@ -91,18 +160,20 @@ class RuleEngine {
       );
     }
 
-
-    // 2. Score against categories using word boundaries
     final legalScore = _countMatches(normalized, legalMarkers);
     final loanScore = _countMatches(normalized, loanKeywords);
     final deedScore = _countMatches(normalized, deedKeywords);
     final jobScore = _countMatches(normalized, jobKeywords);
     final medicalScore = _countMatches(normalized, medicalKeywords);
+    final totalScore =
+        legalScore + loanScore + deedScore + jobScore + medicalScore;
 
-    final totalScore = legalScore + loanScore + deedScore + jobScore + medicalScore;
-
-    // 3. If no official/legal markers are present, classify as UNRECOGNIZED (e.g. school notebook, random notes)
-    if (totalScore == 0 || (loanScore == 0 && deedScore == 0 && jobScore == 0 && medicalScore == 0 && legalScore < 2)) {
+    if (totalScore == 0 ||
+        (loanScore == 0 &&
+            deedScore == 0 &&
+            jobScore == 0 &&
+            medicalScore == 0 &&
+            legalScore < 2)) {
       return DocumentAnalysis(
         category: DocumentCategory.unrecognized,
         severity: DocumentSeverity.unknown,
@@ -113,7 +184,6 @@ class RuleEngine {
       );
     }
 
-    // 4. Determine winning category
     DocumentCategory category = DocumentCategory.loan;
     int highestScore = loanScore;
 
@@ -130,7 +200,6 @@ class RuleEngine {
       highestScore = medicalScore;
     }
 
-    // If highest category score is too weak (e.g., only 1 weak match without legal context)
     if (highestScore < 1 && legalScore < 2) {
       return DocumentAnalysis(
         category: DocumentCategory.unrecognized,
@@ -143,23 +212,42 @@ class RuleEngine {
     }
 
     final List<String> warnings = [];
+    final List<ClauseHighlight> highlights = [];
     DocumentSeverity severity = DocumentSeverity.safe;
 
-    // 5. Evaluate Category Specific Predatory Rules
-
-    // --- Category: LOAN ---
+    // --- LOAN ---
     if (category == DocumentCategory.loan) {
-      final interestRegex = RegExp(r'(\d+)%\s*(?:per annum|annual|interest|yearly|interest rate|ब्याज|प्रति वर्ष)', caseSensitive: false);
+      final interestRegex = RegExp(
+        r'(\d+)%\s*(?:per annum|annual|interest|yearly|interest rate|ब्याज|प्रति वर्ष)',
+        caseSensitive: false,
+      );
       final match = interestRegex.firstMatch(normalized);
       int interestRate = 0;
 
       if (match != null && match.group(1) != null) {
         interestRate = int.tryParse(match.group(1)!) ?? 0;
+        _addRegexHighlight(
+          original: original,
+          normalized: normalized,
+          pattern: interestRegex,
+          warningKey: 'alert_high_interest',
+          highlights: highlights,
+        );
       } else {
-        final monthlyRegex = RegExp(r'(\d+)%\s*(?:per month|monthly|प्रति माह)', caseSensitive: false);
+        final monthlyRegex = RegExp(
+          r'(\d+)%\s*(?:per month|monthly|प्रति माह)',
+          caseSensitive: false,
+        );
         final monthlyMatch = monthlyRegex.firstMatch(normalized);
         if (monthlyMatch != null && monthlyMatch.group(1) != null) {
           interestRate = (int.tryParse(monthlyMatch.group(1)!) ?? 0) * 12;
+          _addRegexHighlight(
+            original: original,
+            normalized: normalized,
+            pattern: monthlyRegex,
+            warningKey: 'alert_high_interest',
+            highlights: highlights,
+          );
         }
       }
 
@@ -171,6 +259,21 @@ class RuleEngine {
           normalized.contains('चक्रवृद्धि')) {
         warnings.add('alert_high_interest');
         severity = DocumentSeverity.danger;
+        _addKeywordHighlight(
+          original: original,
+          normalized: normalized,
+          needles: [
+            'compound interest',
+            'चक्रवृद्धि',
+            '30%',
+            '36%',
+            '40%',
+            'interest rate',
+            'ब्याज',
+          ],
+          warningKey: 'alert_high_interest',
+          highlights: highlights,
+        );
       }
 
       if (_matchesKeyword(normalized, 'seize') ||
@@ -183,6 +286,22 @@ class RuleEngine {
           normalized.contains('அடமானம்')) {
         warnings.add('alert_collateral');
         severity = DocumentSeverity.danger;
+        _addKeywordHighlight(
+          original: original,
+          normalized: normalized,
+          needles: [
+            'seize',
+            'collateral',
+            'forfeit',
+            'mortgage',
+            'guarantee land',
+            'गिरवी',
+            'जब्त',
+            'அடமானம்',
+          ],
+          warningKey: 'alert_collateral',
+          highlights: highlights,
+        );
       }
 
       if (normalized.contains('processing fee') ||
@@ -194,10 +313,23 @@ class RuleEngine {
         if (severity != DocumentSeverity.danger) {
           severity = DocumentSeverity.warning;
         }
+        _addKeywordHighlight(
+          original: original,
+          normalized: normalized,
+          needles: [
+            'processing fee',
+            'admin fee',
+            'hidden cost',
+            'commission',
+            'कमीशन',
+          ],
+          warningKey: 'alert_hidden_fee',
+          highlights: highlights,
+        );
       }
     }
 
-    // --- Category: DEED ---
+    // --- DEED ---
     if (category == DocumentCategory.deed) {
       if (normalized.contains('transfer all rights') ||
           _matchesKeyword(normalized, 'irrevocable') ||
@@ -205,6 +337,18 @@ class RuleEngine {
           normalized.contains('अधिकार हस्तांतरण')) {
         warnings.add('alert_collateral');
         severity = DocumentSeverity.danger;
+        _addKeywordHighlight(
+          original: original,
+          normalized: normalized,
+          needles: [
+            'transfer all rights',
+            'irrevocable',
+            'relinquish',
+            'अधिकार हस्तांतरण',
+          ],
+          warningKey: 'alert_collateral',
+          highlights: highlights,
+        );
       }
       if (normalized.contains('without consent') ||
           normalized.contains('spouse signature') ||
@@ -213,10 +357,21 @@ class RuleEngine {
         if (severity != DocumentSeverity.danger) {
           severity = DocumentSeverity.warning;
         }
+        _addKeywordHighlight(
+          original: original,
+          normalized: normalized,
+          needles: [
+            'without consent',
+            'spouse signature',
+            'बिना सहमति',
+          ],
+          warningKey: 'alert_collateral',
+          highlights: highlights,
+        );
       }
     }
 
-    // --- Category: JOB CONTRACT ---
+    // --- JOB ---
     if (category == DocumentCategory.job) {
       if (normalized.contains('overtime without pay') ||
           normalized.contains('no overtime') ||
@@ -224,6 +379,18 @@ class RuleEngine {
           normalized.contains('बिना अतिरिक्त भुगतान')) {
         warnings.add('alert_unpaid_labor');
         severity = DocumentSeverity.danger;
+        _addKeywordHighlight(
+          original: original,
+          normalized: normalized,
+          needles: [
+            'overtime without pay',
+            'no overtime',
+            'additional hours',
+            'बिना अतिरिक्त भुगतान',
+          ],
+          warningKey: 'alert_unpaid_labor',
+          highlights: highlights,
+        );
       }
       if (normalized.contains('cannot resign') ||
           normalized.contains('bond period') ||
@@ -234,10 +401,23 @@ class RuleEngine {
         if (severity != DocumentSeverity.danger) {
           severity = DocumentSeverity.warning;
         }
+        _addKeywordHighlight(
+          original: original,
+          normalized: normalized,
+          needles: [
+            'cannot resign',
+            'bond period',
+            'penalty fee',
+            'notice period 6 months',
+            'जुर्माना',
+          ],
+          warningKey: 'alert_no_exit',
+          highlights: highlights,
+        );
       }
     }
 
-    // --- Category: MEDICAL CONSENT ---
+    // --- MEDICAL ---
     if (category == DocumentCategory.medical) {
       if (normalized.contains('not responsible') ||
           normalized.contains('waive liability') ||
@@ -246,16 +426,33 @@ class RuleEngine {
           normalized.contains('जिम्मेदार नहीं')) {
         warnings.add('alert_medical_liability');
         severity = DocumentSeverity.warning;
+        _addKeywordHighlight(
+          original: original,
+          normalized: normalized,
+          needles: [
+            'not responsible',
+            'waive liability',
+            'at own risk',
+            'no claims',
+            'जिम्मेदार नहीं',
+          ],
+          warningKey: 'alert_medical_liability',
+          highlights: highlights,
+        );
       }
     }
+
+    // Sort highlights by position for rendering
+    highlights.sort((a, b) => a.start.compareTo(b.start));
 
     return DocumentAnalysis(
       category: category,
       severity: severity,
       warningKeys: warnings,
-      rawText: text,
+      rawText: original,
       analyzedAt: DateTime.now(),
       confidenceScore: (highestScore / 5.0).clamp(0.4, 1.0),
+      highlights: highlights,
     );
   }
 }

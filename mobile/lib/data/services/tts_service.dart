@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:audioplayers/audioplayers.dart';
@@ -8,20 +10,25 @@ import 'package:http/http.dart' as http;
 import '../../domain/models/language.dart';
 import '../../domain/models/localized_content.dart';
 
-/// TtsService — Smart 3-layer TTS engine for VaakSetu.
+/// Cached online TTS audio for instant replay of common phrases.
+class _CachedAudio {
+  final Uint8List bytes;
+  final String layer; // 'bhashini' | 'ai4bharat'
+  _CachedAudio({required this.bytes, required this.layer});
+}
+
+/// TtsService — Fast-start TTS for VaakSetu.
 ///
-/// LAYER 1 (Best — Bhashini / ULCA online):
-///   → Pipeline Config + Compute (MeitY / AI4Bharat)
-///   → Requires BHASHINI_USER_ID + BHASHINI_UDYAT_KEY + BHASHINI_INFERENCE_KEY
+/// HOT PATH (speak): device TTS immediately — never silent-wait on network.
+///   → Target: audible speech within ~1–2 seconds.
+///   → Captions armed only when device/audio actually starts.
 ///
-/// LAYER 2 (Good — HuggingFace AI4Bharat):
-///   → HuggingFace Inference API for ai4bharat/indic-parler-tts
-///   → Requires HF_TOKEN
+/// ONLINE (opportunistic, background):
+///   LAYER 1 — Bhashini / ULCA (MeitY / AI4Bharat)
+///   LAYER 2 — HuggingFace ai4bharat/indic-parler-tts
+///   Prefetched + cached for the *next* utterance of the same text.
 ///
-/// LAYER 3 (Always available — offline):
-///   → Device TTS via flutter_tts
-///
-/// Priority: Bhashini → HuggingFace → Device TTS
+/// LAYER 3 (always): Device TTS via flutter_tts
 class TtsService extends ChangeNotifier {
   // ──────────────────────────────────────────────────────────────────
   // Bhashini / ULCA (LAYER 1)
@@ -74,9 +81,23 @@ class TtsService extends ChangeNotifier {
   String? _lastSpokenLangCode;
   bool _wasSpeakingBeforePause = false;
 
+  /// Shorts-style caption karaoke (footer).
+  List<String> _captionTokens = const [];
+  int _captionActiveIndex = -1;
+  Timer? _captionTimer;
+  StreamSubscription<Duration>? _audioPosSub;
+  /// True only after real audio/TTS has started — captions must not run early.
+  bool _captionArmed = false;
+  Completer<void>? _deviceSpeakCompleter;
+
   /// Incremented on every [stop]/[speak] so in-flight Bhashini/HF work
   /// cannot play audio after navigation or a newer speak request.
   int _speakGeneration = 0;
+
+  /// Generation that owns the current device/audio utterance. Completion and
+  /// cancel handlers only clear UI state when this still matches
+  /// [_speakGeneration] — otherwise a newer [speak] already owns captions.
+  int _activeUtteranceGeneration = 0;
 
   /// Serializes stop/play on both engines so an older async [stop] cannot
   /// halt audio that a newer [speak] already started.
@@ -86,6 +107,17 @@ class TtsService extends ChangeNotifier {
   String? _bhashiniCallbackUrl;
   String? _bhashiniPipelineIdUsed;
   final Map<String, String> _bhashiniServiceIds = {};
+  /// In-flight Bhashini config fetches — shared by [prepareForLanguage] / prefetch.
+  final Map<String, Future<String?>> _bhashiniServiceIdFutures = {};
+
+  /// Online audio cache (lang+text → bytes). Instant path for tour/scanner tips.
+  static const int _maxAudioCacheEntries = 32;
+  final LinkedHashMap<String, _CachedAudio> _audioCache = LinkedHashMap();
+  final Set<String> _prefetchInFlight = {};
+
+  /// Hard caps so halt/init never add multi-second silence before speech.
+  static const Duration _haltTimeout = Duration(milliseconds: 250);
+  static const Duration _initStepTimeout = Duration(milliseconds: 800);
 
   VoidCallback? onSpeechStarted;
   VoidCallback? onSpeechFinished;
@@ -98,15 +130,31 @@ class TtsService extends ChangeNotifier {
       _lastSpokenText!.isNotEmpty &&
       _lastSpokenLangCode != null;
 
+  /// Tokens currently shown in the speaking caption bar (empty when idle).
+  List<String> get captionTokens => _captionTokens;
+  /// Index of the highlighted word (-1 when idle).
+  int get captionActiveIndex => _captionActiveIndex;
+  bool get hasActiveCaption =>
+      _isPlaying && _captionTokens.isNotEmpty && _captionActiveIndex >= 0;
+
   bool get _bhashiniConfigured =>
       _bhashiniUserId.isNotEmpty &&
       _bhashiniUdyatKey.isNotEmpty &&
       _bhashiniInferenceKey.isNotEmpty;
 
   // ──────────────────────────────────────────────────────────────────
-  // Initialization
+  // Initialization (lazy — never block first frame / runApp)
   // ──────────────────────────────────────────────────────────────────
-  Future<void> init() async {
+
+  Future<void>? _initFuture;
+
+  /// Idempotent warm-up. Safe to call from post-frame or before first speak.
+  Future<void> ensureInitialized() => _initFuture ??= _initInternal();
+
+  /// Alias for [ensureInitialized] (call sites / tests).
+  Future<void> init() => ensureInitialized();
+
+  Future<void> _initInternal() async {
     await _initDeviceTts();
     await _audioPlayer.setReleaseMode(ReleaseMode.stop);
 
@@ -129,36 +177,144 @@ class TtsService extends ChangeNotifier {
     }
   }
 
+  /// Prefetch Bhashini pipeline + common prompt audio for [langCode].
+  /// Never speaks or stops audio — warms cache for the next speak.
+  Future<void> prepareForLanguage(String langCode) async {
+    try {
+      await ensureInitialized().timeout(const Duration(seconds: 2));
+    } catch (_) {}
+    if (_bhashiniConfigured) {
+      unawaited(
+        _ensureBhashiniServiceId(langCode).timeout(
+          const Duration(seconds: 8),
+          onTimeout: () => null,
+        ),
+      );
+    }
+    // Warm cache for high-frequency prompts so replay / next screen is instant.
+    for (final key in const ['welcome', 'scan_prompt', 'processing']) {
+      final text = LocalizedContent.getPrompt(langCode, key);
+      if (text.isNotEmpty) {
+        unawaited(_prefetchOnlineAudio(text, langCode));
+      }
+    }
+  }
+
+  /// Kick device init + Bhashini pipeline configs for all supported langs.
+  /// Fire-and-forget from the language screen so first tour speak is warm.
+  void warmLanguagePipelines() {
+    unawaited(ensureInitialized().then((_) async {
+      if (!_bhashiniConfigured) return;
+      for (final lang in Language.supportedLanguages) {
+        unawaited(_ensureBhashiniServiceId(lang.code));
+      }
+    }));
+  }
+
   Future<void> _initDeviceTts() async {
     try {
-      await _flutterTts.setSpeechRate(0.45);
-      await _flutterTts.setVolume(1.0);
-      await _flutterTts.setPitch(1.0);
+      // Short timeouts — never block first speak for minutes on native hangs.
+      await _flutterTts
+          .setSpeechRate(0.45)
+          .timeout(_initStepTimeout, onTimeout: () {});
+      await _flutterTts
+          .setVolume(1.0)
+          .timeout(_initStepTimeout, onTimeout: () {});
+      await _flutterTts
+          .setPitch(1.0)
+          .timeout(_initStepTimeout, onTimeout: () {});
+      try {
+        await _flutterTts
+            .awaitSpeakCompletion(true)
+            .timeout(_initStepTimeout, onTimeout: () {});
+      } catch (_) {}
 
       _flutterTts.setStartHandler(() {
+        if (!_isCurrentGeneration(_activeUtteranceGeneration)) return;
         _isPlaying = true;
+        // Arm only when device TTS actually starts — never during network wait.
+        _armCaptionPlayback(estimateMsPerToken: _estimateMsPerToken());
         notifyListeners();
         onSpeechStarted?.call();
       });
       _flutterTts.setCompletionHandler(() {
+        _finishDeviceSpeak();
+        // Ignore stale completion after a newer speak/stop took ownership.
+        if (!_isCurrentGeneration(_activeUtteranceGeneration)) return;
+        _clearCaption();
         _isPlaying = false;
         notifyListeners();
         onSpeechFinished?.call();
       });
       _flutterTts.setCancelHandler(() {
+        _finishDeviceSpeak();
+        if (!_isCurrentGeneration(_activeUtteranceGeneration)) return;
+        _clearCaption();
         _isPlaying = false;
         notifyListeners();
         onSpeechFinished?.call();
       });
       _flutterTts.setErrorHandler((msg) {
         debugPrint('[TTS Device] Error: $msg');
+        _finishDeviceSpeak();
+        if (!_isCurrentGeneration(_activeUtteranceGeneration)) return;
+        _clearCaption();
         _isPlaying = false;
         notifyListeners();
         onSpeechFinished?.call();
       });
+      // Karaoke sync when device TTS reports word progress.
+      _flutterTts.setProgressHandler((text, start, end, word) {
+        if (!_isPlaying || !_captionArmed || _captionTokens.isEmpty) return;
+        // Progress is authoritative — drop timer fallback.
+        _captionTimer?.cancel();
+        _captionTimer = null;
+        // Prefer character-range mapping for strict sync.
+        if (start >= 0 && _lastSpokenText != null) {
+          final idx = _tokenIndexForCharOffset(start);
+          if (idx != _captionActiveIndex) {
+            _captionActiveIndex = idx;
+            notifyListeners();
+          }
+          return;
+        }
+        final w = word.trim();
+        if (w.isEmpty) return;
+        final lower = w.toLowerCase();
+        var idx = (_captionActiveIndex < 0 ? 0 : _captionActiveIndex);
+        for (var i = idx; i < _captionTokens.length; i++) {
+          final tok = _captionTokens[i].toLowerCase();
+          if (tok == lower || tok.contains(lower) || lower.contains(tok)) {
+            idx = i;
+            break;
+          }
+        }
+        if (idx != _captionActiveIndex) {
+          _captionActiveIndex = idx;
+          notifyListeners();
+        }
+      });
     } catch (e) {
       debugPrint('[TTS] Device init: $e');
     }
+  }
+
+  void _finishDeviceSpeak() {
+    final c = _deviceSpeakCompleter;
+    if (c != null && !c.isCompleted) c.complete();
+    _deviceSpeakCompleter = null;
+  }
+
+  int _tokenIndexForCharOffset(int charOffset) {
+    if (_captionTokens.isEmpty) return 0;
+    // Rebuild approximate offsets from joined tokens + spaces.
+    var cursor = 0;
+    for (var i = 0; i < _captionTokens.length; i++) {
+      final end = cursor + _captionTokens[i].length;
+      if (charOffset <= end) return i;
+      cursor = end + 1; // space
+    }
+    return _captionTokens.length - 1;
   }
 
   // ──────────────────────────────────────────────────────────────────
@@ -173,16 +329,30 @@ class TtsService extends ChangeNotifier {
     return result;
   }
 
+  /// Fire-and-forget native interrupt — must NOT wait on [_engineQueue].
+  /// Unblocks a queued/in-flight device utterance so [stop]/[speak] can
+  /// cut over without waiting for the previous script to finish.
+  void _interruptEnginesNow() {
+    _finishDeviceSpeak();
+    try {
+      unawaited(_audioPlayer.stop());
+    } catch (_) {}
+    try {
+      unawaited(_flutterTts.stop());
+    } catch (_) {}
+  }
+
   /// Stops both audioplayers and flutter_tts (queued, generation-aware).
+  /// Each stop is hard-capped so halt never adds multi-second silence.
   Future<void> _haltBothEngines(int generation) {
     return _enqueueEngineOp(() async {
       if (!_isCurrentGeneration(generation)) return;
       try {
-        await _audioPlayer.stop();
+        await _audioPlayer.stop().timeout(_haltTimeout, onTimeout: () {});
       } catch (_) {}
       if (!_isCurrentGeneration(generation)) return;
       try {
-        await _flutterTts.stop();
+        await _flutterTts.stop().timeout(_haltTimeout, onTimeout: () {});
       } catch (_) {}
     });
   }
@@ -190,55 +360,58 @@ class TtsService extends ChangeNotifier {
   Future<void> speak(String text, String langCode) async {
     if (text.isEmpty) return;
 
+    // Init must not block speak for long (already warm after first frame).
+    try {
+      await ensureInitialized().timeout(const Duration(seconds: 2));
+    } catch (e) {
+      debugPrint('[TTS] Init slow/failed ($e) — continuing device fast-path');
+    }
+
     // Own generation: invalidates any prior in-flight speak/network/play.
     final generation = ++_speakGeneration;
     _wasSpeakingBeforePause = false;
-    await _haltBothEngines(generation);
-    if (!_isCurrentGeneration(generation)) return;
+    // Cut previous audio immediately (do not wait for engine queue).
+    _interruptEnginesNow();
 
     _lastSpokenText = text;
     _lastSpokenLangCode = langCode;
     _isPlaying = true;
+    // Prepare tokens now; do NOT arm/advance until real audio starts.
+    _prepareCaption(text);
     notifyListeners();
-    onSpeechStarted?.call();
 
-    // Layer 1: Bhashini
-    if (_bhashiniConfigured) {
-      final ok = await _speakViaBhashini(text, langCode, generation);
-      if (!_isCurrentGeneration(generation)) return;
-      if (ok) {
-        _activeTtsLayer = 'bhashini';
-        debugPrint('[TTS] Layer used: bhashini');
-        return;
-      }
-      debugPrint('[TTS] Bhashini failed → falling back to next layer');
-    } else {
-      debugPrint(
-        '[TTS] Skipping Bhashini (keys not set) → next layer',
+    // Await halt so a late stop cannot kill the utterance we are about to start.
+    try {
+      await _haltBothEngines(generation).timeout(
+        const Duration(milliseconds: 600),
+        onTimeout: () {
+          debugPrint('[TTS] Halt timeout — speaking anyway');
+        },
       );
-    }
-
+    } catch (_) {}
     if (!_isCurrentGeneration(generation)) return;
 
-    // Layer 2: HuggingFace
-    if (_hfToken.isNotEmpty) {
-      final ok = await _speakViaHuggingFace(text, langCode, generation);
-      if (!_isCurrentGeneration(generation)) return;
-      if (ok) {
-        _activeTtsLayer = 'ai4bharat';
-        debugPrint('[TTS] Layer used: ai4bharat (HuggingFace)');
-        return;
-      }
-      debugPrint('[TTS] HuggingFace failed → falling back to device TTS');
-    } else {
-      debugPrint('[TTS] Skipping HuggingFace (HF_TOKEN not set) → device TTS');
+    final cacheKey = _audioCacheKey(langCode, text);
+
+    // Instant path: previously prefetched online audio (tour tips, welcome, etc.)
+    final cached = _takeCachedAudio(cacheKey);
+    if (cached != null) {
+      _activeTtsLayer = cached.layer;
+      debugPrint(
+        '[TTS] Cache hit (${cached.layer}) — online voice immediately',
+      );
+      // Refresh cache in background for a subsequent replay.
+      unawaited(_prefetchOnlineAudio(text, langCode));
+      final ok = await _playAudioBytes(cached.bytes, generation);
+      if (ok || !_isCurrentGeneration(generation)) return;
+      // Fall through to device if cached playback failed.
     }
 
-    if (!_isCurrentGeneration(generation)) return;
-
-    // Layer 3: Device TTS
+    // HOT PATH: device TTS immediately — never silent-wait on Bhashini/HF.
+    // Online quality voice is prefetched for the *next* speak of this text.
     _activeTtsLayer = 'device';
-    debugPrint('[TTS] Layer used: device');
+    debugPrint('[TTS] Fast-path: device TTS (online prefetch in background)');
+    unawaited(_prefetchOnlineAudio(text, langCode));
     await _speakViaDeviceTts(text, langCode, generation);
   }
 
@@ -256,28 +429,39 @@ class TtsService extends ChangeNotifier {
   Future<void> pauseForBackground() async {
     if (!_isPlaying) return;
     _wasSpeakingBeforePause = true;
+    await ensureInitialized();
     final generation = ++_speakGeneration;
+    _interruptEnginesNow();
     await _haltBothEngines(generation);
     if (!_isCurrentGeneration(generation)) return;
+    _clearCaption();
     _isPlaying = false;
     notifyListeners();
   }
 
   Future<void> resumeFromBackground() async {
-    if (_wasSpeakingBeforePause &&
-        _lastSpokenText != null &&
-        _lastSpokenLangCode != null) {
+    if (!_wasSpeakingBeforePause || !hasLastSpoken) {
       _wasSpeakingBeforePause = false;
-      await speak(_lastSpokenText!, _lastSpokenLangCode!);
+      return;
     }
+    _wasSpeakingBeforePause = false;
+    // Fresh speak() owns a new generation — avoids a dead paused state.
+    await speak(_lastSpokenText!, _lastSpokenLangCode!);
   }
 
   /// Clears BOTH device TTS and audioplayers, and cancels in-flight speak.
   Future<void> stop() async {
     _wasSpeakingBeforePause = false;
     final generation = ++_speakGeneration;
-    await _haltBothEngines(generation);
+    // Cut audio immediately so page navigation never waits on the old script.
+    _interruptEnginesNow();
+    // If init never started, nothing to halt on the native engines.
+    if (_initFuture != null) {
+      await ensureInitialized();
+      await _haltBothEngines(generation);
+    }
     if (!_isCurrentGeneration(generation)) return;
+    _clearCaption();
     _isPlaying = false;
     notifyListeners();
     onSpeechFinished?.call();
@@ -286,29 +470,93 @@ class TtsService extends ChangeNotifier {
   @override
   void dispose() {
     _speakGeneration++;
+    _clearCaption();
     _audioPlayer.dispose();
     _flutterTts.stop();
     super.dispose();
   }
 
   // ──────────────────────────────────────────────────────────────────
-  // Layer 1: Bhashini ULCA TTS
+  // Online fetch + cache (background only — never blocks hot-path speak)
   // ──────────────────────────────────────────────────────────────────
 
-  Future<bool> _speakViaBhashini(
-    String text,
-    String langCode,
-    int generation,
-  ) async {
+  String _audioCacheKey(String langCode, String text) =>
+      '$langCode|${text.hashCode}|${text.length}';
+
+  _CachedAudio? _takeCachedAudio(String key) {
+    final entry = _audioCache.remove(key);
+    if (entry == null) return null;
+    // Re-insert at end (LRU touch) so we keep popular phrases.
+    _audioCache[key] = entry;
+    return entry;
+  }
+
+  void _putCachedAudio(String key, _CachedAudio audio) {
+    _audioCache.remove(key);
+    _audioCache[key] = audio;
+    while (_audioCache.length > _maxAudioCacheEntries) {
+      _audioCache.remove(_audioCache.keys.first);
+    }
+  }
+
+  /// Fetch Bhashini/HF audio in the background and cache for the next speak.
+  /// Never plays audio — avoids caption desync from mid-utterance switches.
+  Future<void> _prefetchOnlineAudio(String text, String langCode) async {
+    if (!_bhashiniConfigured && _hfToken.isEmpty) return;
+    final key = _audioCacheKey(langCode, text);
+    if (_audioCache.containsKey(key) || _prefetchInFlight.contains(key)) {
+      return;
+    }
+    _prefetchInFlight.add(key);
     try {
-      final serviceId = await _ensureBhashiniServiceId(langCode);
-      if (!_isCurrentGeneration(generation)) return false;
+      Uint8List? bytes;
+      var layer = 'bhashini';
+
+      if (_bhashiniConfigured) {
+        try {
+          bytes = await _fetchBhashiniAudio(text, langCode)
+              .timeout(const Duration(seconds: 12));
+        } catch (e) {
+          debugPrint('[TTS Prefetch] Bhashini: $e');
+        }
+      }
+
+      if ((bytes == null || bytes.isEmpty) && _hfToken.isNotEmpty) {
+        layer = 'ai4bharat';
+        try {
+          bytes = await _fetchHuggingFaceAudio(text, langCode)
+              .timeout(const Duration(seconds: 12));
+        } catch (e) {
+          debugPrint('[TTS Prefetch] HF: $e');
+        }
+      }
+
+      if (bytes != null && bytes.isNotEmpty) {
+        _putCachedAudio(key, _CachedAudio(bytes: bytes, layer: layer));
+        debugPrint(
+          '[TTS Prefetch] Cached $layer (${bytes.length} bytes) key=$key',
+        );
+      }
+    } finally {
+      _prefetchInFlight.remove(key);
+    }
+  }
+
+  // ──────────────────────────────────────────────────────────────────
+  // Layer 1: Bhashini ULCA TTS (fetch only)
+  // ──────────────────────────────────────────────────────────────────
+
+  Future<Uint8List?> _fetchBhashiniAudio(String text, String langCode) async {
+    try {
+      // Cap config+compute so a hung pipeline cannot run forever in background.
+      final serviceId = await _ensureBhashiniServiceId(langCode)
+          .timeout(const Duration(seconds: 6), onTimeout: () => null);
       if (serviceId == null || _bhashiniCallbackUrl == null) {
         debugPrint(
           '[TTS Bhashini] Config failed — no serviceId/callbackUrl '
           '(lang=$langCode)',
         );
-        return false;
+        return null;
       }
 
       final computeBody = {
@@ -338,57 +586,66 @@ class TtsService extends ChangeNotifier {
             },
             body: jsonEncode(computeBody),
           )
-          .timeout(const Duration(seconds: 20));
-
-      if (!_isCurrentGeneration(generation)) return false;
+          .timeout(const Duration(seconds: 6));
 
       if (response.statusCode != 200) {
         debugPrint(
-          '[TTS Bhashini] Compute HTTP ${response.statusCode} — fallback',
+          '[TTS Bhashini] Compute HTTP ${response.statusCode} — skip',
         );
-        return false;
+        return null;
       }
 
       final decoded = jsonDecode(response.body);
       if (decoded is! Map<String, dynamic>) {
-        debugPrint('[TTS Bhashini] Unexpected compute JSON — fallback');
-        return false;
+        debugPrint('[TTS Bhashini] Unexpected compute JSON — skip');
+        return null;
       }
 
       final audioB64 = _extractTtsAudioBase64(decoded);
       if (audioB64 == null || audioB64.isEmpty) {
-        debugPrint('[TTS Bhashini] No audioContent in response — fallback');
-        return false;
+        debugPrint('[TTS Bhashini] No audioContent in response — skip');
+        return null;
       }
 
-      final bytes = base64Decode(audioB64);
+      final bytes = Uint8List.fromList(base64Decode(audioB64));
       debugPrint(
         '[TTS Bhashini] Got ${bytes.length} audio bytes '
         '(pipeline=$_bhashiniPipelineIdUsed)',
       );
-      return await _playAudioBytes(bytes, generation);
+      return bytes;
     } catch (e) {
       debugPrint('[TTS Bhashini] Exception: $e');
-      return false;
+      return null;
     }
   }
 
-  Future<String?> _ensureBhashiniServiceId(String langCode) async {
+  Future<String?> _ensureBhashiniServiceId(String langCode) {
     final cached = _bhashiniServiceIds[langCode];
-    if (cached != null && _bhashiniCallbackUrl != null) return cached;
-
-    for (final pipelineId in _bhashiniPipelineIds) {
-      final ok = await _fetchBhashiniConfig(pipelineId, langCode);
-      if (ok) {
-        _bhashiniPipelineIdUsed = pipelineId;
-        return _bhashiniServiceIds[langCode];
-      }
-      debugPrint(
-        '[TTS Bhashini] Config failed for pipeline $pipelineId '
-        '(lang=$langCode) — trying next',
-      );
+    if (cached != null && _bhashiniCallbackUrl != null) {
+      return Future.value(cached);
     }
-    return null;
+
+    return _bhashiniServiceIdFutures.putIfAbsent(langCode, () async {
+      try {
+        for (final pipelineId in _bhashiniPipelineIds) {
+          final ok = await _fetchBhashiniConfig(pipelineId, langCode);
+          if (ok) {
+            _bhashiniPipelineIdUsed = pipelineId;
+            return _bhashiniServiceIds[langCode];
+          }
+          debugPrint(
+            '[TTS Bhashini] Config failed for pipeline $pipelineId '
+            '(lang=$langCode) — trying next',
+          );
+        }
+        return null;
+      } finally {
+        // Allow retry on failure; success stays in _bhashiniServiceIds.
+        if (_bhashiniServiceIds[langCode] == null) {
+          _bhashiniServiceIdFutures.remove(langCode);
+        }
+      }
+    });
   }
 
   Future<bool> _fetchBhashiniConfig(String pipelineId, String langCode) async {
@@ -415,7 +672,7 @@ class TtsService extends ChangeNotifier {
             },
             body: jsonEncode(body),
           )
-          .timeout(const Duration(seconds: 15));
+          .timeout(const Duration(seconds: 5));
 
       if (response.statusCode != 200) {
         debugPrint(
@@ -515,13 +772,12 @@ class TtsService extends ChangeNotifier {
   }
 
   // ──────────────────────────────────────────────────────────────────
-  // Layer 2: HuggingFace AI4Bharat Indic Parler-TTS
+  // Layer 2: HuggingFace AI4Bharat Indic Parler-TTS (fetch only)
   // ──────────────────────────────────────────────────────────────────
 
-  Future<bool> _speakViaHuggingFace(
+  Future<Uint8List?> _fetchHuggingFaceAudio(
     String text,
     String langCode,
-    int generation,
   ) async {
     try {
       final voiceDescription = _getVoiceDescription(langCode);
@@ -541,19 +797,17 @@ class TtsService extends ChangeNotifier {
               },
             }),
           )
-          .timeout(const Duration(seconds: 10));
-
-      if (!_isCurrentGeneration(generation)) return false;
+          .timeout(const Duration(seconds: 6));
 
       if (response.statusCode == 200 &&
           response.headers['content-type']?.contains('audio') == true) {
-        return await _playAudioBytes(response.bodyBytes, generation);
+        return response.bodyBytes;
       }
 
+      // Cold-start: one short retry only (background prefetch — not hot path).
       if (response.statusCode == 503) {
-        debugPrint('[TTS HF] Model loading, retrying in 3s...');
-        await Future.delayed(const Duration(seconds: 3));
-        if (!_isCurrentGeneration(generation)) return false;
+        debugPrint('[TTS HF] Model loading, one quick retry...');
+        await Future.delayed(const Duration(milliseconds: 800));
         final retry = await http
             .post(
               Uri.parse(_hfApiUrl),
@@ -566,19 +820,18 @@ class TtsService extends ChangeNotifier {
                 'parameters': {'description': voiceDescription},
               }),
             )
-            .timeout(const Duration(seconds: 12));
-        if (!_isCurrentGeneration(generation)) return false;
+            .timeout(const Duration(seconds: 6));
         if (retry.statusCode == 200 &&
             retry.headers['content-type']?.contains('audio') == true) {
-          return await _playAudioBytes(retry.bodyBytes, generation);
+          return retry.bodyBytes;
         }
       }
 
       debugPrint('[TTS HF] Response ${response.statusCode}');
-      return false;
+      return null;
     } catch (e) {
       debugPrint('[TTS HF] Exception: $e');
-      return false;
+      return null;
     }
   }
 
@@ -597,13 +850,19 @@ class TtsService extends ChangeNotifier {
         } catch (_) {}
         if (!_isCurrentGeneration(generation)) return;
 
-        _isPlaying = true;
-        notifyListeners();
-
+        _activeUtteranceGeneration = generation;
         completion = _audioPlayer.onPlayerComplete.first;
         await _audioPlayer.play(
           BytesSource(Uint8List.fromList(bytes)),
         );
+        if (!_isCurrentGeneration(generation)) return;
+
+        // Arm captions only after play() — never during network wait.
+        _isPlaying = true;
+        _armCaptionPlayback();
+        notifyListeners();
+        onSpeechStarted?.call();
+        unawaited(_syncCaptionToAudio(generation));
       });
 
       if (completion == null || !_isCurrentGeneration(generation)) {
@@ -614,6 +873,7 @@ class TtsService extends ChangeNotifier {
 
       if (!_isCurrentGeneration(generation)) return false;
 
+      _clearCaption();
       _isPlaying = false;
       notifyListeners();
       onSpeechFinished?.call();
@@ -627,6 +887,7 @@ class TtsService extends ChangeNotifier {
         } catch (_) {}
       });
       if (!_isCurrentGeneration(generation)) return false;
+      _clearCaption();
       _isPlaying = false;
       notifyListeners();
       onSpeechFinished?.call();
@@ -645,25 +906,212 @@ class TtsService extends ChangeNotifier {
   ) async {
     if (!_isCurrentGeneration(generation)) return;
     try {
+      final completer = Completer<void>();
+      _deviceSpeakCompleter = completer;
+      _activeUtteranceGeneration = generation;
+
+      // Start inside the queue; wait for completion OUTSIDE so a concurrent
+      // stop()/speak() halt can run without waiting for this utterance.
+      // (Mirrors [_playAudioBytes] — awaitSpeakCompletion must not hold queue.)
       await _enqueueEngineOp(() async {
         if (!_isCurrentGeneration(generation)) return;
         try {
-          await _audioPlayer.stop();
+          await _audioPlayer.stop().timeout(_haltTimeout, onTimeout: () {});
         } catch (_) {}
         if (!_isCurrentGeneration(generation)) return;
 
         final language = Language.fromCode(langCode);
-        await _flutterTts.setLanguage(language.ttsLocale);
+        // setLanguage can hang while downloading a voice pack — never wait long.
+        try {
+          await _flutterTts
+              .setLanguage(language.ttsLocale)
+              .timeout(_initStepTimeout, onTimeout: () {
+            debugPrint(
+              '[TTS Device] setLanguage timeout — speaking with default locale',
+            );
+          });
+        } catch (e) {
+          debugPrint('[TTS Device] setLanguage: $e');
+        }
         if (!_isCurrentGeneration(generation)) return;
-        await _flutterTts.speak(text);
+
+        _isPlaying = true;
+        notifyListeners();
+
+        // Kick off speak; do not await completion inside the engine queue.
+        try {
+          final speakFuture = _flutterTts.speak(text);
+          unawaited(
+            speakFuture.then((_) {}, onError: (_) {}),
+          );
+        } catch (e) {
+          debugPrint('[TTS Device] speak kickoff error: $e');
+          _finishDeviceSpeak();
+        }
       });
+
+      if (!_isCurrentGeneration(generation)) {
+        _finishDeviceSpeak();
+        return;
+      }
+
+      // Wait for cancel/completion handlers (or speak future) outside the queue.
+      final pending = _deviceSpeakCompleter;
+      if (pending != null && !pending.isCompleted) {
+        await pending.future.timeout(
+          Duration(milliseconds: _estimateSpeakTimeoutMs()),
+          onTimeout: () {
+            debugPrint('[TTS Device] Completion timeout — clearing');
+          },
+        );
+      }
+
+      if (!_isCurrentGeneration(generation)) return;
+
+      // Handlers normally clear; ensure we don't leave a stuck playing state.
+      if (_isPlaying) {
+        _finishDeviceSpeak();
+        _clearCaption();
+        _isPlaying = false;
+        notifyListeners();
+        onSpeechFinished?.call();
+      }
     } catch (e) {
       debugPrint('[TTS Device] speak error: $e');
+      _finishDeviceSpeak();
       if (!_isCurrentGeneration(generation)) return;
+      _clearCaption();
       _isPlaying = false;
       notifyListeners();
       onSpeechFinished?.call();
     }
+  }
+
+  // ──────────────────────────────────────────────────────────────────
+  // Caption karaoke (YouTube Shorts–style footer)
+  // ──────────────────────────────────────────────────────────────────
+
+  /// Tokenize caption text. Does NOT start the ticker — call [_armCaptionPlayback]
+  /// only when audio / device TTS has actually started.
+  void _prepareCaption(String text) {
+    _captionTimer?.cancel();
+    _captionTimer = null;
+    unawaited(_audioPosSub?.cancel());
+    _audioPosSub = null;
+    _captionArmed = false;
+
+    _captionTokens = text
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .trim()
+        .split(' ')
+        .where((t) => t.isNotEmpty)
+        .toList();
+    // Stay at -1 until playback starts so the footer stays idle.
+    _captionActiveIndex = -1;
+  }
+
+  /// Start karaoke highlighting. Resets index to 0. Optional timer is a
+  /// fallback when device progress / audio position is unavailable.
+  void _armCaptionPlayback({int? estimateMsPerToken}) {
+    _captionTimer?.cancel();
+    _captionTimer = null;
+
+    _captionArmed = true;
+    _captionActiveIndex = _captionTokens.isEmpty ? -1 : 0;
+
+    if (estimateMsPerToken != null &&
+        estimateMsPerToken > 0 &&
+        _captionTokens.length > 1) {
+      _captionTimer = Timer.periodic(
+        Duration(milliseconds: estimateMsPerToken),
+        (timer) {
+          if (!_isPlaying || !_captionArmed || _captionTokens.isEmpty) {
+            timer.cancel();
+            return;
+          }
+          if (_captionActiveIndex < _captionTokens.length - 1) {
+            _captionActiveIndex++;
+            notifyListeners();
+          } else {
+            timer.cancel();
+          }
+        },
+      );
+    }
+    notifyListeners();
+  }
+
+  int _estimateMsPerToken() {
+    if (_captionTokens.isEmpty) return 340;
+    final chars = (_lastSpokenText ?? '').length;
+    // Slow, clear speech (~11–12 chars/sec) for rural listeners.
+    final totalMs = (chars / 11.5 * 1000).clamp(900.0, 90000.0);
+    return (totalMs / _captionTokens.length).round().clamp(160, 900);
+  }
+
+  int _estimateSpeakTimeoutMs() {
+    final chars = (_lastSpokenText ?? '').length;
+    return (10000 + chars * 90).clamp(12000, 180000);
+  }
+
+  Future<void> _syncCaptionToAudio(int generation) async {
+    try {
+      Duration? duration;
+      for (var i = 0; i < 25; i++) {
+        if (!_isCurrentGeneration(generation) || !_captionArmed) return;
+        try {
+          duration = await _audioPlayer.getDuration();
+        } catch (_) {
+          duration = null;
+        }
+        if (duration != null && duration.inMilliseconds > 200) break;
+        await Future<void>.delayed(const Duration(milliseconds: 40));
+      }
+      if (!_isCurrentGeneration(generation) || !_captionArmed) return;
+      if (duration == null ||
+          duration.inMilliseconds < 200 ||
+          _captionTokens.isEmpty) {
+        // Duration unknown — fall back to estimated timer.
+        if (_captionTokens.length > 1 && _captionTimer == null) {
+          _armCaptionPlayback(estimateMsPerToken: _estimateMsPerToken());
+        }
+        return;
+      }
+
+      final totalMs = duration.inMilliseconds;
+
+      // Switch from any timer fallback to audio-position-driven index.
+      _captionTimer?.cancel();
+      _captionTimer = null;
+      await _audioPosSub?.cancel();
+      _audioPosSub = _audioPlayer.onPositionChanged.listen((pos) {
+        if (!_isCurrentGeneration(generation) ||
+            !_isPlaying ||
+            !_captionArmed) {
+          return;
+        }
+        if (totalMs <= 0 || _captionTokens.isEmpty) return;
+        final idx = ((pos.inMilliseconds / totalMs) * _captionTokens.length)
+            .floor()
+            .clamp(0, _captionTokens.length - 1);
+        if (idx != _captionActiveIndex) {
+          _captionActiveIndex = idx;
+          notifyListeners();
+        }
+      });
+    } catch (e) {
+      debugPrint('[TTS Caption] audio sync: $e');
+    }
+  }
+
+  void _clearCaption() {
+    _captionTimer?.cancel();
+    _captionTimer = null;
+    unawaited(_audioPosSub?.cancel());
+    _audioPosSub = null;
+    _captionArmed = false;
+    _captionTokens = const [];
+    _captionActiveIndex = -1;
   }
 
   // ──────────────────────────────────────────────────────────────────

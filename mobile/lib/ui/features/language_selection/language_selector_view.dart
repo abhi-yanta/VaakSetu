@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import '../../../data/services/haptic_service.dart';
 import '../../../data/services/tts_service.dart';
@@ -6,7 +8,7 @@ import '../../../domain/models/localized_content.dart';
 import '../../core/app_colors.dart';
 import '../../core/listen_again_button.dart';
 
-class LanguageSelectorView extends StatelessWidget {
+class LanguageSelectorView extends StatefulWidget {
   final Function(String langCode) onLanguageSelected;
   final TtsService ttsService;
 
@@ -16,9 +18,32 @@ class LanguageSelectorView extends StatelessWidget {
     required this.ttsService,
   });
 
+  @override
+  State<LanguageSelectorView> createState() => _LanguageSelectorViewState();
+}
+
+class _LanguageSelectorViewState extends State<LanguageSelectorView> {
+  @override
+  void initState() {
+    super.initState();
+    // Re-warm on every open (welcome → language, or back to language).
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      widget.ttsService.ensureInitialized();
+      widget.ttsService.warmLanguagePipelines();
+    });
+  }
+
   void _replayWelcome() {
     HapticService.lightTap();
-    ttsService.speakPrompt('welcome', 'hi');
+    widget.ttsService.speakPrompt('welcome', 'hi');
+  }
+
+  void _onLangTap(String langCode) {
+    HapticService.selectionClick();
+    // Prefetch locale/pipeline before parent navigates + speaks tour.
+    unawaited(widget.ttsService.prepareForLanguage(langCode));
+    widget.onLanguageSelected(langCode);
   }
 
   @override
@@ -69,10 +94,7 @@ class LanguageSelectorView extends StatelessWidget {
               final lang = Language.supportedLanguages[index];
               return _LanguageTile(
                 language: lang,
-                onTap: () {
-                  HapticService.selectionClick();
-                  onLanguageSelected(lang.code);
-                },
+                onTap: () => _onLangTap(lang.code),
               );
             },
           ),

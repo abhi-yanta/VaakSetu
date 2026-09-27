@@ -5,8 +5,8 @@ import '../../../data/services/haptic_service.dart';
 import '../../../data/services/preset_service.dart';
 import '../../../domain/models/localized_content.dart';
 import '../../core/app_colors.dart';
-import '../../core/tactile_button.dart';
 
+/// Full-screen legal document scanner (live camera + gallery + shutter).
 class CameraScannerView extends StatefulWidget {
   final String selectedLang;
   final Function(String imagePath) onImageCaptured;
@@ -46,12 +46,10 @@ class _CameraScannerViewState extends State<CameraScannerView> {
     try {
       _cameras = await availableCameras();
       if (_cameras.isNotEmpty) {
-        // Prefer rear camera
         _selectedCameraIndex = _cameras.indexWhere(
           (c) => c.lensDirection == CameraLensDirection.back,
         );
         if (_selectedCameraIndex == -1) _selectedCameraIndex = 0;
-
         await _startCamera(_cameras[_selectedCameraIndex]);
       }
     } catch (e) {
@@ -62,7 +60,8 @@ class _CameraScannerViewState extends State<CameraScannerView> {
   Future<void> _startCamera(CameraDescription camera) async {
     final controller = CameraController(
       camera,
-      ResolutionPreset.high,
+      // Higher capture quality for document OCR readability.
+      ResolutionPreset.veryHigh,
       enableAudio: false,
     );
 
@@ -76,6 +75,23 @@ class _CameraScannerViewState extends State<CameraScannerView> {
       }
     } catch (e) {
       debugPrint("Failed to start camera controller: $e");
+      // Fallback if veryHigh is unsupported on device.
+      try {
+        final fallback = CameraController(
+          camera,
+          ResolutionPreset.high,
+          enableAudio: false,
+        );
+        await fallback.initialize();
+        if (mounted) {
+          setState(() {
+            _cameraController = fallback;
+            _isCameraReady = true;
+          });
+        }
+      } catch (e2) {
+        debugPrint("Camera fallback also failed: $e2");
+      }
     }
   }
 
@@ -93,7 +109,8 @@ class _CameraScannerViewState extends State<CameraScannerView> {
     HapticService.lightTap();
     try {
       final nextFlash = !_isFlashOn;
-      await _cameraController!.setFlashMode(nextFlash ? FlashMode.torch : FlashMode.off);
+      await _cameraController!
+          .setFlashMode(nextFlash ? FlashMode.torch : FlashMode.off);
       setState(() => _isFlashOn = nextFlash);
     } catch (e) {
       debugPrint("Flash toggle: $e");
@@ -101,9 +118,10 @@ class _CameraScannerViewState extends State<CameraScannerView> {
   }
 
   Future<void> _capturePhoto() async {
-    if (_cameraController == null || !_cameraController!.value.isInitialized) return;
+    if (_cameraController == null || !_cameraController!.value.isInitialized) {
+      return;
+    }
     HapticService.dangerFeedback();
-
     try {
       final XFile photo = await _cameraController!.takePicture();
       widget.onImageCaptured(photo.path);
@@ -117,7 +135,7 @@ class _CameraScannerViewState extends State<CameraScannerView> {
     try {
       final XFile? image = await _imagePicker.pickImage(
         source: ImageSource.gallery,
-        imageQuality: 90,
+        imageQuality: 95,
       );
       if (image != null) {
         widget.onImageCaptured(image.path);
@@ -127,138 +145,326 @@ class _CameraScannerViewState extends State<CameraScannerView> {
     }
   }
 
+  void _showDemoSheet() {
+    HapticService.lightTap();
+    final allPresets = PresetService.getPresets();
+    final presets = widget.forFormGuide
+        ? allPresets.where((p) => p.isForm).toList()
+        : allPresets.where((p) => !p.isForm).toList();
+    final ui =
+        LocalizedContent.uiTexts[widget.selectedLang] ?? LocalizedContent.uiTexts['hi']!;
+
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: AppColors.surfaceDark,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: AppColors.borderDark,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 14),
+                Text(
+                  ui['demo_docs'] ??
+                      LocalizedContent.get(widget.selectedLang, 'demo_docs'),
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: MediaQuery.sizeOf(context).height * 0.45,
+                  ),
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: presets.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 10),
+                    itemBuilder: (context, index) {
+                      final preset = presets[index];
+                      return Material(
+                        color: AppColors.bgDark,
+                        borderRadius: BorderRadius.circular(14),
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                            HapticService.lightTap();
+                            widget.onPresetSelected(preset);
+                          },
+                          borderRadius: BorderRadius.circular(14),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 14,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(color: AppColors.borderDark),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.article_rounded,
+                                  color: AppColors.primarySaffronLight,
+                                  size: 28,
+                                ),
+                                const SizedBox(width: 14),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        preset.title,
+                                        style: const TextStyle(
+                                          color: AppColors.textPrimary,
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 3),
+                                      Text(
+                                        preset.previewDescription,
+                                        style: const TextStyle(
+                                          color: AppColors.textMuted,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const Icon(
+                                  Icons.chevron_right_rounded,
+                                  color: AppColors.textMuted,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   void dispose() {
     _cameraController?.dispose();
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final ui = LocalizedContent.uiTexts[widget.selectedLang] ?? LocalizedContent.uiTexts['hi']!;
-    final allPresets = PresetService.getPresets();
-    final presets = widget.forFormGuide
-        ? allPresets.where((p) => p.isForm).toList()
-        : allPresets;
-    final scanTitle = widget.forFormGuide
-        ? LocalizedContent.get(widget.selectedLang, 'mode_form_title')
-        : (ui['take_photo'] ?? 'Scan Document');
-
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header Controls
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget _buildCameraPreview() {
+    if (!_isCameraReady || _cameraController == null) {
+      return ColoredBox(
+        color: Colors.black,
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textPrimary, size: 24),
-                onPressed: () {
-                  HapticService.lightTap();
-                  widget.onBack();
-                },
+              const CircularProgressIndicator(color: AppColors.primarySaffron),
+              const SizedBox(height: 16),
+              Text(
+                LocalizedContent.get(widget.selectedLang, 'camera_preparing'),
+                style: const TextStyle(color: Colors.white70, fontSize: 15),
               ),
-              Flexible(
-                child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: AppColors.surfaceDark,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.borderDark),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        widget.forFormGuide
-                            ? Icons.edit_note_rounded
-                            : Icons.document_scanner_rounded,
-                        color: AppColors.primarySaffronLight,
-                        size: 18,
-                      ),
-                      const SizedBox(width: 8),
-                      Flexible(
-                        child: Text(
-                          scanTitle,
-                          style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 13),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              if (_isCameraReady)
-                Row(
-                  children: [
-                    IconButton(
-                      icon: Icon(
-                        _isFlashOn ? Icons.flash_on_rounded : Icons.flash_off_rounded,
-                        color: _isFlashOn ? AppColors.warningYellow : AppColors.textSecondary,
-                      ),
-                      onPressed: _toggleFlash,
-                    ),
-                    if (_cameras.length > 1)
-                      IconButton(
-                        icon: const Icon(Icons.flip_camera_ios_rounded, color: AppColors.textSecondary),
-                        onPressed: _toggleCamera,
-                      ),
-                  ],
-                )
-              else
-                const SizedBox(width: 48),
             ],
           ),
-          const SizedBox(height: 12),
+        ),
+      );
+    }
 
-          // Camera Viewport or Fallback
-          // Fixed, comfortable height (340px) with BoxFit.cover:
-          // 1. Zero squishing/stretching (maintains native camera aspect ratio)
-          // 2. Fits on screen with shutter button clearly visible without scrolling!
-          ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: Container(
-              height: 340,
-              width: double.infinity,
-              color: Colors.black,
-              child: _isCameraReady && _cameraController != null
-                  ? Stack(
-                      fit: StackFit.expand,
-                      alignment: Alignment.center,
+    final previewSize = _cameraController!.value.previewSize;
+    // previewSize is landscape-oriented from the plugin; swap for portrait UI.
+    final previewW = previewSize?.height ?? 3.0;
+    final previewH = previewSize?.width ?? 4.0;
+
+    return FittedBox(
+      fit: BoxFit.cover,
+      clipBehavior: Clip.hardEdge,
+      child: SizedBox(
+        width: previewW,
+        height: previewH,
+        child: CameraPreview(_cameraController!),
+      ),
+    );
+  }
+
+  Widget _buildBottomControl({
+    required IconData icon,
+    required String label,
+    required VoidCallback? onTap,
+    bool highlight = false,
+  }) {
+    final enabled = onTap != null;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(10),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: !enabled
+                  ? Colors.white24
+                  : highlight
+                      ? AppColors.warningYellow
+                      : Colors.white,
+              size: 20,
+            ),
+            const SizedBox(height: 3),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              softWrap: true,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: enabled ? Colors.white70 : Colors.white24,
+                fontSize: 9,
+                fontWeight: FontWeight.w600,
+                height: 1.1,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final lang = widget.selectedLang;
+    final scanTitle = widget.forFormGuide
+        ? LocalizedContent.get(lang, 'mode_form_title')
+        : LocalizedContent.get(lang, 'take_photo');
+    final galleryLabel = LocalizedContent.getGalleryShortLabel(lang);
+    final flashLabel = LocalizedContent.getFlashLabel(lang);
+    final flipLabel = LocalizedContent.getFlipLabel(lang);
+    final demoLabel = LocalizedContent.get(lang, 'demo_docs');
+
+    return ColoredBox(
+      color: Colors.black,
+      child: SafeArea(
+        bottom: true,
+        child: Column(
+          children: [
+            // Thin header: back + title (outside camera frame)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(4, 4, 8, 4),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(
+                      Icons.arrow_back_ios_new_rounded,
+                      color: Colors.white,
+                      size: 22,
+                    ),
+                    onPressed: () {
+                      HapticService.lightTap();
+                      widget.onBack();
+                    },
+                  ),
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        FittedBox(
-                          fit: BoxFit.cover,
-                          clipBehavior: Clip.hardEdge,
-                          child: SizedBox(
-                            width: 100,
-                            height: 100 * _cameraController!.value.aspectRatio,
-                            child: CameraPreview(_cameraController!),
+                        Icon(
+                          widget.forFormGuide
+                              ? Icons.edit_note_rounded
+                              : Icons.description_outlined,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: Text(
+                            scanTitle,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                        // Framing Overlay Guide
-                        Container(
-                          margin: const EdgeInsets.all(20),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 48),
+                ],
+              ),
+            ),
+
+            // Camera frame — preview + overlay controls INSIDE the frame
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(12, 4, 12, 8),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(18),
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      _buildCameraPreview(),
+
+                      // Saffron border
+                      IgnorePointer(
+                        child: DecoratedBox(
                           decoration: BoxDecoration(
                             border: Border.all(
-                              color: AppColors.primarySaffronLight.withOpacity(0.75),
+                              color: AppColors.primarySaffronLight
+                                  .withValues(alpha: 0.9),
                               width: 2.5,
                             ),
-                            borderRadius: BorderRadius.circular(14),
+                            borderRadius: BorderRadius.circular(18),
                           ),
-                          child: Align(
-                            alignment: Alignment.topCenter,
+                        ),
+                      ),
+
+                      // Frame guide text (top, inside frame)
+                      Positioned(
+                        top: 14,
+                        left: 16,
+                        right: 16,
+                        child: IgnorePointer(
+                          child: Center(
                             child: Container(
-                              margin: const EdgeInsets.only(top: 10),
-                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 6,
+                              ),
                               decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.65),
+                                color: Colors.black.withValues(alpha: 0.65),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Text(
-                                LocalizedContent.getFrameGuide(widget.selectedLang),
+                                LocalizedContent.getFrameGuide(lang),
+                                textAlign: TextAlign.center,
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 13,
@@ -268,217 +474,142 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                             ),
                           ),
                         ),
-                      ],
-                    )
-                  : SizedBox(
-                      height: 340,
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Icons.camera_alt_outlined, color: AppColors.textMuted, size: 56),
-                            const SizedBox(height: 14),
-                            Text(
-                              ui['camera_preparing'] ?? LocalizedContent.get(widget.selectedLang, 'camera_preparing'),
-                              style: const TextStyle(color: AppColors.textSecondary, fontSize: 16),
-                            ),
-                            const SizedBox(height: 12),
-                            ElevatedButton.icon(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.primarySaffron,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                              ),
-                              icon: const Icon(Icons.photo_library_rounded, color: Colors.white),
-                              label: Text(
-                                ui['upload_photo'] ?? LocalizedContent.get(widget.selectedLang, 'upload_photo'),
-                                style: const TextStyle(color: Colors.white),
-                              ),
-                              onPressed: _pickFromGallery,
-                            ),
-                          ],
-                        ),
                       ),
-                    ),
-            ),
-          ),
-          const SizedBox(height: 14),
 
-          // Shutter & Gallery Controls
-          if (_isCameraReady) ...[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                InkWell(
-                  onTap: _capturePhoto,
-                  borderRadius: BorderRadius.circular(40),
-                  child: Container(
-                    width: 72,
-                    height: 72,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: AppColors.primarySaffron,
-                      border: Border.all(color: Colors.white, width: 4),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.primarySaffron.withOpacity(0.5),
-                          blurRadius: 18,
-                          spreadRadius: 2,
-                        ),
-                      ],
-                    ),
-                    child: const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 34),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-          ],
-
-          // Upload File Alternative
-          TactileButton(
-            label: ui['upload_photo'] ?? LocalizedContent.get(widget.selectedLang, 'upload_photo'),
-            icon: const Icon(Icons.file_upload_rounded, color: AppColors.textPrimary, size: 22),
-            style: TactileButtonStyle.secondary,
-            height: 52,
-            fontSize: 15,
-            onPressed: _pickFromGallery,
-          ),
-          const SizedBox(height: 18),
-
-          // Built-in Demo Documents Section
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: AppColors.primarySaffron.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: AppColors.primarySaffron.withValues(alpha: 0.5)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '📝 ${LocalizedContent.get(widget.selectedLang, 'try_form_guide')}',
-                  style: const TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  LocalizedContent.get(widget.selectedLang, 'try_form_guide_hint'),
-                  style: const TextStyle(color: AppColors.textSecondary, fontSize: 12, height: 1.35),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 14),
-
-          Row(
-            children: [
-              const Icon(Icons.description_rounded, color: AppColors.primarySaffronLight, size: 20),
-              const SizedBox(width: 8),
-              Text(
-                widget.forFormGuide
-                    ? LocalizedContent.get(widget.selectedLang, 'try_form_guide')
-                    : (ui['demo_docs'] ?? LocalizedContent.get(widget.selectedLang, 'demo_docs')),
-                style: const TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: 17,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-
-          ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: presets.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 10),
-            itemBuilder: (context, index) {
-              final preset = presets[index];
-              final isForm = preset.isForm;
-              return Material(
-                color: isForm
-                    ? AppColors.primarySaffron.withValues(alpha: 0.14)
-                    : AppColors.surfaceDark,
-                borderRadius: BorderRadius.circular(14),
-                child: InkWell(
-                  onTap: () {
-                    HapticService.lightTap();
-                    widget.onPresetSelected(preset);
-                  },
-                  borderRadius: BorderRadius.circular(14),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(
-                        color: isForm ? AppColors.primarySaffron : AppColors.borderDark,
-                        width: isForm ? 1.5 : 1,
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          isForm ? Icons.edit_note_rounded : Icons.article_rounded,
-                          color: AppColors.primarySaffronLight,
-                          size: 28,
-                        ),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                      // Controls INSIDE frame — capture stays large & centered;
+                      // gallery / flash / flip are smaller side icons.
+                      Positioned(
+                        left: 6,
+                        right: 6,
+                        bottom: 10,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.45),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Text(
-                                preset.title,
-                                style: const TextStyle(
-                                  color: AppColors.textPrimary,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
+                              // Left half — keeps shutter geometrically centered
+                              Expanded(
+                                child: Align(
+                                  alignment: Alignment.center,
+                                  child: _buildBottomControl(
+                                    icon: Icons.photo_library_outlined,
+                                    label: galleryLabel,
+                                    onTap: _pickFromGallery,
+                                  ),
                                 ),
                               ),
-                              const SizedBox(height: 3),
-                              Text(
-                                preset.previewDescription,
-                                style: const TextStyle(
-                                  color: AppColors.textMuted,
-                                  fontSize: 12,
+                              // Center — large capture button
+                              GestureDetector(
+                                onTap: _isCameraReady ? _capturePhoto : null,
+                                child: Container(
+                                  width: 76,
+                                  height: 76,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: _isCameraReady
+                                        ? AppColors.primarySaffron
+                                        : Colors.white24,
+                                    border: Border.all(
+                                      color: Colors.white,
+                                      width: 4,
+                                    ),
+                                    boxShadow: _isCameraReady
+                                        ? [
+                                            BoxShadow(
+                                              color: AppColors.primarySaffron
+                                                  .withValues(alpha: 0.45),
+                                              blurRadius: 14,
+                                              spreadRadius: 1,
+                                            ),
+                                          ]
+                                        : null,
+                                  ),
+                                  child: const Icon(
+                                    Icons.camera_alt_rounded,
+                                    color: Colors.white,
+                                    size: 34,
+                                  ),
+                                ),
+                              ),
+                              // Right half — flash + flip (smaller icons)
+                              Expanded(
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Flexible(
+                                      child: _buildBottomControl(
+                                        icon: _isFlashOn
+                                            ? Icons.flash_on_rounded
+                                            : Icons.flash_off_rounded,
+                                        label: flashLabel,
+                                        highlight: _isFlashOn,
+                                        onTap: _isCameraReady
+                                            ? _toggleFlash
+                                            : null,
+                                      ),
+                                    ),
+                                    Flexible(
+                                      child: _buildBottomControl(
+                                        icon: Icons.cameraswitch_rounded,
+                                        label: flipLabel,
+                                        onTap: _cameras.length > 1
+                                            ? _toggleCamera
+                                            : null,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        if (isForm)
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: AppColors.primarySaffron,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: const Text(
-                              'GUIDE',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          )
-                        else
-                          const Icon(Icons.chevron_right_rounded, color: AppColors.textMuted),
-                      ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+            // Demo docs — OUTSIDE the camera frame; extra bottom space so
+            // speaking captions don't cover this button.
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 88),
+              child: SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  onPressed: _showDemoSheet,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: AppColors.primarySaffron,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 18,
+                      vertical: 14,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  icon: const Icon(Icons.description_rounded, size: 22),
+                  label: Text(
+                    demoLabel,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
-              );
-            },
-          ),
-          const SizedBox(height: 20),
-        ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

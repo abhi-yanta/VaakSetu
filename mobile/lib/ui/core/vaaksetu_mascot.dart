@@ -31,6 +31,17 @@ class VaakSetuMascot extends StatelessWidget {
     }
   }
 
+  /// Decode mascot assets after first frame — never before [runApp].
+  static Future<void> precacheAll(BuildContext context) async {
+    for (final pose in MascotPose.values) {
+      try {
+        await precacheImage(AssetImage(assetForPose(pose)), context);
+      } catch (_) {
+        // Best-effort; tour still loads via Image.asset.
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import '../../../data/services/haptic_service.dart';
 import '../../../data/services/tts_service.dart';
@@ -24,6 +26,7 @@ class _TourPageDef {
 }
 
 /// Feature showcase — standing character with a hand gesture per feature.
+/// TEMP: Form Guide tour page omitted while Form Guide is disabled.
 const _tourPages = [
   _TourPageDef(
     titleKey: 'tour_scan_title',
@@ -40,13 +43,6 @@ const _tourPages = [
     icon: Icons.shield_rounded,
   ),
   _TourPageDef(
-    titleKey: 'tour_form_title',
-    bodyKey: 'tour_form_body',
-    speakKey: 'tour_form_speak',
-    pose: MascotPose.namaste,
-    icon: Icons.edit_note_rounded,
-  ),
-  _TourPageDef(
     titleKey: 'tour_langs_title',
     bodyKey: 'tour_langs_body',
     speakKey: 'tour_langs_speak',
@@ -60,33 +56,50 @@ class CharacterWelcomeView extends StatefulWidget {
   final TtsService ttsService;
   final String selectedLang;
   final VoidCallback onFinished;
+  /// When true, parent already started speaking page 0 (skip duplicate).
+  final bool skipInitialSpeak;
 
   const CharacterWelcomeView({
     super.key,
     required this.ttsService,
     required this.selectedLang,
     required this.onFinished,
+    this.skipInitialSpeak = false,
   });
 
   @override
-  State<CharacterWelcomeView> createState() => _CharacterWelcomeViewState();
+  CharacterWelcomeViewState createState() => CharacterWelcomeViewState();
 }
 
-class _CharacterWelcomeViewState extends State<CharacterWelcomeView> {
+class CharacterWelcomeViewState extends State<CharacterWelcomeView> {
   final PageController _pageController = PageController();
   int _page = 0;
-  bool _hasSpoken = false;
+  /// Latest page index we kicked TTS for — latest wins on rapid swipes.
+  int _speakTargetPage = -1;
+  late bool _hasSpoken;
 
   String _t(String key) => LocalizedContent.get(widget.selectedLang, key);
+
+  /// Handles Android system back. Returns true if consumed (previous tour page).
+  bool handleSystemBack() {
+    if (_page > 0) {
+      _goToPage(_page - 1);
+      return true;
+    }
+    return false;
+  }
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || _hasSpoken) return;
-      _hasSpoken = true;
-      _speakPage(0);
-    });
+    _hasSpoken = widget.skipInitialSpeak;
+    if (_hasSpoken) {
+      _speakTargetPage = 0;
+      return;
+    }
+    // Speak ASAP — no post-frame wait (TTS does not need layout).
+    _hasSpoken = true;
+    unawaited(_speakPage(0));
   }
 
   @override
@@ -100,22 +113,30 @@ class _CharacterWelcomeViewState extends State<CharacterWelcomeView> {
   void _onPageChanged(int index) {
     if (!mounted) return;
     setState(() => _page = index);
-    _speakPage(index);
+    // Button nav already spoke for this index; swipe / jump still need speak.
+    if (_speakTargetPage == index) return;
+    unawaited(_speakPage(index));
   }
 
-  void _speakPage(int index) {
+  /// Stop prior audio (via [TtsService.speak] generation + immediate halt)
+  /// and speak the script for [index]. Rapid calls: latest page wins.
+  Future<void> _speakPage(int index) async {
     if (!mounted) return;
     if (index < 0 || index >= _tourPages.length) return;
-    widget.ttsService.speak(
-      _t(_tourPages[index].speakKey),
-      widget.selectedLang,
-    );
+    _speakTargetPage = index;
+    final text = _t(_tourPages[index].speakKey);
+    final lang = widget.selectedLang;
+    // speak() immediately interrupts prior TTS then starts device-first path.
+    await widget.ttsService.speak(text, lang);
   }
 
   void _goToPage(int index) {
     if (!mounted) return;
+    if (index < 0 || index >= _tourPages.length) return;
     HapticService.lightTap();
-    widget.ttsService.stop();
+    setState(() => _page = index);
+    // Speak immediately on button next/back — don't wait for animation settle.
+    unawaited(_speakPage(index));
     _pageController.animateToPage(
       index,
       duration: const Duration(milliseconds: 380),
@@ -261,7 +282,7 @@ class _CharacterWelcomeViewState extends State<CharacterWelcomeView> {
           langCode: widget.selectedLang,
           height: 52,
           fontSize: 15,
-          onPressed: () => _speakPage(_page),
+          onPressed: () => unawaited(_speakPage(_page)),
         ),
         const SizedBox(height: 10),
 
