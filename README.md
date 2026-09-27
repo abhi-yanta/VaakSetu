@@ -1,90 +1,139 @@
-# VaakSetu (वाक् सेतु) — The Voice Bridge 🇮🇳
+# VaakSetu (वाक् सेतु) — The Voice Bridge
 
-An offline-first, AI-powered document reader designed to protect and empower illiterate or semi-literate Indians when signing contracts, land deeds, loan papers, and hospital consent forms.
+Audio-first Android app that helps low-literacy and rural users understand legal papers and forms before they sign. Point a phone camera at a document → on-device OCR → spoken safety summary (or field-by-field form help) in the user’s language.
 
-VaakSetu acts as a safety bridge: point any low-cost phone at a document, and hear it explained clearly in your local dialect while immediately highlighting deceptive clauses or red-flag interest rates.
-
----
-
-## 🚀 Key Features
-
-1. **NO Literacy Required**: The UI is audio-first. Tapping elements plays spoken guides, and large icons combined with a green/yellow/red safety hierarchy ensure clear, non-text communication.
-2. **NO Internet / Data Connection Required**:
-   - Runs fully on-device inside a **Progressive Web App (PWA)** cache.
-   - Extracts text using in-browser WebAssembly-compiled **Tesseract.js**.
-   - Translates and assesses hazards using a local client-side Rules Engine.
-   - Synthesizes dialect output offline via the device's native browser **SpeechSynthesis API**.
-3. **Local Hotspot Kiosk Mode**: Includes an Express backend server allowing local kiosks (e.g., in a village center) to broadcast the app offline over a local Wi-Fi hotspot, offloading computational heavy-lifting from old, Rs.4,000 Android phones.
-4. **12 Indian Languages Supported**: Speaks in Hindi, Tamil, Telugu, Marathi, Bengali, Gujarati, Kannada, Malayalam, Odia, Punjabi, Assamese, and Urdu.
+**Primary product:** Flutter app in [`mobile/`](mobile/) (v1.0.0).  
+**Repository:** https://github.com/abhi-yanta/VaakSetu
 
 ---
 
-## 🏗️ Project Architecture
+## What it does
 
-```mermaid
-graph TD
-  A[Scanned Document Page] -->|Phone Camera / Upload| B[VaakSetu client React PWA]
-  B -->|WebAssembly Offline OCR| C[Tesseract.js Worker]
-  B -->|Or Offload OCR if Hotspot connected| D[Local Express Hotspot Kiosk]
-  C -->|Extracted Document Text| E[Client Offline Rule Engine]
-  D -->|Local API OCR & Vulnerability Check| E
-  E -->|Identify Category & Red Flags| F[Audio-First Breakdown Panel]
-  F -->|Visual Codes Green/Yellow/Red| G[Large Accessible Interface]
-  F -->|Speech Output in 12 Dialects| H[Browser Offline Speech Synthesis]
-  H -->|Dynamic Canvas visual| I[Audio Wave visualizer]
+| Mode | Behavior |
+|---|---|
+| **Document safety** | Scan or pick a loan / deed / job / medical paper. Rule engine classifies category and severity (safe / warning / danger / unknown), highlights risky clauses, and speaks an elaborate narrative plus tap-to-replay warnings. |
+| **Form Field Guide** | Scan a KYC-style or government form. Match labels to known fields and walk through each blank with spoken help. |
+
+**Also included:**
+
+- **12 Indian languages** — Hindi, Tamil, Telugu, Marathi, Bengali, Gujarati, Kannada, Malayalam, Odia, Punjabi, Assamese, Urdu (UI + TTS prompts)
+- **Mascot welcome tour** — character pages after first language pick, with TTS and Shorts-style synced captions
+- **Full-screen camera scanner** — live viewfinder, gallery, flash, framing prompts; offline **demo presets** so demos work without printed paper
+- **On-device OCR** — Google ML Kit (documents stay on the phone for analysis)
+- **Rule-engine clause highlights** — deterministic checks (e.g. high interest, land collateral, bonded-labor style clauses, blanket medical waivers) — not an LLM lawyer
+- **Listen again** — replay controls on guided screens and AppBar
+- **Cream vernacular UX** — large targets, green / amber / red severity, haptics
+
+Core OCR + rules run offline. Online TTS (Bhashini / Hugging Face) is optional; without keys the app still speaks via **device TTS**.
+
+There is **no speech-to-text / voice-command** pipeline today — interaction is tap + spoken playback.
+
+---
+
+## Tech stack
+
+| Layer | Choice |
+|---|---|
+| App | Flutter 3.x / Dart (`vaaksetu_mobile`) |
+| OCR | `google_mlkit_text_recognition` |
+| Camera / gallery | `camera`, `image_picker` |
+| TTS | Device-first (`flutter_tts`) for instant speech; optional Bhashini / Hugging Face AI4Bharat voices prefetch for later plays (`audioplayers`, `http`) |
+| State | `provider` / `ChangeNotifier`, `shared_preferences` |
+| Haptics | `vibration` |
+
+Secondary / legacy: React + Vite client (`client/`) and Express kiosk helper (`server/`) for browser/CSC demos. Feature parity lags the Flutter app.
+
+---
+
+## Repo structure
+
+```
+vaaksetu/
+├── mobile/          # Flagship Flutter Android app
+│   ├── lib/         # UI, domain (rules, forms), data (OCR, TTS)
+│   ├── assets/      # Presets, mascot, form-guide export, icon
+│   ├── tool/        # run_with_env.ps1 and tooling
+│   └── .env.example # Optional TTS key placeholders
+├── dataset/         # Legal / OCR sources + synthetic rule benchmarks
+├── client/          # React web UI (kiosk / CSC path)
+├── server/          # Express companion for the web client
+├── docs/            # Product overview and notes
+└── VAAKSETU_SYSTEM_DESCRIPTION.md
 ```
 
----
-
-## 🛠️ Codebase Structure
-
-- **`client/`**: React Vite application built with accessibility-first standards.
-  - [`src/App.jsx`](client/src/App.jsx) - Main view and voice guidance controller.
-  - [`src/index.css`](client/src/index.css) - Vibrant, high-contrast, Indian-heritage design system.
-  - [`src/components/LanguageSelector.jsx`](client/src/components/LanguageSelector.jsx) - Large grid of 12 native language triggers with pronunciations.
-  - [`src/components/CameraScanner.jsx`](client/src/components/CameraScanner.jsx) - Camera capture overlay and offline document presets.
-  - [`src/components/DocumentAnalyzer.jsx`](client/src/components/DocumentAnalyzer.jsx) - Performs hybrid WebAssembly OCR and builds the warning layouts.
-  - [`src/components/WaveVisualizer.jsx`](client/src/components/WaveVisualizer.jsx) - Canvas voice activity canvas synchronizer.
-  - [`src/utils/ruleEngine.js`](client/src/utils/ruleEngine.js) - Evaluates loan interest limits, collateral grabs, unpaid labor, etc.
-  - [`src/utils/voiceGuider.js`](client/src/utils/voiceGuider.js) - Speech synthesis voice manager and native script translation prompts.
-  - [`public/service-worker.js`](client/public/service-worker.js) - Caches resources for 100% offline standalone usage.
-- **`server/`**: Kiosk hotspot server simulating local-network offloading capabilities.
-  - [`server.js`](server/server.js) - Express backend with multer upload pipelines and multi-language presets.
+Deeper product walkthrough: [`docs/VaakSetu_Overview.md`](docs/VaakSetu_Overview.md).
 
 ---
 
-## ⚡ Setup & Run Instructions
+## Run the Flutter app
 
-To install and run both parts of the full stack:
+### Prerequisites
 
-### Prerequisite
-Make sure you have [Node.js](https://nodejs.org) (v16+) installed.
+- [Flutter](https://docs.flutter.dev/get-started/install) 3.x
+- Android SDK / Studio (min SDK 21)
+- Phone or emulator (camera optional if you use presets)
 
-### 1. Start the Local Hotspot Kiosk Backend
-Open a terminal in the project directory:
+### Install and launch
+
+```powershell
+cd mobile
+flutter pub get
+flutter test
+flutter run
+```
+
+Release APK:
+
+```powershell
+cd mobile
+flutter build apk --release
+# → mobile/build/app/outputs/flutter-apk/app-release.apk
+```
+
+### Optional online TTS (Bhashini / Hugging Face)
+
+Copy the example env file, fill in **your own** keys locally, then launch with the helper script (values are passed as `--dart-define`; never commit real secrets):
+
+```powershell
+cd mobile
+Copy-Item .env.example .env
+# Edit .env — leave blank keys unused
+.\tool\run_with_env.ps1
+```
+
+Placeholders in [`mobile/.env.example`](mobile/.env.example):
+
+```
+BHASHINI_USER_ID=
+BHASHINI_UDYAT_KEY=
+BHASHINI_INFERENCE_KEY=
+HF_TOKEN=
+```
+
+**Speech path:** device TTS starts immediately (no silent wait on the network). When Bhashini / HF keys are set, higher-quality audio is prefetched in the background and used on cache hit for the next play of that text.
+
+---
+
+## Web / kiosk path (optional)
 
 ```bash
-cd server
-npm install
-npm start
+cd server && npm install && npm start   # typically :5000
+cd client && npm install && npm run dev # typically :3000
 ```
-The server will boot on `http://localhost:5000` (and is broadcastable to any phone on the local Wi-Fi router network at `http://<your-ip>:5000`).
 
-### 2. Start the React Client App
-Open another terminal:
-
-```bash
-cd client
-npm install
-npm run dev
-```
-Vite will host the web interface at `http://localhost:3000`.
+Use this for shared-laptop / hotspot demos. For rural voice-first UX, prefer `mobile/`.
 
 ---
 
-## 🛡️ Vulnerability Rule Set Examples
-VaakSetu detects high-risk fraud factors including:
-- **Loans**: Compound interest rates above 24% per annum or assets/agricultural land clauses without legal safeguards.
-- **Job Contracts**: Working conditions involving 12-hour mandatory work shifts, overtime without additional pay, or large early-resignation fines/bonds.
-- **Hospital Consent**: Total release of liability and negligence waiver clauses.
-- **Deeds**: Complete transfer of irrevocable rights without co-owners or spouses signatures.
+## Honest limits
+
+- Legal analysis is **keyword / rule-based**, not a substitute for a lawyer.
+- OCR quality depends on lighting, stamp fonts, and script coverage.
+- Form blank placement is heuristic, not a trained layout model.
+- Best cloud voices need network + configured keys; offline speech uses device TTS.
+
+---
+
+## License / contribution
+
+See repository settings and existing project docs for contribution and licensing details. Do not commit `.env` files or API keys.
