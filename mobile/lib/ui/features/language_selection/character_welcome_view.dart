@@ -118,6 +118,11 @@ class CharacterWelcomeViewState extends State<CharacterWelcomeView> {
     unawaited(_speakPage(index));
   }
 
+  /// Replay the script for the page currently on screen (listen-again / AppBar).
+  void replayCurrentPage() {
+    unawaited(_speakPage(_page));
+  }
+
   /// Stop prior audio (via [TtsService.speak] generation + immediate halt)
   /// and speak the script for [index]. Rapid calls: latest page wins.
   Future<void> _speakPage(int index) async {
@@ -282,7 +287,7 @@ class CharacterWelcomeViewState extends State<CharacterWelcomeView> {
           langCode: widget.selectedLang,
           height: 52,
           fontSize: 15,
-          onPressed: () => unawaited(_speakPage(_page)),
+          onPressed: replayCurrentPage,
         ),
         const SizedBox(height: 10),
 

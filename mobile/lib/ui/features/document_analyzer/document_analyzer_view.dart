@@ -348,11 +348,8 @@ class DocumentAnalyzerViewState extends State<DocumentAnalyzerView> {
                   fontSize: 15,
                   onPressed: () {
                     HapticService.lightTap();
-                    if (widget.ttsService.hasLastSpoken) {
-                      widget.ttsService.replayLast();
-                    } else {
-                      _announceInitialOverview();
-                    }
+                    // Always this screen's narrative — not last warning/welcome.
+                    _announceInitialOverview();
                   },
                 ),
               ),

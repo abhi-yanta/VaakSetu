@@ -329,16 +329,16 @@ class TtsService extends ChangeNotifier {
     return result;
   }
 
-  /// Fire-and-forget native interrupt — must NOT wait on [_engineQueue].
-  /// Unblocks a queued/in-flight device utterance so [stop]/[speak] can
-  /// cut over without waiting for the previous script to finish.
-  void _interruptEnginesNow() {
+  /// Immediate native interrupt — must NOT wait on [_engineQueue].
+  /// Awaits engine stop (hard-capped) so a late stop cannot cancel the
+  /// utterance we are about to start (listen-again / page-change race).
+  Future<void> _interruptEnginesNow() async {
     _finishDeviceSpeak();
     try {
-      unawaited(_audioPlayer.stop());
+      await _audioPlayer.stop().timeout(_haltTimeout, onTimeout: () {});
     } catch (_) {}
     try {
-      unawaited(_flutterTts.stop());
+      await _flutterTts.stop().timeout(_haltTimeout, onTimeout: () {});
     } catch (_) {}
   }
 
@@ -370,8 +370,10 @@ class TtsService extends ChangeNotifier {
     // Own generation: invalidates any prior in-flight speak/network/play.
     final generation = ++_speakGeneration;
     _wasSpeakingBeforePause = false;
-    // Cut previous audio immediately (do not wait for engine queue).
-    _interruptEnginesNow();
+    // Cut previous audio immediately and wait for stop to settle (do not
+    // fire-and-forget — that raced with the new speak on listen-again).
+    await _interruptEnginesNow();
+    if (!_isCurrentGeneration(generation)) return;
 
     _lastSpokenText = text;
     _lastSpokenLangCode = langCode;
@@ -380,7 +382,7 @@ class TtsService extends ChangeNotifier {
     _prepareCaption(text);
     notifyListeners();
 
-    // Await halt so a late stop cannot kill the utterance we are about to start.
+    // Queue-serialized halt so any in-flight engine op finishes before kickoff.
     try {
       await _haltBothEngines(generation).timeout(
         const Duration(milliseconds: 600),
@@ -431,7 +433,7 @@ class TtsService extends ChangeNotifier {
     _wasSpeakingBeforePause = true;
     await ensureInitialized();
     final generation = ++_speakGeneration;
-    _interruptEnginesNow();
+    await _interruptEnginesNow();
     await _haltBothEngines(generation);
     if (!_isCurrentGeneration(generation)) return;
     _clearCaption();
@@ -454,7 +456,7 @@ class TtsService extends ChangeNotifier {
     _wasSpeakingBeforePause = false;
     final generation = ++_speakGeneration;
     // Cut audio immediately so page navigation never waits on the old script.
-    _interruptEnginesNow();
+    await _interruptEnginesNow();
     // If init never started, nothing to halt on the native engines.
     if (_initFuture != null) {
       await ensureInitialized();

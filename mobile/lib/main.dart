@@ -384,8 +384,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         widget.ttsService.speakPrompt('welcome', 'hi');
         break;
       case AppView.featureTour:
-        // Tour pages store the spoken text in TtsService; replay that.
-        widget.ttsService.replayLast();
+        // Always replay the visible tour page — not a stale earlier script.
+        final tour = _tourKey.currentState;
+        if (tour != null) {
+          tour.replayCurrentPage();
+        } else {
+          widget.ttsService.replayLast();
+        }
         break;
       case AppView.scanner:
         widget.ttsService.speakPrompt('scan_prompt', _selectedLang);
@@ -394,8 +399,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         widget.ttsService.speakPrompt('processing', _selectedLang);
         break;
       case AppView.analyzer:
-        // Prefer last spoken safety/warning text; fall back to result_ready.
-        if (widget.ttsService.hasLastSpoken) {
+        // Replay this screen's result narrative (not a stale warning/welcome).
+        final analysis = _analysis;
+        if (analysis != null) {
+          final speech = LocalizedContent.buildResultSpeech(
+            _selectedLang,
+            analysis,
+          );
+          unawaited(widget.ttsService.speak(speech, _selectedLang));
+        } else if (widget.ttsService.hasLastSpoken) {
           widget.ttsService.replayLast();
         } else {
           widget.ttsService.speakPrompt('result_ready', _selectedLang);
