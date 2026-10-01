@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VaakSetu — The Voice Bridge</title>
+  <meta name="description" content="VaakSetu helps rural users hear what’s in a legal paper before they sign — camera scan to spoken safety summary in their language." />
+  <meta name="theme-color" content="#F7F3EB" />
+  <link rel="icon" type="image/png" href="assets/app_icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --cream: #F7F3EB;
+      --cream-deep: #EFEAE2;
+      --saffron: #E65100;
+      --saffron-soft: #EF6C00;
+      --teal: #00695C;
+      --teal-soft: #00897B;
+      --slate: #1E293B;
+      --slate-muted: #475569;
+      --border: #D4CEC4;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: "Sora", system-ui, sans-serif;
+      color: var(--slate);
+      background: var(--cream);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Atmospheric field — paper grain + soft teal/saffron wash */
+    .atmosphere {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background:
+        radial-gradient(ellipse 90% 70% at 85% 20%, rgba(230, 81, 0, 0.14), transparent 55%),
+        radial-gradient(ellipse 70% 60% at 10% 80%, rgba(0, 105, 92, 0.12), transparent 50%),
+        linear-gradient(165deg, #F7F3EB 0%, #EFEAE2 45%, #F7F3EB 100%);
+    }
+    .atmosphere::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: 0.35;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+
+    .hero {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: clamp(1.5rem, 4vw, 3.5rem);
+      padding: clamp(1.25rem, 4vw, 3rem) clamp(1.25rem, 5vw, 4.5rem);
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .hero-copy {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1.15rem;
+      animation: rise-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .brand-lockup {
+      display: block;
+      width: min(100%, 420px);
+      height: auto;
+      animation: brand-float 5.5s ease-in-out infinite;
+      filter: drop-shadow(0 8px 24px rgba(0, 105, 92, 0.08));
+    }
+
+    .headline {
+      font-family: "Fraunces", Georgia, serif;
+      font-weight: 700;
+      font-size: clamp(1.85rem, 4.2vw, 3rem);
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: var(--slate);
+      max-width: 16ch;
+    }
+
+    .support {
+      font-size: clamp(1rem, 1.6vw, 1.15rem);
+      line-height: 1.55;
+      color: var(--slate-muted);
+      max-width: 36ch;
+      font-weight: 400;
+    }
+
+    .cta-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 0.35rem;
+      animation: rise-in 1.05s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.85rem 1.35rem;
+      border-radius: 12px;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      border: 2px solid transparent;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: var(--saffron);
+      color: #fff;
+      box-shadow: 0 10px 28px rgba(230, 81, 0, 0.28);
+      animation: cta-glow 2.8s ease-in-out infinite;
+    }
+    .btn-primary:hover {
+      background: var(--saffron-soft);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--teal);
+      border-color: var(--teal);
+    }
+    .btn-secondary:hover {
+      background: rgba(0, 105, 92, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .hero-visual {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: rise-in 1.1s cubic-bezier(0.22, 1, 0.36, 1) 0.18s both;
+    }
+
+    .phone-frame {
+      position: relative;
+      width: min(100%, 340px);
+      aspect-ratio: 9 / 16;
+      border-radius: 28px;
+      overflow: hidden;
+      border: 3px solid var(--slate);
+      background: var(--cream-deep);
+      box-shadow:
+        0 28px 60px rgba(30, 41, 59, 0.18),
+        0 0 0 10px rgba(247, 243, 235, 0.65);
+    }
+
+    .phone-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      display: block;
+    }
+
+    .phone-notch {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 38%;
+      height: 8px;
+      background: var(--slate);
+      border-radius: 999px;
+      z-index: 2;
+      opacity: 0.85;
+    }
+
+    .voice-ring {
+      position: absolute;
+      width: min(88%, 380px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      border: 1.5px solid rgba(0, 105, 92, 0.22);
+      z-index: -1;
+      animation: ring-pulse 4s ease-in-out infinite;
+    }
+    .voice-ring::before,
+    .voice-ring::after {
+      content: "";
+      position: absolute;
+      inset: 12%;
+      border-radius: 50%;
+      border: 1px solid rgba(230, 81, 0, 0.18);
+    }
+    .voice-ring::after {
+      inset: 24%;
+      border-color: rgba(0, 105, 92, 0.14);
+    }
+
+    @keyframes rise-in {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes brand-float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    @keyframes cta-glow {
+      0%, 100% { box-shadow: 0 10px 28px rgba(230, 81, 0, 0.28); }
+      50% { box-shadow: 0 14px 36px rgba(230, 81, 0, 0.4); }
+    }
+
+    @keyframes ring-pulse {
+      0%, 100% { transform: scale(1); opacity: 0.9; }
+      50% { transform: scale(1.04); opacity: 1; }
+    }
+
+    @media (max-width: 860px) {
+      .hero {
+        grid-template-columns: 1fr;
+        min-height: auto;
+        padding-top: 2rem;
+        padding-bottom: 3rem;
+        gap: 2rem;
+      }
+      .hero-copy {
+        align-items: center;
+        text-align: center;
+      }
+      .headline { max-width: 18ch; }
+      .support { max-width: 40ch; }
+      .cta-group { justify-content: center; }
+      .brand-lockup { width: min(100%, 340px); }
+      .phone-frame { width: min(100%, 280px); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="atmosphere" aria-hidden="true"></div>
+
+  <main class="hero">
+    <div class="hero-copy">
+      <img
+        class="brand-lockup"
+        src="assets/lockup.png"
+        width="420"
+        height="236"
+        alt="VaakSetu — वाक्सेतु, The Voice Bridge"
+      />
+      <h1 class="headline">Hear the paper before you sign.</h1>
+      <p class="support">
+        Point a phone at a loan, deed, or form — VaakSetu speaks the risks in your language.
+      </p>
+      <div class="cta-group">
+        <a class="btn btn-primary" href="../../mobile/">Open the Android app</a>
+        <a class="btn btn-secondary" href="../../README.md">Read the project</a>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="voice-ring" aria-hidden="true"></div>
+      <div class="phone-frame">
+        <span class="phone-notch" aria-hidden="true"></span>
+        <img
+          src="assets/hero-product.png"
+          width="340"
+          height="604"
+          alt="VaakSetu on a phone — spoken document help with large tap targets"
+        />
+      </div>
+    </div>
+  </main>
+</body>
+</html>

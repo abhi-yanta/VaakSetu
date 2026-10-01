@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VaakSetu · Placeholder answers form</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f7f3eb;
+      --bg-elevated: #efeae2;
+      --surface: #ffffff;
+      --border: rgba(30, 41, 59, 0.12);
+      --text: #1e293b;
+      --text-muted: #475569;
+      --text-faint: #64748b;
+      --accent: #00695c;
+      --accent-soft: rgba(0, 105, 92, 0.1);
+      --accent-2: #00897b;
+      --saffron: #e65100;
+      --radius: 10px;
+      --shadow: 0 16px 40px rgba(30, 41, 59, 0.08);
+      --font-sans: "DM Sans", system-ui, sans-serif;
+      --font-display: "Instrument Serif", Georgia, serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      font-family: var(--font-sans);
+      background:
+        radial-gradient(ellipse 80% 50% at 10% -10%, rgba(230, 81, 0, 0.1), transparent),
+        radial-gradient(ellipse 60% 40% at 90% 0%, rgba(0, 105, 92, 0.1), transparent),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: var(--accent); }
+
+    .wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 1.5rem 1.15rem 4rem;
+    }
+
+    header {
+      margin-bottom: 1.75rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .brand img {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+    }
+
+    .brand-name {
+      font-family: var(--font-display);
+      font-size: 1.55rem;
+      line-height: 1.1;
+    }
+
+    h1 {
+      font-family: var(--font-display);
+      font-size: clamp(1.7rem, 4vw, 2.25rem);
+      font-weight: 400;
+      margin: 0 0 0.5rem;
+      line-height: 1.2;
+    }
+
+    .lede {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      max-width: 42rem;
+    }
+
+    .toc {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin: 1rem 0 0;
+    }
+
+    .toc a {
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .hint-box {
+      margin: 1rem 0 0;
+      padding: 0.85rem 1rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .hint-box strong { color: var(--text); }
+
+    section.block {
+      margin-top: 2rem;
+      scroll-margin-top: 1rem;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      gap: 0.65rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.35rem;
+    }
+
+    .section-id {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--saffron);
+    }
+
+    .section-head h2 {
+      font-family: var(--font-display);
+      font-size: 1.55rem;
+      font-weight: 400;
+      margin: 0;
+    }
+
+    .section-sub {
+      margin: 0 0 1rem;
+      color: var(--text-faint);
+      font-size: 0.88rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.05rem 1.15rem;
+      margin-bottom: 0.85rem;
+      box-shadow: var(--shadow);
+    }
+
+    .card-id {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: var(--accent);
+      background: var(--accent-soft);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      margin-bottom: 0.45rem;
+    }
+
+    .card h3 {
+      margin: 0 0 0.35rem;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .current {
+      margin: 0 0 0.75rem;
+      font-size: 0.8rem;
+      color: var(--text-faint);
+      word-break: break-word;
+    }
+
+    .current code {
+      font-size: 0.78rem;
+      background: var(--bg-elevated);
+      padding: 0.1rem 0.35rem;
+      border-radius: 4px;
+    }
+
+    label.field {
+      display: block;
+      margin-bottom: 0.7rem;
+    }
+
+    label.field > span {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+      color: var(--text-muted);
+    }
+
+    input[type="text"],
+    input[type="url"],
+    input[type="email"],
+    textarea,
+    select {
+      width: 100%;
+      font: inherit;
+      font-size: 0.95rem;
+      padding: 0.55rem 0.7rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fffcf7;
+      color: var(--text);
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      outline: 2px solid rgba(0, 105, 92, 0.35);
+      border-color: var(--accent);
+    }
+
+    textarea {
+      min-height: 5.5rem;
+      resize: vertical;
+    }
+
+    textarea.tall { min-height: 8rem; }
+
+    .row {
+      display: grid;
+      gap: 0.65rem;
+    }
+
+    @media (min-width: 560px) {
+      .row.cols-2 { grid-template-columns: 1fr 1fr; }
+      .row.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+    }
+
+    .check {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      margin: 0.45rem 0;
+      font-size: 0.9rem;
+    }
+
+    .check input { margin-top: 0.2rem; }
+
+    .file-note {
+      font-size: 0.78rem;
+      color: var(--text-faint);
+      margin: 0.35rem 0 0;
+    }
+
+    .file-name {
+      font-size: 0.82rem;
+      color: var(--accent-2);
+      margin: 0.25rem 0 0;
+      min-height: 1.1em;
+    }
+
+    .actions {
+      position: sticky;
+      bottom: 0;
+      margin-top: 2rem;
+      padding: 1rem;
+      background: rgba(247, 243, 235, 0.92);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 -8px 30px rgba(30, 41, 59, 0.08);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      align-items: center;
+    }
+
+    button {
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 8px;
+      padding: 0.65rem 1.1rem;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn-primary:hover { background: var(--accent-2); }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid rgba(0, 105, 92, 0.35);
+    }
+
+    .status {
+      flex: 1 1 100%;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin: 0;
+      min-height: 1.3em;
+    }
+
+    .status.ok { color: var(--accent); font-weight: 600; }
+    .status.err { color: var(--saffron); font-weight: 600; }
+
+    #preview {
+      margin-top: 1.25rem;
+      display: none;
+    }
+
+    #preview.visible { display: block; }
+
+    #preview h2 {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 400;
+      margin: 0 0 0.5rem;
+    }
+
+    #preview pre {
+      margin: 0;
+      padding: 1rem;
+      background: #1e293b;
+      color: #e2e8f0;
+      border-radius: var(--radius);
+      overflow: auto;
+      font-size: 0.75rem;
+      line-height: 1.45;
+      max-height: 28rem;
+    }
+
+    .count-badge {
+      font-size: 0.75rem;
+      color: var(--text-faint);
+      margin-left: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <img src="brand/app_icon.png" alt="" width="40" height="40" onerror="this.style.display='none'" />
+        <div class="brand-name">VaakSetu</div>
+      </div>
+      <h1>Placeholder answers form</h1>
+      <p class="lede">
+        Fill every A–D slot for the second landing (<code>website/</code>). Empty fields or the word
+        <strong>skip</strong> leave the site placeholder unchanged. Export copies structured answers
+        for pasting into Cursor chat — image files must be attached separately.
+      </p>
+      <nav class="toc" aria-label="Sections">
+        <a href="#section-a">A Text (18)</a>
+        <a href="#section-b">B Logos (8)</a>
+        <a href="#section-c">C Screens (6)</a>
+        <a href="#section-d">D Team photos (3)</a>
+      </nav>
+      <div class="hint-box">
+        <strong>35 IDs total.</strong> Prefills show current PLACEHOLDER copy as hints.
+        After export: paste the JSON/markdown into Cursor chat and attach any listed image files.
+      </div>
+    </header>
+
+    <form id="ph-form" novalidate>
+      <!-- ========== A TEXT ========== -->
+      <section class="block" id="section-a">
+        <div class="section-head">
+          <span class="section-id">Section A</span>
+          <h2>Text placeholders</h2>
+          <span class="count-badge">A1–A18</span>
+        </div>
+        <p class="section-sub">Hero, audience notes, traction copy, team text, CTA / footer links.</p>
+
+        <div class="card" id="A1">
+          <span class="card-id">A1</span>
+          <h3>Hero status chip</h3>
+          <p class="current">Current: <code>PLACEHOLDER: Building / Hackathon finalist (replace only with evidenced status)</code></p>
+          <label class="field">
+            <span>Action</span>
+            <select name="A1_action" data-id="A1">
+              <option value="keep">Keep cautious placeholder</option>
+              <option value="remove">Remove chip</option>
+              <option value="custom">Custom text</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Custom chip text (if custom)</span>
+            <input type="text" name="A1_text" data-id="A1" placeholder="e.g. Hackathon finalist — [event name, year]" />
+          </label>
+        </div>
+
+        <div class="card" id="A2">
+          <span class="card-id">A2</span>
+          <h3>Hero phone caption</h3>
+          <p class="current">Current: <code>Concept UI · sample values</code></p>
+          <label class="field">
+            <span>Action</span>
+            <select name="A2_action" data-id="A2">
+              <option value="keep">Keep current caption</option>
+              <option value="custom">Custom caption</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Caption text</span>
+            <input type="text" name="A2_text" data-id="A2" placeholder="Concept UI · sample values" />
+          </label>
+        </div>
+
+        <div class="card" id="A3">
+          <span class="card-id">A3</span>
+          <h3>Audience · CSC / village helpers note</h3>
+          <p class="current">Current: <code>PLACEHOLDER: do not claim formal CSC partnerships without evidence.</code></p>
+          <label class="field">
+            <span>Action</span>
+            <select name="A3_action" data-id="A3">
+              <option value="keep">Keep cautious note</option>
+              <option value="remove">Remove / soften note</option>
+              <option value="custom">Custom text</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Custom note</span>
+            <textarea name="A3_text" data-id="A3" placeholder="Named CSC partnership or keep caution…"></textarea>
+          </label>
+        </div>
+
+        <div class="card" id="A4">
+          <span class="card-id">A4</span>
+          <h3>Audience · NGO partners note</h3>
+          <p class="current">Current: <code>PLACEHOLDER: named NGO partners not found in repo.</code></p>
+          <label class="field">
+            <span>Action</span>
+            <select name="A4_action" data-id="A4">
+              <option value="keep">Keep cautious note</option>
+              <option value="remove">Remove / soften note</option>
+              <option value="custom">Custom text</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Custom note (named partners only if evidenced)</span>
+            <textarea name="A4_text" data-id="A4" placeholder="e.g. Pilot with [NGO name] in [region]…"></textarea>
+          </label>
+        </div>
+
+        <div class="card" id="A5">
+          <span class="card-id">A5</span>
+          <h3>Audience · Banks / KYC note</h3>
+          <p class="current">Current: <code>PLACEHOLDER: no bank deployment claims in repo — Form Guide currently off.</code></p>
+          <label class="field">
+            <span>Action</span>
+            <select name="A5_action" data-id="A5">
+              <option value="keep">Keep cautious note</option>
+              <option value="remove">Remove / soften note</option>
+              <option value="custom">Custom text</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Custom note</span>
+            <textarea name="A5_text" data-id="A5" placeholder="Bank deployment claim only with evidence…"></textarea>
+          </label>
+        </div>
+
+        <div class="card" id="A6">
+          <span class="card-id">A6</span>
+          <h3>Traction card 1 · recognition moment</h3>
+          <p class="current">Fields: category, title, caption, Result / Year / Venue (Evidence stays “Not in repo” unless you supply proof).</p>
+          <label class="field">
+            <span>Action</span>
+            <select name="A6_action" data-id="A6">
+              <option value="keep">Keep placeholders</option>
+              <option value="remove">Remove this card</option>
+              <option value="custom">Fill custom fields</option>
+            </select>
+          </label>
+          <div class="row cols-2">
+            <label class="field"><span>Category</span><input type="text" name="A6_category" data-id="A6" placeholder="PLACEHOLDER" /></label>
+            <label class="field"><span>Title</span><input type="text" name="A6_title" data-id="A6" placeholder="PLACEHOLDER: Recognition moment" /></label>
+          </div>
+          <label class="field"><span>Caption</span><input type="text" name="A6_caption" data-id="A6" placeholder="PLACEHOLDER: photo / certificate caption" /></label>
+          <div class="row cols-3">
+            <label class="field"><span>Result</span><input type="text" name="A6_result" data-id="A6" placeholder="PLACEHOLDER" /></label>
+            <label class="field"><span>Year</span><input type="text" name="A6_year" data-id="A6" placeholder="PLACEHOLDER" /></label>
+            <label class="field"><span>Venue</span><input type="text" name="A6_venue" data-id="A6" placeholder="PLACEHOLDER" /></label>
+          </div>
+          <label class="field"><span>Evidence note (optional)</span><input type="text" name="A6_evidence" data-id="A6" placeholder="Link / certificate filename / skip" /></label>
+        </div>
+
+        <div class="card" id="A7">
+          <span class="card-id">A7</span>
+          <h3>Traction card 2 · pilot / field note</h3>
+          <p class="current">Fields: category, title, caption, Users / Docs scanned / Location.</p>
+          <label class="field">
+            <span>Action</span>
+            <select name="A7_action" data-id="A7">
+              <option value="keep">Keep placeholders</option>
+              <option value="remove">Remove this card</option>
+              <option value="custom">Fill custom fields</option>
+            </select>
+          </label>
+          <div class="row cols-2">
+            <label class="field"><span>Category</span><input type="text" name="A7_category" data-id="A7" placeholder="PLACEHOLDER" /></label>
+            <label class="field"><span>Title</span><input type="text" name="A7_title" data-id="A7" placeholder="PLACEHOLDER: Pilot / field note" /></label>
+          </div>
+          <label class="field"><span>Caption</span><input type="text" name="A7_caption" data-id="A7" placeholder="PLACEHOLDER: field photo caption" /></label>
+          <div class="row cols-3">
+            <label class="field"><span>Users</span><input type="text" name="A7_users" data-id="A7" placeholder="PLACEHOLDER" /></label>
+            <label class="field"><span>Docs scanned</span><input type="text" name="A7_docs" data-id="A7" placeholder="PLACEHOLDER" /></label>
+            <label class="field"><span>Location</span><input type="text" name="A7_location" data-id="A7" placeholder="PLACEHOLDER" /></label>
+          </div>
+          <label class="field"><span>Evidence note (optional)</span><input type="text" name="A7_evidence" data-id="A7" placeholder="Link / photo filename / skip" /></label>
+        </div>
+
+        <div class="card" id="A8">
+          <span class="card-id">A8</span>
+          <h3>Traction counters</h3>
+          <p class="current">Current: <code>[]</code> (intentionally empty — no fake numbers).</p>
+          <label class="field">
+            <span>Action</span>
+            <select name="A8_action" data-id="A8">
+              <option value="keep">Keep empty (recommended unless evidenced)</option>
+              <option value="custom">Provide counters JSON</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Counters JSON array</span>
+            <textarea class="tall" name="A8_json" data-id="A8" placeholder='[{"label":"Users reached","value":120,"suffix":"+","note":"Pilot Q1"}]'></textarea>
+          </label>
+          <p class="file-note">Or one counter per line: <code>label | value | suffix | note</code></p>
+          <label class="field">
+            <span>Alternate line format (optional if not using JSON)</span>
+            <textarea name="A8_lines" data-id="A8" placeholder="Languages supported | 12 |  | From language.dart"></textarea>
+          </label>
+        </div>
+
+        <div class="card" id="A9">
+          <span class="card-id">A9</span>
+          <h3>Team member 1 · text</h3>
+          <p class="current">Current: <code>PLACEHOLDER: Name / Role / LinkedIn URL</code></p>
+          <label class="field">
+            <span>Action</span>
+            <select name="A9_action" data-id="A9">
+              <option value="keep">Keep placeholders</option>
+              <option value="remove">Remove this member slot</option>
+              <option value="custom">Fill fields</option>
+            </select>
+          </label>
+          <div class="row cols-2">
+            <label class="field"><span>Name</span><input type="text" name="A9_name" data-id="A9" placeholder="PLACEHOLDER: Name" /></label>
+            <label class="field"><span>Role</span><input type="text" name="A9_role" data-id="A9" placeholder="PLACEHOLDER: Role" /></label>
+          </div>
+          <label class="field"><span>LinkedIn URL</span><input type="url" name="A9_linkedin" data-id="A9" placeholder="PLACEHOLDER: LinkedIn URL" /></label>
+        </div>
+
+        <div class="card" id="A10">
+          <span class="card-id">A10</span>
+          <h3>Team member 2 · text</h3>
+          <p class="current">Current: <code>PLACEHOLDER: Name / Role / LinkedIn URL</code></p>
+          <label class="field">
+            <span>Action</span>
+            <select name="A10_action" data-id="A10">
+              <option value="keep">Keep placeholders</option>
+              <option value="remove">Remove this member slot</option>
+              <option value="custom">Fill fields</option>
+            </select>
+          </label>
+          <div class="row cols-2">
+            <label class="field"><span>Name</span><input type="text" name="A10_name" data-id="A10" placeholder="PLACEHOLDER: Name" /></label>
+            <label class="field"><span>Role</span><input type="text" name="A10_role" data-id="A10" placeholder="PLACEHOLDER: Role" /></label>
+          </div>
+          <label class="field"><span>LinkedIn URL</span><input type="url" name="A10_linkedin" data-id="A10" placeholder="PLACEHOLDER: LinkedIn URL" /></label>
+        </div>
+
+        <div class="card" id="A11">
+          <span class="card-id">A11</span>
+          <h3>Team member 3 · text</h3>
+          <p class="current">Current: <code>PLACEHOLDER: Name / Role / LinkedIn URL</code></p>
+          <label class="field">
+            <span>Action</span>
+            <select name="A11_action" data-id="A11">
+              <option value="keep">Keep placeholders</option>
+              <option value="remove">Remove this member slot</option>
+              <option value="custom">Fill fields</option>
+            </select>
+          </label>
+          <div class="row cols-2">
+            <label class="field"><span>Name</span><input type="text" name="A11_name" data-id="A11" placeholder="PLACEHOLDER: Name" /></label>
+            <label class="field"><span>Role</span><input type="text" name="A11_role" data-id="A11" placeholder="PLACEHOLDER: Role" /></label>
+          </div>
+          <label class="field"><span>LinkedIn URL</span><input type="url" name="A11_linkedin" data-id="A11" placeholder="PLACEHOLDER: LinkedIn URL" /></label>
+        </div>
+
+        <div class="card" id="A12">
+          <span class="card-id">A12</span>
+          <h3>Privacy policy URL</h3>
+          <p class="current">Current: consent text embeds <code>PLACEHOLDER: privacy policy URL.</code></p>
+          <label class="field">
+            <span>Action</span>
+            <select name="A12_action" data-id="A12">
+              <option value="keep">Keep placeholder</option>
+              <option value="custom">Set URL</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Privacy policy URL</span>
+            <input type="url" name="A12_url" data-id="A12" placeholder="https://…" />
+          </label>
+        </div>
+
+        <div class="card" id="A13">
+          <span class="card-id">A13</span>
+          <h3>Form submit endpoint</h3>
+          <p class="current">Current: <code>PLACEHOLDER: backend submit endpoint — this build only validates…</code></p>
+          <label class="field">
+            <span>Action</span>
+            <select name="A13_action" data-id="A13">
+              <option value="keep">Keep front-end-only message</option>
+              <option value="custom">Wire endpoint URL</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Endpoint URL</span>
+            <input type="url" name="A13_url" data-id="A13" placeholder="https://api…/early-access" />
+          </label>
+        </div>
+
+        <div class="card" id="A14">
+          <span class="card-id">A14</span>
+          <h3>Footer · Email</h3>
+          <p class="current">Current: <code>PLACEHOLDER: Email</code> → <code>#</code></p>
+          <label class="field">
+            <span>Action</span>
+            <select name="A14_action" data-id="A14">
+              <option value="keep">Keep placeholder</option>
+              <option value="remove">Remove link</option>
+              <option value="custom">Set email</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Email address</span>
+            <input type="email" name="A14_email" data-id="A14" placeholder="hello@…" />
+          </label>
+        </div>
+
+        <div class="card" id="A15">
+          <span class="card-id">A15</span>
+          <h3>Footer · Twitter / X</h3>
+          <p class="current">Current: <code>PLACEHOLDER: Twitter / X</code> → <code>#</code></p>
+          <label class="field">
+            <span>Action</span>
+            <select name="A15_action" data-id="A15">
+              <option value="keep">Keep placeholder</option>
+              <option value="remove">Remove link</option>
+              <option value="custom">Set URL</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Profile URL</span>
+            <input type="url" name="A15_url" data-id="A15" placeholder="https://x.com/…" />
+          </label>
+        </div>
+
+        <div class="card" id="A16">
+          <span class="card-id">A16</span>
+          <h3>Footer · LinkedIn page</h3>
+          <p class="current">Current: <code>PLACEHOLDER: LinkedIn page</code> → <code>#</code></p>
+          <label class="field">
+            <span>Action</span>
+            <select name="A16_action" data-id="A16">
+              <option value="keep">Keep placeholder</option>
+              <option value="remove">Remove link</option>
+              <option value="custom">Set URL</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Company / page URL</span>
+            <input type="url" name="A16_url" data-id="A16" placeholder="https://linkedin.com/company/…" />
+          </label>
+        </div>
+
+        <div class="card" id="A17">
+          <span class="card-id">A17</span>
+          <h3>Footer · Location</h3>
+          <p class="current">Current: <code>PLACEHOLDER: City / region</code></p>
+          <label class="field">
+            <span>Action</span>
+            <select name="A17_action" data-id="A17">
+              <option value="keep">Keep placeholder</option>
+              <option value="remove">Remove location line</option>
+              <option value="custom">Set location</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>City / region</span>
+            <input type="text" name="A17_text" data-id="A17" placeholder="e.g. Bengaluru, India" />
+          </label>
+        </div>
+
+        <div class="card" id="A18">
+          <span class="card-id">A18</span>
+          <h3>Download / APK / store URL</h3>
+          <p class="current">Current: <code>https://github.com/abhi-yanta/VaakSetu</code> (repo until store listing exists)</p>
+          <label class="field">
+            <span>Action</span>
+            <select name="A18_action" data-id="A18">
+              <option value="keep">Keep GitHub repo link</option>
+              <option value="custom">Set download / store URL</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Download URL</span>
+            <input type="url" name="A18_url" data-id="A18" placeholder="https://play.google.com/… or APK release URL" />
+          </label>
+        </div>
+      </section>
+
+      <!-- ========== B LOGOS ========== -->
+      <section class="block" id="section-b">
+        <div class="section-head">
+          <span class="section-id">Section B</span>
+          <h2>Logos &amp; traction photos</h2>
+          <span class="count-badge">B1–B8</span>
+        </div>
+        <p class="section-sub">Pick a file (filename exported) or paste a path/URL. Attach the same files in Cursor chat.</p>
+
+        <!-- B1 -->
+        <div class="card" id="B1">
+          <span class="card-id">B1</span>
+          <h3>Recognition · Hackathon / program logo</h3>
+          <p class="current">Current: <code>/assets/logos/hackathon.svg</code> · <code>PLACEHOLDER: Hackathon / program logo</code></p>
+          <label class="field">
+            <span>Action</span>
+            <select name="B1_action" data-id="B1">
+              <option value="keep">Keep placeholder artwork</option>
+              <option value="replace">Replace with real logo</option>
+              <option value="remove">Remove from strip</option>
+            </select>
+          </label>
+          <label class="field"><span>Display name</span><input type="text" name="B1_label" data-id="B1" placeholder="PLACEHOLDER: Hackathon / program logo" /></label>
+          <label class="field"><span>Path or URL note</span><input type="text" name="B1_path" data-id="B1" placeholder="/assets/logos/… or https://…" /></label>
+          <label class="field"><span>File to attach in chat</span><input type="file" name="B1_file" data-id="B1" accept="image/*,.svg" /></label>
+          <p class="file-name" id="B1_fname"></p>
+          <label class="check"><input type="checkbox" name="B1_remove" data-id="B1" /> Mark for removal from recognition strip</label>
+        </div>
+
+        <div class="card" id="B2">
+          <span class="card-id">B2</span>
+          <h3>Recognition · College / institution logo</h3>
+          <p class="current">Current: <code>/assets/logos/college.svg</code> · <code>PLACEHOLDER: College / institution logo</code></p>
+          <label class="field">
+            <span>Action</span>
+            <select name="B2_action" data-id="B2">
+              <option value="keep">Keep placeholder artwork</option>
+              <option value="replace">Replace with real logo</option>
+              <option value="remove">Remove from strip</option>
+            </select>
+          </label>
+          <label class="field"><span>Display name</span><input type="text" name="B2_label" data-id="B2" placeholder="PLACEHOLDER: College / institution logo" /></label>
+          <label class="field"><span>Path or URL note</span><input type="text" name="B2_path" data-id="B2" placeholder="/assets/logos/… or https://…" /></label>
+          <label class="field"><span>File to attach in chat</span><input type="file" name="B2_file" data-id="B2" accept="image/*,.svg" /></label>
+          <p class="file-name" id="B2_fname"></p>
+          <label class="check"><input type="checkbox" name="B2_remove" data-id="B2" /> Mark for removal from recognition strip</label>
+        </div>
+
+        <div class="card" id="B3">
+          <span class="card-id">B3</span>
+          <h3>Recognition · Flutter logo artwork</h3>
+          <p class="current">Current: <code>/assets/logos/flutter.svg</code> · label <code>Flutter</code> (real tool name; placeholder mark)</p>
+          <label class="field">
+            <span>Action</span>
+            <select name="B3_action" data-id="B3">
+              <option value="keep">Keep placeholder artwork</option>
+              <option value="replace">Replace with licensed official mark</option>
+              <option value="remove">Remove from strip</option>
+            </select>
+          </label>
+          <label class="field"><span>Display name</span><input type="text" name="B3_label" data-id="B3" placeholder="Flutter" /></label>
+          <label class="field"><span>Path or URL note</span><input type="text" name="B3_path" data-id="B3" placeholder="/assets/logos/flutter.svg" /></label>
+          <label class="field"><span>File to attach in chat</span><input type="file" name="B3_file" data-id="B3" accept="image/*,.svg" /></label>
+          <p class="file-name" id="B3_fname"></p>
+          <label class="check"><input type="checkbox" name="B3_remove" data-id="B3" /> Mark for removal from recognition strip</label>
+        </div>
+
+        <div class="card" id="B4">
+          <span class="card-id">B4</span>
+          <h3>Recognition · Google ML Kit logo artwork</h3>
+          <p class="current">Current: <code>/assets/logos/mlkit.svg</code> · label <code>Google ML Kit</code></p>
+          <label class="field">
+            <span>Action</span>
+            <select name="B4_action" data-id="B4">
+              <option value="keep">Keep placeholder artwork</option>
+              <option value="replace">Replace with licensed official mark</option>
+              <option value="remove">Remove from strip</option>
+            </select>
+          </label>
+          <label class="field"><span>Display name</span><input type="text" name="B4_label" data-id="B4" placeholder="Google ML Kit" /></label>
+          <label class="field"><span>Path or URL note</span><input type="text" name="B4_path" data-id="B4" placeholder="/assets/logos/mlkit.svg" /></label>
+          <label class="field"><span>File to attach in chat</span><input type="file" name="B4_file" data-id="B4" accept="image/*,.svg" /></label>
+          <p class="file-name" id="B4_fname"></p>
+          <label class="check"><input type="checkbox" name="B4_remove" data-id="B4" /> Mark for removal from recognition strip</label>
+        </div>
+
+        <div class="card" id="B5">
+          <span class="card-id">B5</span>
+          <h3>Recognition · Bhashini / ULCA logo artwork</h3>
+          <p class="current">Current: <code>/assets/logos/bhashini.svg</code> · label <code>Bhashini / ULCA (optional TTS)</code></p>
+          <label class="field">
+            <span>Action</span>
+            <select name="B5_action" data-id="B5">
+              <option value="keep">Keep placeholder artwork</option>
+              <option value="replace">Replace with licensed official mark</option>
+              <option value="remove">Remove from strip</option>
+            </select>
+          </label>
+          <label class="field"><span>Display name</span><input type="text" name="B5_label" data-id="B5" placeholder="Bhashini / ULCA (optional TTS)" /></label>
+          <label class="field"><span>Path or URL note</span><input type="text" name="B5_path" data-id="B5" placeholder="/assets/logos/bhashini.svg" /></label>
+          <label class="field"><span>File to attach in chat</span><input type="file" name="B5_file" data-id="B5" accept="image/*,.svg" /></label>
+          <p class="file-name" id="B5_fname"></p>
+          <label class="check"><input type="checkbox" name="B5_remove" data-id="B5" /> Mark for removal from recognition strip</label>
+        </div>
+
+        <div class="card" id="B6">
+          <span class="card-id">B6</span>
+          <h3>Recognition · Partner / NGO logo</h3>
+          <p class="current">Current: <code>/assets/logos/partner.svg</code> · <code>PLACEHOLDER: Partner / NGO logo</code></p>
+          <label class="field">
+            <span>Action</span>
+            <select name="B6_action" data-id="B6">
+              <option value="keep">Keep placeholder artwork</option>
+              <option value="replace">Replace with real logo</option>
+              <option value="remove">Remove from strip</option>
+            </select>
+          </label>
+          <label class="field"><span>Display name</span><input type="text" name="B6_label" data-id="B6" placeholder="PLACEHOLDER: Partner / NGO logo" /></label>
+          <label class="field"><span>Path or URL note</span><input type="text" name="B6_path" data-id="B6" placeholder="/assets/logos/… or https://…" /></label>
+          <label class="field"><span>File to attach in chat</span><input type="file" name="B6_file" data-id="B6" accept="image/*,.svg" /></label>
+          <p class="file-name" id="B6_fname"></p>
+          <label class="check"><input type="checkbox" name="B6_remove" data-id="B6" /> Mark for removal from recognition strip</label>
+        </div>
+
+        <div class="card" id="B7">
+          <span class="card-id">B7</span>
+          <h3>Traction photo · card 1</h3>
+          <p class="current">Current: <code>/assets/traction/placeholder-1.svg</code></p>
+          <label class="field">
+            <span>Action</span>
+            <select name="B7_action" data-id="B7">
+              <option value="keep">Keep placeholder</option>
+              <option value="attach">I will attach photo in chat</option>
+              <option value="remove">Remove photo / card</option>
+            </select>
+          </label>
+          <label class="field"><span>Caption (optional override)</span><input type="text" name="B7_caption" data-id="B7" placeholder="Uses A6 caption if empty" /></label>
+          <label class="field"><span>File to attach in chat</span><input type="file" name="B7_file" data-id="B7" accept="image/*" /></label>
+          <p class="file-name" id="B7_fname"></p>
+          <p class="file-note">Expected target path: <code>public/assets/traction/…</code></p>
+        </div>
+
+        <div class="card" id="B8">
+          <span class="card-id">B8</span>
+          <h3>Traction photo · card 2</h3>
+          <p class="current">Current: <code>/assets/traction/placeholder-2.svg</code></p>
+          <label class="field">
+            <span>Action</span>
+            <select name="B8_action" data-id="B8">
+              <option value="keep">Keep placeholder</option>
+              <option value="attach">I will attach photo in chat</option>
+              <option value="remove">Remove photo / card</option>
+            </select>
+          </label>
+          <label class="field"><span>Caption (optional override)</span><input type="text" name="B8_caption" data-id="B8" placeholder="Uses A7 caption if empty" /></label>
+          <label class="field"><span>File to attach in chat</span><input type="file" name="B8_file" data-id="B8" accept="image/*" /></label>
+          <p class="file-name" id="B8_fname"></p>
+          <p class="file-note">Expected target path: <code>public/assets/traction/…</code></p>
+        </div>
+      </section>
+
+      <!-- ========== C SCREENSHOTS ========== -->
+      <section class="block" id="section-c">
+        <div class="section-head">
+          <span class="section-id">Section C</span>
+          <h2>App screenshots</h2>
+          <span class="count-badge">C1–C6</span>
+        </div>
+        <p class="section-sub">Existing step PNGs may already be fine. Check “I will attach” only if replacing.</p>
+
+        <div class="card" id="C1">
+          <span class="card-id">C1</span>
+          <h3>Welcome</h3>
+          <p class="current">Expected filename: <code>step-01-welcome.png</code> → <code>/assets/steps/</code></p>
+          <label class="check"><input type="checkbox" name="C1_attach" data-id="C1" /> I will attach a replacement screenshot in chat</label>
+          <label class="check"><input type="checkbox" name="C1_keep" data-id="C1" checked /> Keep existing file</label>
+          <label class="field"><span>Notes (optional)</span><input type="text" name="C1_notes" data-id="C1" placeholder="Crop / device / theme notes…" /></label>
+          <label class="field"><span>File (optional preview of name)</span><input type="file" name="C1_file" data-id="C1" accept="image/*" /></label>
+          <p class="file-name" id="C1_fname"></p>
+        </div>
+
+        <div class="card" id="C2">
+          <span class="card-id">C2</span>
+          <h3>Language grid</h3>
+          <p class="current">Expected filename: <code>step-02-language.png</code></p>
+          <label class="check"><input type="checkbox" name="C2_attach" data-id="C2" /> I will attach a replacement screenshot in chat</label>
+          <label class="check"><input type="checkbox" name="C2_keep" data-id="C2" checked /> Keep existing file</label>
+          <label class="field"><span>Notes (optional)</span><input type="text" name="C2_notes" data-id="C2" placeholder="Crop / device / theme notes…" /></label>
+          <label class="field"><span>File (optional preview of name)</span><input type="file" name="C2_file" data-id="C2" accept="image/*" /></label>
+          <p class="file-name" id="C2_fname"></p>
+        </div>
+
+        <div class="card" id="C3">
+          <span class="card-id">C3</span>
+          <h3>Feature tour</h3>
+          <p class="current">Expected filename: <code>step-03-feature-tour.png</code></p>
+          <label class="check"><input type="checkbox" name="C3_attach" data-id="C3" /> I will attach a replacement screenshot in chat</label>
+          <label class="check"><input type="checkbox" name="C3_keep" data-id="C3" checked /> Keep existing file</label>
+          <label class="field"><span>Notes (optional)</span><input type="text" name="C3_notes" data-id="C3" placeholder="Crop / device / theme notes…" /></label>
+          <label class="field"><span>File (optional preview of name)</span><input type="file" name="C3_file" data-id="C3" accept="image/*" /></label>
+          <p class="file-name" id="C3_fname"></p>
+        </div>
+
+        <div class="card" id="C4">
+          <span class="card-id">C4</span>
+          <h3>Scanner</h3>
+          <p class="current">Expected filename: <code>step-04-scanner.png</code></p>
+          <label class="check"><input type="checkbox" name="C4_attach" data-id="C4" /> I will attach a replacement screenshot in chat</label>
+          <label class="check"><input type="checkbox" name="C4_keep" data-id="C4" checked /> Keep existing file</label>
+          <label class="field"><span>Notes (optional)</span><input type="text" name="C4_notes" data-id="C4" placeholder="Crop / device / theme notes…" /></label>
+          <label class="field"><span>File (optional preview of name)</span><input type="file" name="C4_file" data-id="C4" accept="image/*" /></label>
+          <p class="file-name" id="C4_fname"></p>
+        </div>
+
+        <div class="card" id="C5">
+          <span class="card-id">C5</span>
+          <h3>Loading</h3>
+          <p class="current">Expected filename: <code>step-05-loading.png</code></p>
+          <label class="check"><input type="checkbox" name="C5_attach" data-id="C5" /> I will attach a replacement screenshot in chat</label>
+          <label class="check"><input type="checkbox" name="C5_keep" data-id="C5" checked /> Keep existing file</label>
+          <label class="field"><span>Notes (optional)</span><input type="text" name="C5_notes" data-id="C5" placeholder="Crop / device / theme notes…" /></label>
+          <label class="field"><span>File (optional preview of name)</span><input type="file" name="C5_file" data-id="C5" accept="image/*" /></label>
+          <p class="file-name" id="C5_fname"></p>
+        </div>
+
+        <div class="card" id="C6">
+          <span class="card-id">C6</span>
+          <h3>Results</h3>
+          <p class="current">Expected filename: <code>step-06-results.png</code></p>
+          <label class="check"><input type="checkbox" name="C6_attach" data-id="C6" /> I will attach a replacement screenshot in chat</label>
+          <label class="check"><input type="checkbox" name="C6_keep" data-id="C6" checked /> Keep existing file</label>
+          <label class="field"><span>Notes (optional)</span><input type="text" name="C6_notes" data-id="C6" placeholder="Crop / device / theme notes…" /></label>
+          <label class="field"><span>File (optional preview of name)</span><input type="file" name="C6_file" data-id="C6" accept="image/*" /></label>
+          <p class="file-name" id="C6_fname"></p>
+        </div>
+      </section>
+
+      <!-- ========== D TEAM PHOTOS ========== -->
+      <section class="block" id="section-d">
+        <div class="section-head">
+          <span class="section-id">Section D</span>
+          <h2>Team photos</h2>
+          <span class="count-badge">D1–D3</span>
+        </div>
+        <p class="section-sub">Will attach in chat, or skip to leave SVG placeholders.</p>
+
+        <div class="card" id="D1">
+          <span class="card-id">D1</span>
+          <h3>Team member 1 photo</h3>
+          <p class="current">Current: <code>/assets/team/placeholder-1.svg</code> · pairs with A9</p>
+          <label class="field">
+            <span>Action</span>
+            <select name="D1_action" data-id="D1">
+              <option value="skip">Skip (keep placeholder)</option>
+              <option value="attach">I will attach photo in chat</option>
+              <option value="remove">Remove photo / hide member</option>
+            </select>
+          </label>
+          <label class="field"><span>File to attach in chat</span><input type="file" name="D1_file" data-id="D1" accept="image/*" /></label>
+          <p class="file-name" id="D1_fname"></p>
+        </div>
+
+        <div class="card" id="D2">
+          <span class="card-id">D2</span>
+          <h3>Team member 2 photo</h3>
+          <p class="current">Current: <code>/assets/team/placeholder-2.svg</code> · pairs with A10</p>
+          <label class="field">
+            <span>Action</span>
+            <select name="D2_action" data-id="D2">
+              <option value="skip">Skip (keep placeholder)</option>
+              <option value="attach">I will attach photo in chat</option>
+              <option value="remove">Remove photo / hide member</option>
+            </select>
+          </label>
+          <label class="field"><span>File to attach in chat</span><input type="file" name="D2_file" data-id="D2" accept="image/*" /></label>
+          <p class="file-name" id="D2_fname"></p>
+        </div>
+
+        <div class="card" id="D3">
+          <span class="card-id">D3</span>
+          <h3>Team member 3 photo</h3>
+          <p class="current">Current: <code>/assets/team/placeholder-3.svg</code> · pairs with A11</p>
+          <label class="field">
+            <span>Action</span>
+            <select name="D3_action" data-id="D3">
+              <option value="skip">Skip (keep placeholder)</option>
+              <option value="attach">I will attach photo in chat</option>
+              <option value="remove">Remove photo / hide member</option>
+            </select>
+          </label>
+          <label class="field"><span>File to attach in chat</span><input type="file" name="D3_file" data-id="D3" accept="image/*" /></label>
+          <p class="file-name" id="D3_fname"></p>
+        </div>
+      </section>
+
+      <div class="actions">
+        <button type="submit" class="btn-primary" id="btn-export">Export &amp; copy answers</button>
+        <button type="button" class="btn-secondary" id="btn-md">Download .md only</button>
+        <button type="button" class="btn-secondary" id="btn-clear">Clear form</button>
+        <p class="status" id="status" role="status"></p>
+      </div>
+    </form>
+
+    <div id="preview">
+      <h2>Export preview</h2>
+      <p class="lede" style="margin-bottom:0.75rem">Paste this into Cursor chat. Attach any files listed under <code>filesToAttachInChat</code>.</p>
+      <pre id="preview-body"></pre>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const IDS = [
+        'A1','A2','A3','A4','A5','A6','A7','A8','A9','A10','A11','A12','A13','A14','A15','A16','A17','A18',
+        'B1','B2','B3','B4','B5','B6','B7','B8',
+        'C1','C2','C3','C4','C5','C6',
+        'D1','D2','D3'
+      ];
+
+      const CURRENT = {
+        A1: 'PLACEHOLDER: Building / Hackathon finalist (replace only with evidenced status)',
+        A2: 'Concept UI · sample values',
+        A3: 'PLACEHOLDER: do not claim formal CSC partnerships without evidence.',
+        A4: 'PLACEHOLDER: named NGO partners not found in repo.',
+        A5: 'PLACEHOLDER: no bank deployment claims in repo — Form Guide currently off.',
+        A6: { category: 'PLACEHOLDER', title: 'PLACEHOLDER: Recognition moment', caption: 'PLACEHOLDER: photo / certificate caption', Result: 'PLACEHOLDER', Year: 'PLACEHOLDER', Venue: 'PLACEHOLDER' },
+        A7: { category: 'PLACEHOLDER', title: 'PLACEHOLDER: Pilot / field note', caption: 'PLACEHOLDER: field photo caption', Users: 'PLACEHOLDER', 'Docs scanned': 'PLACEHOLDER', Location: 'PLACEHOLDER' },
+        A8: [],
+        A9: { name: 'PLACEHOLDER: Name', role: 'PLACEHOLDER: Role', linkedin: 'PLACEHOLDER: LinkedIn URL' },
+        A10: { name: 'PLACEHOLDER: Name', role: 'PLACEHOLDER: Role', linkedin: 'PLACEHOLDER: LinkedIn URL' },
+        A11: { name: 'PLACEHOLDER: Name', role: 'PLACEHOLDER: Role', linkedin: 'PLACEHOLDER: LinkedIn URL' },
+        A12: 'PLACEHOLDER: privacy policy URL.',
+        A13: 'PLACEHOLDER: backend submit endpoint — this build only validates and shows success in the browser.',
+        A14: { label: 'PLACEHOLDER: Email', href: '#' },
+        A15: { label: 'PLACEHOLDER: Twitter / X', href: '#' },
+        A16: { label: 'PLACEHOLDER: LinkedIn page', href: '#' },
+        A17: 'PLACEHOLDER: City / region',
+        A18: 'https://github.com/abhi-yanta/VaakSetu',
+        B1: { src: '/assets/logos/hackathon.svg', label: 'PLACEHOLDER: Hackathon / program logo' },
+        B2: { src: '/assets/logos/college.svg', label: 'PLACEHOLDER: College / institution logo' },
+        B3: { src: '/assets/logos/flutter.svg', label: 'Flutter' },
+        B4: { src: '/assets/logos/mlkit.svg', label: 'Google ML Kit' },
+        B5: { src: '/assets/logos/bhashini.svg', label: 'Bhashini / ULCA (optional TTS)' },
+        B6: { src: '/assets/logos/partner.svg', label: 'PLACEHOLDER: Partner / NGO logo' },
+        B7: { src: '/assets/traction/placeholder-1.svg' },
+        B8: { src: '/assets/traction/placeholder-2.svg' },
+        C1: 'step-01-welcome.png',
+        C2: 'step-02-language.png',
+        C3: 'step-03-feature-tour.png',
+        C4: 'step-04-scanner.png',
+        C5: 'step-05-loading.png',
+        C6: 'step-06-results.png',
+        D1: '/assets/team/placeholder-1.svg',
+        D2: '/assets/team/placeholder-2.svg',
+        D3: '/assets/team/placeholder-3.svg'
+      };
+
+      const form = document.getElementById('ph-form');
+      const statusEl = document.getElementById('status');
+      const preview = document.getElementById('preview');
+      const previewBody = document.getElementById('preview-body');
+
+      // File name previews
+      form.querySelectorAll('input[type="file"]').forEach(function (input) {
+        input.addEventListener('change', function () {
+          const id = input.getAttribute('data-id');
+          const el = document.getElementById(id + '_fname');
+          if (!el) return;
+          el.textContent = input.files && input.files[0]
+            ? 'Selected: ' + input.files[0].name + ' — attach this same file in Cursor chat'
+            : '';
+        });
+      });
+
+      function val(name) {
+        const el = form.elements.namedItem(name);
+        if (!el) return '';
+        if (el.type === 'checkbox') return el.checked;
+        if (el.type === 'file') return el.files && el.files[0] ? el.files[0].name : '';
+        return String(el.value || '').trim();
+      }
+
+      function isSkip(s) {
+        return !s || /^skip$/i.test(s);
+      }
+
+      function parseCounters() {
+        const action = val('A8_action');
+        if (action === 'keep') return { action: 'keep', counters: [], note: 'leave empty' };
+        const rawJson = val('A8_json');
+        const lines = val('A8_lines');
+        if (rawJson) {
+          try {
+            return { action: 'custom', counters: JSON.parse(rawJson) };
+          } catch (e) {
+            return { action: 'custom', counters: null, parseError: String(e.message), raw: rawJson };
+          }
+        }
+        if (lines) {
+          const counters = lines.split(/\n/).map(function (line) {
+            line = line.trim();
+            if (!line) return null;
+            const parts = line.split('|').map(function (p) { return p.trim(); });
+            return {
+              label: parts[0] || '',
+              value: parts[1] ? Number(parts[1]) || parts[1] : '',
+              suffix: parts[2] || undefined,
+              note: parts[3] || ''
+            };
+          }).filter(Boolean);
+          return { action: 'custom', counters: counters };
+        }
+        return { action: 'keep', counters: [], note: 'no custom data provided — leave empty' };
+      }
+
+      function buildPayload() {
+        const answers = {};
+        const filesToAttach = [];
+
+        function pushFile(id, filename) {
+          if (filename) filesToAttach.push({ id: id, filename: filename });
+        }
+
+        // A1
+        answers.A1 = {
+          title: 'Hero status chip',
+          action: val('A1_action'),
+          text: isSkip(val('A1_text')) ? null : val('A1_text') || null,
+          current: CURRENT.A1
+        };
+        // A2
+        answers.A2 = {
+          title: 'Hero phone caption',
+          action: val('A2_action'),
+          text: isSkip(val('A2_text')) ? null : val('A2_text') || null,
+          current: CURRENT.A2
+        };
+        // A3–A5
+        ;['A3','A4','A5'].forEach(function (id) {
+          const titles = {
+            A3: 'Audience CSC note',
+            A4: 'Audience NGO note',
+            A5: 'Audience Banks note'
+          };
+          answers[id] = {
+            title: titles[id],
+            action: val(id + '_action'),
+            text: isSkip(val(id + '_text')) ? null : val(id + '_text') || null,
+            current: CURRENT[id]
+          };
+        });
+
+        // A6
+        answers.A6 = {
+          title: 'Traction card 1',
+          action: val('A6_action'),
+          fields: {
+            category: val('A6_category') || null,
+            title: val('A6_title') || null,
+            caption: val('A6_caption') || null,
+            result: val('A6_result') || null,
+            year: val('A6_year') || null,
+            venue: val('A6_venue') || null,
+            evidence: val('A6_evidence') || null
+          },
+          current: CURRENT.A6
+        };
+        // A7
+        answers.A7 = {
+          title: 'Traction card 2',
+          action: val('A7_action'),
+          fields: {
+            category: val('A7_category') || null,
+            title: val('A7_title') || null,
+            caption: val('A7_caption') || null,
+            users: val('A7_users') || null,
+            docsScanned: val('A7_docs') || null,
+            location: val('A7_location') || null,
+            evidence: val('A7_evidence') || null
+          },
+          current: CURRENT.A7
+        };
+        // A8
+        answers.A8 = Object.assign({ title: 'Traction counters', current: CURRENT.A8 }, parseCounters());
+
+        // A9–A11
+        ;['A9','A10','A11'].forEach(function (id, i) {
+          answers[id] = {
+            title: 'Team member ' + (i + 1) + ' text',
+            action: val(id + '_action'),
+            name: val(id + '_name') || null,
+            role: val(id + '_role') || null,
+            linkedin: val(id + '_linkedin') || null,
+            current: CURRENT[id]
+          };
+        });
+
+        // A12–A18
+        answers.A12 = { title: 'Privacy policy URL', action: val('A12_action'), url: val('A12_url') || null, current: CURRENT.A12 };
+        answers.A13 = { title: 'Form submit endpoint', action: val('A13_action'), url: val('A13_url') || null, current: CURRENT.A13 };
+        answers.A14 = { title: 'Footer email', action: val('A14_action'), email: val('A14_email') || null, current: CURRENT.A14 };
+        answers.A15 = { title: 'Footer Twitter/X', action: val('A15_action'), url: val('A15_url') || null, current: CURRENT.A15 };
+        answers.A16 = { title: 'Footer LinkedIn', action: val('A16_action'), url: val('A16_url') || null, current: CURRENT.A16 };
+        answers.A17 = { title: 'Footer location', action: val('A17_action'), text: val('A17_text') || null, current: CURRENT.A17 };
+        answers.A18 = { title: 'Download URL', action: val('A18_action'), url: val('A18_url') || null, current: CURRENT.A18 };
+
+        // B1–B6
+        ;['B1','B2','B3','B4','B5','B6'].forEach(function (id) {
+          const fname = val(id + '_file');
+          pushFile(id, fname);
+          const removeCb = val(id + '_remove');
+          let action = val(id + '_action');
+          if (removeCb) action = 'remove';
+          answers[id] = {
+            title: document.querySelector('#' + id + ' h3').textContent,
+            action: action,
+            label: val(id + '_label') || null,
+            pathOrUrl: val(id + '_path') || null,
+            selectedFilename: fname || null,
+            remove: !!removeCb,
+            current: CURRENT[id],
+            instruction: fname ? 'Attach "' + fname + '" in Cursor chat' : null
+          };
+        });
+
+        // B7–B8
+        ;['B7','B8'].forEach(function (id) {
+          const fname = val(id + '_file');
+          pushFile(id, fname);
+          answers[id] = {
+            title: document.querySelector('#' + id + ' h3').textContent,
+            action: val(id + '_action'),
+            caption: val(id + '_caption') || null,
+            selectedFilename: fname || null,
+            current: CURRENT[id],
+            instruction: fname || val(id + '_action') === 'attach'
+              ? 'Attach traction photo in Cursor chat' + (fname ? ' ("' + fname + '")' : '')
+              : null
+          };
+        });
+
+        // C1–C6
+        const expected = { C1: CURRENT.C1, C2: CURRENT.C2, C3: CURRENT.C3, C4: CURRENT.C4, C5: CURRENT.C5, C6: CURRENT.C6 };
+        ;['C1','C2','C3','C4','C5','C6'].forEach(function (id) {
+          const fname = val(id + '_file');
+          pushFile(id, fname);
+          const willAttach = !!val(id + '_attach');
+          answers[id] = {
+            title: document.querySelector('#' + id + ' h3').textContent,
+            expectedFilename: expected[id],
+            keepExisting: !!val(id + '_keep'),
+            willAttachInChat: willAttach,
+            notes: val(id + '_notes') || null,
+            selectedFilename: fname || null,
+            instruction: willAttach || fname
+              ? 'Attach screenshot for ' + expected[id] + (fname ? ' (selected: ' + fname + ')' : '')
+              : 'Keep existing ' + expected[id]
+          };
+        });
+
+        // D1–D3
+        ;['D1','D2','D3'].forEach(function (id) {
+          const fname = val(id + '_file');
+          pushFile(id, fname);
+          const action = val(id + '_action');
+          answers[id] = {
+            title: document.querySelector('#' + id + ' h3').textContent,
+            action: action,
+            selectedFilename: fname || null,
+            current: CURRENT[id],
+            instruction: action === 'attach' || fname
+              ? 'Attach team photo in Cursor chat' + (fname ? ' ("' + fname + '")' : '')
+              : action === 'skip' ? 'Leave placeholder' : 'Remove / hide'
+          };
+        });
+
+        // Soft validation notes
+        const warnings = [];
+        if (answers.A8.parseError) warnings.push('A8 JSON parse error: ' + answers.A8.parseError);
+        ;['A1','A3','A4','A5','A12','A13','A14','A15','A16','A17','A18'].forEach(function (id) {
+          if (answers[id].action === 'custom') {
+            const has =
+              answers[id].text || answers[id].url || answers[id].email;
+            if (!has) warnings.push(id + ': action is custom but field is empty (will be treated as leave/skip)');
+          }
+        });
+
+        const missingIds = IDS.filter(function (id) { return !answers[id]; });
+
+        return {
+          meta: {
+            product: 'VaakSetu',
+            target: 'website/ (second landing)',
+            exportedAt: new Date().toISOString(),
+            idCount: IDS.length,
+            idsPresent: IDS.slice(),
+            missingIds: missingIds,
+            warnings: warnings,
+            howToUse:
+              'Paste this JSON (or the sibling markdown) into Cursor chat. Attach every file listed in filesToAttachInChat. Empty / skip / keep = leave site placeholder unchanged.'
+          },
+          answers: answers,
+          filesToAttachInChat: filesToAttach
+        };
+      }
+
+      function toMarkdown(payload) {
+        const lines = [];
+        lines.push('# VaakSetu placeholder answers');
+        lines.push('');
+        lines.push('Exported: ' + payload.meta.exportedAt);
+        lines.push('IDs: ' + payload.meta.idCount + ' (' + payload.meta.idsPresent.join(', ') + ')');
+        lines.push('');
+        lines.push('> Paste into Cursor chat. Attach files listed at the bottom.');
+        lines.push('');
+
+        function block(id, obj) {
+          lines.push('## ' + id + ' — ' + (obj.title || ''));
+          lines.push('```json');
+          lines.push(JSON.stringify(obj, null, 2));
+          lines.push('```');
+          lines.push('');
+        }
+
+        IDS.forEach(function (id) { block(id, payload.answers[id]); });
+
+        lines.push('## Files to attach in Cursor chat');
+        if (!payload.filesToAttachInChat.length) {
+          lines.push('_None selected._');
+        } else {
+          payload.filesToAttachInChat.forEach(function (f) {
+            lines.push('- **' + f.id + '**: `' + f.filename + '`');
+          });
+        }
+        lines.push('');
+        if (payload.meta.warnings.length) {
+          lines.push('## Warnings');
+          payload.meta.warnings.forEach(function (w) { lines.push('- ' + w); });
+          lines.push('');
+        }
+        return lines.join('\n');
+      }
+
+      function download(filename, text, mime) {
+        const blob = new Blob([text], { type: mime || 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      async function copyText(text) {
+        try {
+          await navigator.clipboard.writeText(text);
+          return true;
+        } catch (e) {
+          // Fallback
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.left = '-9999px';
+          document.body.appendChild(ta);
+          ta.select();
+          try {
+            document.execCommand('copy');
+            return true;
+          } catch (e2) {
+            return false;
+          } finally {
+            ta.remove();
+          }
+        }
+      }
+
+      async function exportAll(alsoMd) {
+        const payload = buildPayload();
+        if (payload.meta.missingIds.length) {
+          statusEl.className = 'status err';
+          statusEl.textContent = 'Missing IDs on form: ' + payload.meta.missingIds.join(', ');
+          return;
+        }
+
+        const json = JSON.stringify(payload, null, 2);
+        const md = toMarkdown(payload);
+
+        download('vaaksetu-placeholder-answers.json', json, 'application/json');
+        if (alsoMd !== false) {
+          download('vaaksetu-placeholder-answers.md', md, 'text/markdown');
+        }
+
+        const copied = await copyText(json);
+        preview.classList.add('visible');
+        previewBody.textContent = json;
+
+        statusEl.className = 'status ok';
+        statusEl.textContent = copied
+          ? 'Copied JSON to clipboard. Files downloaded. Paste this into Cursor chat.'
+          : 'Downloaded files. Copy failed — select the preview below and paste into Cursor chat.';
+
+        preview.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        exportAll(true);
+      });
+
+      document.getElementById('btn-md').addEventListener('click', function () {
+        const payload = buildPayload();
+        const md = toMarkdown(payload);
+        download('vaaksetu-placeholder-answers.md', md, 'text/markdown');
+        copyText(md).then(function (ok) {
+          statusEl.className = 'status ok';
+          statusEl.textContent = ok
+            ? 'Markdown downloaded and copied. Paste into Cursor chat.'
+            : 'Markdown downloaded. Copy from the file if needed.';
+          preview.classList.add('visible');
+          previewBody.textContent = md;
+        });
+      });
+
+      document.getElementById('btn-clear').addEventListener('click', function () {
+        if (!confirm('Clear all fields?')) return;
+        form.reset();
+        form.querySelectorAll('.file-name').forEach(function (el) { el.textContent = ''; });
+        statusEl.className = 'status';
+        statusEl.textContent = 'Form cleared.';
+        preview.classList.remove('visible');
+      });
+
+      // Confirm all 35 cards exist in DOM
+      const missingDom = IDS.filter(function (id) { return !document.getElementById(id); });
+      if (missingDom.length) {
+        statusEl.className = 'status err';
+        statusEl.textContent = 'Form incomplete — missing DOM nodes: ' + missingDom.join(', ');
+      }
+    })();
+  </script>
+</body>
+</html>

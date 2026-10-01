@@ -451,10 +451,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
                         child: Image.asset(
-                          'assets/icon/app_icon.png',
+                          'assets/brand/mark.png',
                           width: 32,
                           height: 32,
-                          fit: BoxFit.cover,
+                          fit: BoxFit.contain,
+                          errorBuilder: (_, __, ___) => Image.asset(
+                            'assets/brand/app_icon.png',
+                            width: 32,
+                            height: 32,
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 10),

@@ -19,9 +19,9 @@ class WelcomeView extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Animated Logo Badge
-            const AnimatedLogo(size: 110),
-            const SizedBox(height: 32),
+            // Brand mark (V–S Bridge monogram) — larger on welcome / splash
+            const AnimatedLogo(size: 128),
+            const SizedBox(height: 28),
 
             // Titles
             const Text(

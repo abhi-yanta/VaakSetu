@@ -90,13 +90,13 @@ class _AnimatedLogoState extends State<AnimatedLogo> with TickerProviderStateMix
             child: ClipRRect(
               borderRadius: BorderRadius.circular(widget.size * 0.24),
               child: Image.asset(
-                'assets/icon/app_icon.png',
+                'assets/brand/app_icon.png',
                 width: widget.size,
                 height: widget.size,
                 fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) => Container(
-                  color: AppColors.primarySaffron,
-                  child: Icon(Icons.shield_rounded, color: Colors.white, size: widget.size * 0.5),
+                  color: AppColors.deepTeal,
+                  child: Icon(Icons.graphic_eq_rounded, color: AppColors.primarySaffron, size: widget.size * 0.45),
                 ),
               ),
             ),

@@ -1,8 +1,13 @@
 # VaakSetu (वाक् सेतु) — The Voice Bridge
 
+<p align="center">
+  <img src="docs/brand/lockup.png" alt="VaakSetu brand lockup" width="420" />
+</p>
+
 Audio-first Android app that helps low-literacy and rural users understand legal papers and forms before they sign. Point a phone camera at a document → on-device OCR → spoken safety summary (or field-by-field form help) in the user’s language.
 
 **Primary product:** Flutter app in [`mobile/`](mobile/) (v1.0.0).  
+**Brand mark:** [`docs/brand/`](docs/brand/) · **Landing:** [`docs/landing/`](docs/landing/index.html)  
 **Repository:** https://github.com/abhi-yanta/VaakSetu
 
 ---
@@ -57,11 +62,13 @@ vaaksetu/
 ├── dataset/         # Legal / OCR sources + synthetic rule benchmarks
 ├── client/          # React web UI (kiosk / CSC path)
 ├── server/          # Express companion for the web client
-├── docs/            # Product overview and notes
+├── docs/            # Product overview, brand assets, landing
+│   ├── brand/       # Unified V–S Bridge mark (icon, mark, lockup)
+│   └── landing/     # Static branded landing page
 └── VAAKSETU_SYSTEM_DESCRIPTION.md
 ```
 
-Deeper product walkthrough: [`docs/VaakSetu_Overview.md`](docs/VaakSetu_Overview.md).
+Brand assets also live under `mobile/assets/brand/` for the Flutter app. Deeper product walkthrough: [`docs/VaakSetu_Overview.md`](docs/VaakSetu_Overview.md).
 
 ---
 

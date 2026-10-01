@@ -52,16 +52,29 @@ class SpeakingCaptionFooter extends StatelessWidget {
   }
 
   Widget _buildIdleBrand() {
-    return const SizedBox(
+    return SizedBox(
       height: 24,
       child: Center(
-        child: Text(
-          'VaakSetu • AI Document Assistant',
-          style: TextStyle(
-            color: AppColors.textMuted,
-            fontSize: 11,
-            fontWeight: FontWeight.w500,
-          ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset(
+              'assets/brand/mark.png',
+              width: 16,
+              height: 16,
+              fit: BoxFit.contain,
+              errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+            ),
+            const SizedBox(width: 6),
+            const Text(
+              'VaakSetu • AI Document Assistant',
+              style: TextStyle(
+                color: AppColors.textMuted,
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
         ),
       ),
     );
